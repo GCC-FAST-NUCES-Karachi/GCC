@@ -1,0 +1,20 @@
+/* Team route styles */
+.team-page {
+    width: min(1200px, calc(100% - 3rem));
+    margin-inline: auto;
+    padding: 5rem 0;
+    border-top: 1px solid var(--border-default);
+}
+
+.team-page>p:last-child {
+    margin-top: 1.5rem;
+    color: var(--text-body);
+    line-height: 1.6;
+}
+
+@media (max-width: 700px) {
+    .team-page {
+        width: calc(100% - 2rem);
+        padding: 4rem 0;
+    }
+}
