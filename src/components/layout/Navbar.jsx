@@ -11,6 +11,7 @@ const navItems = [
   { href: "/", label: "~/home" },
   { href: "/learn", label: "~/learn" },
   { href: "/events", label: "~/events" },
+  { href: "/games", label: "~/games" },
   { href: "/team", label: "~/team" },
 ];
 
@@ -45,8 +46,8 @@ export default function Navbar() {
       <div className={`nav-links${menuOpen ? " is-open" : ""}`} id="primary-nav-links">
         {navItems.map((item) => (
           <Link
-            aria-current={pathname === item.href ? "page" : undefined}
-            className={pathname === item.href ? "active" : undefined}
+            aria-current={pathname === item.href || (item.href === "/games" && pathname.startsWith("/games/")) ? "page" : undefined}
+            className={pathname === item.href || (item.href === "/games" && pathname.startsWith("/games/")) ? "active" : undefined}
             href={item.href}
             key={item.href}
             onClick={() => setMenuOpen(false)}
