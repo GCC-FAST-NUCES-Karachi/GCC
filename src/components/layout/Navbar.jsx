@@ -57,7 +57,23 @@ export default function Navbar() {
       </div>
 
       <div className="nav-actions">
-        <Link href="/#join" className="join-button nav-join" onClick={() => setMenuOpen(false)}>Join the club</Link>
+        <button className="terminal-button" type="button" aria-label="Terminal (coming soon)" title="Terminal (coming soon)">
+          <span aria-hidden="true">&gt;_</span>
+          <span className="terminal-label" aria-hidden="true">terminal</span>
+        </button>
+        <Link href="/#join" className="join-button nav-join" onClick={() => setMenuOpen(false)}>
+          <span className="join-label-desktop">Join the club</span>
+          <span className="join-label-mobile">Join</span>
+        </Link>
+        <a
+          aria-label="GitHub organization"
+          className="github-button"
+          href="https://github.com/ismailsilat7/ghcc"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d={siGithub.path} /></svg>
+        </a>
         <button
           className="nav-menu-toggle"
           type="button"
@@ -68,15 +84,6 @@ export default function Navbar() {
         >
           {menuOpen ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
         </button>
-        <a
-          aria-label="GitHub organization"
-          className="github-button"
-          href="https://github.com/ismailsilat7/ghcc"
-          rel="noreferrer"
-          target="_blank"
-        >
-          <svg aria-hidden="true" viewBox="0 0 24 24"><path d={siGithub.path} /></svg>
-        </a>
       </div>
     </nav>
   );

@@ -4,7 +4,7 @@
   top: 1rem;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: clamp(.85rem, 1.5vw, 1.5rem);
   width: min(1200px, calc(100% - 2rem));
   max-width: calc(100% - 2rem);
@@ -40,9 +40,10 @@
 
 .nav-links {
   display: flex;
+  flex: 1 1 auto;
   align-items: center;
   justify-content: center;
-  gap: clamp(1rem, 2vw, 2rem);
+  gap: clamp(1.75rem, 2.5vw, 2.25rem);
 }
 
 .nav-menu-toggle {
@@ -91,6 +92,26 @@
   gap: .6rem;
 }
 
+.terminal-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .55rem;
+  min-height: 48px;
+  padding: 0 1rem;
+  border: 1px solid #252d35;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--accent-green);
+  font-family: var(--font-mono);
+  font-size: .9rem;
+  font-weight: 700;
+  cursor: default;
+}
+
+.terminal-label { color: var(--text-body); font-weight: 400; }
+.join-label-mobile { display: none; }
+
 .github-button {
   display: inline-flex;
   width: 40px;
@@ -137,8 +158,29 @@
   justify-content: center;
 }
 
+@media (max-width: 1200px) and (min-width: 1001px) {
+  .site-nav {
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .nav-links {
+    flex: 1 1 auto;
+    justify-content: flex-start;
+    gap: clamp(1.5rem, 2vw, 1.75rem);
+    margin-left: clamp(2.25rem, 3vw, 3rem);
+  }
+
+  .nav-actions {
+    flex: 0 0 auto;
+    margin-left: auto;
+  }
+}
+
 @media (max-width: 1000px) {
   .site-nav {
+    display: flex;
+    justify-content: space-between;
     width: calc(100% - 2rem);
     gap: .5rem;
     margin: 1rem auto;
@@ -156,6 +198,7 @@
     right: 0;
     left: 0;
     display: none;
+    justify-self: auto;
     align-items: stretch;
     flex-direction: column;
     gap: .15rem;
@@ -182,6 +225,7 @@
 
   .nav-actions {
     gap: .4rem;
+    margin-left: auto;
   }
 
   .nav-join {
@@ -190,12 +234,39 @@
     font-size: .8rem;
   }
 
+  .site-nav .nav-join {
+    min-height: 40px;
+    padding: 0 .65rem;
+  }
+
   .github-button {
     display: inline-flex;
     width: 40px;
     min-width: 40px;
     min-height: 40px;
     flex: 0 0 40px;
+  }
+
+  .terminal-button {
+    width: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    flex-basis: 40px;
+    gap: 0;
+    padding: 0;
+    border-radius: 50%;
+  }
+
+  .terminal-label {
+    display: none;
+  }
+
+  .join-label-desktop {
+    display: none;
+  }
+
+  .join-label-mobile {
+    display: inline;
   }
 }
 
@@ -264,9 +335,21 @@
     flex-basis: 36px;
   }
 
+  .terminal-button {
+    width: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    flex-basis: 36px;
+  }
+
   .nav-join {
-    min-height: 44px;
+    min-height: 40px;
     padding: 0 .45rem;
     font-size: .7rem;
+  }
+
+  .site-nav .nav-join {
+    min-height: 40px;
+    padding: 0 .45rem;
   }
 }
