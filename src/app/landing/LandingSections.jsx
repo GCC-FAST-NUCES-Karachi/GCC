@@ -1,6 +1,7 @@
 import {
   ArrowRight,
   Clock3,
+  Gamepad2,
   MapPin,
   Mic,
   Trophy,
@@ -157,14 +158,11 @@ export function PlaySection() {
   return (
     <RevealOnScroll as="section" className="landing-section play-section" aria-labelledby="play-heading">
       <SectionHeading id="play-heading" title="Play" command="// ./play --arcade" />
-      <div className="arcade-window">
-        <div className="arcade-titlebar"><span className="arcade-dots"><i /><i /><i /></span><span>gcc-arcade</span><span /></div>
-        <div className="arcade-content">
-          <div className="game-canvas"><span>GAME CANVAS</span><small>content to be decided</small></div>
-          <div className="arcade-commentary"><p className="commentary-label">{"// commentary"}</p><p>Take a break from shipping code. This is the club’s arcade corner, ready for a little friendly competition.</p><p>The game is still being chosen. This canvas is reserved for the experience. Instructions and controls will appear here when it’s ready.</p></div>
-        </div>
+      <div className="play-cta">
+        <div className="play-cta-icon"><Gamepad2 size={28} aria-hidden="true" /></div>
+        <div><h3>A little break between commits.</h3><p>Browse the club arcade, pick a game and see if you can beat your high score.</p></div>
+        <a href="/games" className="play-cta-link">Explore games <ArrowRight size={16} aria-hidden="true" /></a>
       </div>
-      <p className="arcade-prompt">&gt; game loading soon_</p>
     </RevealOnScroll>
   );
 }
