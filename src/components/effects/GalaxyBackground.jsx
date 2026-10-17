@@ -225,7 +225,8 @@ export default function GalaxyBackground() {
     }
 
     function galaxyOpacity() {
-      const progress = Math.min(window.scrollY / Math.max(window.innerHeight, 1), 1);
+      const loop = window.__gccLoop; // set on the endless-scroll home page
+      const progress = Math.min((loop ? loop.distanceFromHero() : window.scrollY) / Math.max(window.innerHeight, 1), 1);
       return 1 - progress * 0.65;
     }
 
@@ -249,7 +250,7 @@ export default function GalaxyBackground() {
       lastT = now;
 
       // scroll velocity (px/sec), smoothed
-      const y = window.scrollY;
+      const y = window.__gccLoop ? window.__gccLoop.unwrappedY() : window.scrollY;
       const deltaY = y - lastY;
       if (deltaY !== 0) scrollDirection = Math.sign(deltaY);
       const vel = Math.abs(deltaY) / Math.max(dt, 0.001);

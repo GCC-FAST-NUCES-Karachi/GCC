@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { siGithub } from "simple-icons";
-import { useTerminal } from "@/components/terminal/TerminalProvider.jsx";
+import { getBug, getServerBug, subscribe, wasJustUnlocked } from "@/lib/easterBug";
 import "./Navbar.css";
 
 const navItems = [
@@ -20,8 +20,8 @@ export default function Navbar() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const navRef = useRef(null);
-  const terminalBtnRef = useRef(null);
-  const { openTerminal } = useTerminal();
+  // The terminal stays hidden until the easter bug is over (bug === false).
+  const bug = useSyncExternalStore(subscribe, getBug, getServerBug);
 
   useEffect(() => {
     if (!menuOpen) return undefined;
@@ -38,10 +38,6 @@ export default function Navbar() {
       window.removeEventListener("keydown", closeOnEscape);
     };
   }, [menuOpen]);
-
-  const handleTerminalClick = () => {
-    openTerminal(terminalBtnRef.current);
-  };
 
   return (
     <nav ref={navRef} aria-label="Primary navigation" className="site-nav">
@@ -65,17 +61,12 @@ export default function Navbar() {
       </div>
 
       <div className="nav-actions">
-        <button
-          ref={terminalBtnRef}
-          className="terminal-button"
-          type="button"
-          aria-label="Open terminal"
-          title="Open terminal"
-          onClick={handleTerminalClick}
-        >
-          <span aria-hidden="true">&gt;_</span>
-          <span className="terminal-label" aria-hidden="true">terminal</span>
-        </button>
+        {!bug && (
+          <button className={`terminal-button${wasJustUnlocked() ? " is-new" : ""}`} type="button" aria-label="Terminal (coming soon)" title="Terminal (coming soon)">
+            <span aria-hidden="true">&gt;_</span>
+            <span className="terminal-label" aria-hidden="true">terminal</span>
+          </button>
+        )}
         <Link href="/#join" className="join-button nav-join" onClick={() => setMenuOpen(false)}>
           <span className="join-label-desktop">Join the club</span>
           <span className="join-label-mobile">Join</span>
