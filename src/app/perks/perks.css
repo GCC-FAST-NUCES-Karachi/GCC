@@ -1,139 +1,284 @@
-/* Perks page. Uses your shared tokens when they exist, with fallbacks from design.md. */
 .perks-page {
-  --p-card: var(--bg-card, #161b22);
-  --p-border: var(--border-default, #30363d);
-  --p-blue: var(--accent-blue, #58a6ff);
-  --p-green: var(--accent-green, #3fb950);
-  --p-heading: var(--text-heading, #ffffff);
-  --p-body: var(--text-body, #c9d1d9);
-  --p-dim: var(--text-dim, #8b949e);
+  --perk-green: #b7f36a;
+  --perk-blue: #8fc7ff;
+  --perk-yellow: #f2d675;
+  --perk-orange: #ffad78;
+  --perk-card: rgb(16 22 29 / 92%);
+  --perk-border: rgb(153 171 185 / 20%);
+  --perk-muted: #aab5bf;
 
-  max-width: 1200px;
+  position: relative;
+  z-index: 1;
+  width: min(1160px, calc(100% - 3rem));
   margin: 0 auto;
-  padding: 140px 24px 96px;
+  padding: 76px 0 100px;
 }
 
 .perks-header {
-  text-align: center;
-  margin-bottom: 56px;
-}
-.perks-header h1 {
-  color: var(--p-heading);
-  font-size: clamp(2.2rem, 5vw, 3.2rem);
-  font-weight: 800;
-  margin: 0 0 8px;
-}
-.perks-subtitle {
-  font-family: var(--font-mono, "JetBrains Mono", monospace);
-  color: var(--p-blue);
-  margin: 0;
+  position: relative;
+  margin: 0 0 42px;
+  padding: 0 0 30px;
+  border-bottom: 1px solid var(--perk-border);
+  text-align: left;
 }
 
-/* align-items:start so opening one card does not stretch its neighbours */
+.perks-header::after {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: min(220px, 42%);
+  height: 2px;
+  background: linear-gradient(90deg, var(--perk-green), var(--perk-blue), transparent);
+  content: "";
+}
+
+.perks-page .perks-header h1 {
+  max-width: none;
+  margin: 0 0 12px;
+  color: var(--text-heading);
+  font-size: 4.25rem;
+  font-weight: 850;
+  line-height: .98;
+  letter-spacing: 0;
+}
+
+.perks-subtitle {
+  margin: 0;
+  color: var(--perk-green);
+  font-family: var(--font-mono);
+  font-size: .9rem;
+  line-height: 1.6;
+}
+
 .perks-grid {
-  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
   margin: 0;
   padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 24px;
-  align-items: start;
+  list-style: none;
+  counter-reset: perk;
 }
 
-.perk-card {
+.perks-grid > .perk-card {
+  --perk-accent: var(--perk-green);
+
+  position: relative;
   display: flex;
+  min-width: 0;
   flex-direction: column;
-  gap: 12px;
+  overflow: hidden;
   padding: 24px;
-  background: var(--p-card);
-  border: 1px solid var(--p-border);
-  border-radius: 14px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  border: 1px solid var(--perk-border);
+  border-radius: 10px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--perk-accent) 7%, transparent), transparent 48%),
+    var(--perk-card);
+  box-shadow: 0 14px 36px rgb(0 0 0 / 16%);
+  counter-increment: perk;
+  transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+  animation: perk-arrive .5s both;
 }
-/* The hover effect you asked for: scale up + deeper shadow (+ blue glow from design.md) */
-.perk-card:hover,
-.perk-card:focus-within {
-  transform: scale(1.04);
-  border-color: var(--p-blue);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.65), 0 0 24px rgba(88, 166, 255, 0.25);
+
+.perks-grid > .perk-card:nth-child(4n + 2) { --perk-accent: var(--perk-blue); }
+.perks-grid > .perk-card:nth-child(4n + 3) { --perk-accent: var(--perk-yellow); }
+.perks-grid > .perk-card:nth-child(4n + 4) { --perk-accent: var(--perk-orange); }
+
+.perks-grid > .perk-card::before {
+  position: absolute;
+  top: 0;
+  right: 24px;
+  left: 24px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--perk-accent), transparent 78%);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--perk-accent) 45%, transparent);
+  content: "";
+}
+
+.perks-grid > .perk-card::after {
+  position: absolute;
+  top: 16px;
+  right: 22px;
+  color: var(--perk-accent);
+  content: "0" counter(perk);
+  font-family: var(--font-mono);
+  font-size: .75rem;
+  opacity: .8;
 }
 
 .perk-file {
-  font-family: var(--font-mono, "JetBrains Mono", monospace);
-  font-size: 0.78rem;
-  color: var(--p-dim);
+  display: block;
+  margin: 0 52px 12px 0;
+  color: var(--perk-accent);
+  font-family: var(--font-mono);
+  font-size: .75rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
 }
-.perk-card h2 {
-  color: var(--p-heading);
-  font-size: 1.3rem;
-  font-weight: 800;
-  margin: 0;
+
+.perks-page .perk-card h2 {
+  margin: 0 0 10px;
+  color: var(--text-heading);
+  font-size: 1.55rem;
+  font-weight: 750;
+  line-height: 1.2;
+  letter-spacing: 0;
+  text-wrap: balance;
 }
+
 .perk-desc {
-  color: var(--p-body);
-  line-height: 1.6;
-  margin: 0;
+  margin: 0 0 20px;
+  color: var(--text-body);
+  font-size: .96rem;
+  line-height: 1.65;
 }
 
 .perk-details {
-  color: var(--p-body);
-  font-size: 0.92rem;
-}
-.perk-details summary {
-  cursor: pointer;
-  color: var(--p-blue);
-  font-family: var(--font-mono, "JetBrains Mono", monospace);
-  font-size: 0.85rem;
-}
-.perk-details summary:focus-visible,
-.perk-btn:focus-visible {
-  outline: 2px solid var(--p-blue);
-  outline-offset: 3px;
-}
-.perk-details h3 {
-  color: var(--p-heading);
-  font-size: 0.95rem;
-  margin: 14px 0 6px;
-}
-.perk-details ul,
-.perk-details ol {
-  margin: 0;
-  padding-left: 20px;
-  line-height: 1.6;
+  margin: auto 0 18px;
+  border-top: 1px solid var(--perk-border);
+  color: var(--perk-muted);
+  font-size: .88rem;
 }
 
+.perk-details summary {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--text-heading);
+  cursor: pointer;
+  font-weight: 650;
+  list-style: none;
+}
+
+.perk-details summary::-webkit-details-marker { display: none; }
+
+.perk-details summary::after {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  place-items: center;
+  border: 1px solid var(--perk-border);
+  border-radius: 50%;
+  color: var(--perk-accent);
+  content: "+";
+  font-family: var(--font-mono);
+  transition: transform .2s ease, border-color .2s ease;
+}
+
+.perk-details[open] summary::after {
+  border-color: var(--perk-accent);
+  content: "-";
+}
+
+.perk-details summary:focus-visible {
+  outline: 2px solid var(--perk-accent);
+  outline-offset: 3px;
+}
+
+.perk-details h3 {
+  margin: 12px 0 6px;
+  color: var(--perk-accent);
+  font-family: var(--font-mono);
+  font-size: .75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.perk-details ul,
+.perk-details ol {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding-left: 20px;
+  line-height: 1.55;
+}
+
+.perk-details li::marker { color: var(--perk-accent); }
+
 .perk-btn {
-  margin-top: 4px;
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
   align-self: flex-start;
-  padding: 10px 20px;
-  border-radius: 999px;
-  background: var(--p-green);
-  color: #fff;
+  padding: 0 16px;
+  border: 1px solid color-mix(in srgb, var(--perk-accent) 55%, transparent);
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--perk-accent) 12%, transparent);
+  color: var(--text-heading);
+  font-size: .9rem;
   font-weight: 700;
   text-decoration: none;
-  transition: filter 0.2s ease;
+  transition: background .18s ease, border-color .18s ease, box-shadow .18s ease;
 }
+
+.perk-btn::after {
+  color: var(--perk-accent);
+  content: "->";
+  font-family: var(--font-mono);
+}
+
 .perk-btn:hover {
-  filter: brightness(1.15);
+  border-color: var(--perk-accent);
+  background: color-mix(in srgb, var(--perk-accent) 20%, transparent);
+  box-shadow: 0 0 22px color-mix(in srgb, var(--perk-accent) 17%, transparent);
+}
+
+.perk-btn:focus-visible {
+  outline: 2px solid var(--perk-accent);
+  outline-offset: 3px;
 }
 
 .perks-note {
-  max-width: 800px;
-  margin: 56px auto 0;
-  text-align: center;
-  color: var(--p-dim);
-  font-size: 0.85rem;
-  line-height: 1.6;
+  max-width: 78ch;
+  margin: 32px auto 0;
+  padding: 16px 20px;
+  border-left: 2px solid var(--perk-blue);
+  background: rgb(143 199 255 / 5%);
+  color: var(--perk-muted);
+  font-size: .84rem;
+  line-height: 1.65;
 }
 
-/* Respect "reduce motion": keep the shadow change, drop the scaling */
+@keyframes perk-arrive {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.perks-grid > .perk-card:nth-child(2) { animation-delay: 50ms; }
+.perks-grid > .perk-card:nth-child(3) { animation-delay: 100ms; }
+.perks-grid > .perk-card:nth-child(4) { animation-delay: 150ms; }
+.perks-grid > .perk-card:nth-child(5) { animation-delay: 200ms; }
+.perks-grid > .perk-card:nth-child(6) { animation-delay: 250ms; }
+.perks-grid > .perk-card:nth-child(7) { animation-delay: 300ms; }
+
+@media (hover: hover) {
+  .perks-grid > .perk-card:hover,
+  .perks-grid > .perk-card:focus-within {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--perk-accent) 55%, var(--perk-border));
+    box-shadow: 0 20px 44px rgb(0 0 0 / 28%), 0 0 28px color-mix(in srgb, var(--perk-accent) 10%, transparent);
+  }
+}
+
+@media (max-width: 760px) {
+  .perks-page {
+    width: calc(100% - 2rem);
+    padding: 52px 0 72px;
+  }
+
+  .perks-header { margin-bottom: 28px; }
+  .perks-page .perks-header h1 { font-size: 3.25rem; }
+  .perks-grid { grid-template-columns: 1fr; gap: 14px; }
+  .perks-grid > .perk-card { padding: 22px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .perk-card {
-    transition: none;
-  }
-  .perk-card:hover,
-  .perk-card:focus-within {
-    transform: none;
-  }
+  .perks-grid > .perk-card,
+  .perk-btn,
+  .perk-details summary::after { animation: none; transition: none; }
 }
