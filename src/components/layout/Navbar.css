@@ -106,7 +106,13 @@
   font-family: var(--font-mono);
   font-size: .9rem;
   font-weight: 700;
-  cursor: default;
+  cursor: pointer;
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+
+.terminal-button:hover {
+  border-color: var(--accent-green);
+  box-shadow: 0 0 12px rgba(63, 185, 80, 0.15);
 }
 
 .terminal-label { color: var(--text-body); font-weight: 400; }

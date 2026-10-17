@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { siGithub } from "simple-icons";
+import { useTerminal } from "@/components/terminal/TerminalProvider.jsx";
 import "./Navbar.css";
 
 const navItems = [
@@ -18,6 +19,8 @@ export default function Navbar() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const navRef = useRef(null);
+  const terminalBtnRef = useRef(null);
+  const { openTerminal } = useTerminal();
 
   useEffect(() => {
     if (!menuOpen) return undefined;
@@ -34,6 +37,10 @@ export default function Navbar() {
       window.removeEventListener("keydown", closeOnEscape);
     };
   }, [menuOpen]);
+
+  const handleTerminalClick = () => {
+    openTerminal(terminalBtnRef.current);
+  };
 
   return (
     <nav ref={navRef} aria-label="Primary navigation" className="site-nav">
@@ -57,7 +64,14 @@ export default function Navbar() {
       </div>
 
       <div className="nav-actions">
-        <button className="terminal-button" type="button" aria-label="Terminal (coming soon)" title="Terminal (coming soon)">
+        <button
+          ref={terminalBtnRef}
+          className="terminal-button"
+          type="button"
+          aria-label="Open terminal"
+          title="Open terminal"
+          onClick={handleTerminalClick}
+        >
           <span aria-hidden="true">&gt;_</span>
           <span className="terminal-label" aria-hidden="true">terminal</span>
         </button>

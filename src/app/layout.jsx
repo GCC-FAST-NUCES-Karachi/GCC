@@ -1,6 +1,8 @@
 import GalaxyBackground from "@/components/effects/GalaxyBackground";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
+import Terminal from "@/components/terminal/Terminal.jsx";
+import { TerminalProvider } from "@/components/terminal/TerminalProvider.jsx";
 import localFont from "next/font/local";
 import "./globals.css";
 
@@ -30,13 +32,17 @@ export default function RootLayout({ children }) {
     <html lang="en" className={`${inter.variable} ${jetBrainsMono.variable}`}>
       <body>
         <GalaxyBackground />
-        <div className="site-content">
-          <a className="skip-link" href="#main-content">Skip to main content</a>
-          <Navbar />
-          {children}
-          <Footer />
-        </div>
+        <TerminalProvider>
+          <div className="site-content">
+            <a className="skip-link" href="#main-content">Skip to main content</a>
+            <Navbar />
+            {children}
+            <Footer />
+          </div>
+          <Terminal />
+        </TerminalProvider>
       </body>
     </html>
   );
 }
+
