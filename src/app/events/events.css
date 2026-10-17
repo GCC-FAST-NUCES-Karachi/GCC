@@ -1,20 +1,49 @@
-/* Events route styles */
 .events-page {
-    width: min(1200px, calc(100% - 3rem));
-    margin-inline: auto;
-    padding: 5rem 0;
-    border-top: 1px solid var(--border-default);
+  position: relative;
+  display: flex;
+  min-height: max(760px, 100svh);
+  flex-direction: column;
+  padding: clamp(7rem, 13vh, 9rem) clamp(1.25rem, 3vw, 3rem) 5rem;
+  color: var(--text-heading);
 }
 
-.events-page>p:last-child {
-    margin-top: 1.5rem;
-    color: var(--text-body);
-    line-height: 1.6;
+.events-page-heading {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+.events-page-heading h1 {
+  max-width: none;
+  margin: 0;
+  font-size: clamp(2.7rem, 5.1vw, 4.5rem);
+  letter-spacing: -0.055em;
+}
+
+.events-page-heading p {
+  margin: 0.65rem 0 0;
+  color: var(--accent-blue);
+  font: clamp(0.95rem, 1.35vw, 1.2rem) var(--font-mono);
+}
+
+.events-page .events-grid {
+  position: relative;
+  z-index: 1;
+  width: min(1120px, 100%);
+  margin: clamp(5.5rem, 17vh, 10rem) auto 0;
 }
 
 @media (max-width: 700px) {
-    .events-page {
-        width: calc(100% - 2rem);
-        padding: 4rem 0;
-    }
+  .events-page {
+    min-height: max(700px, 100svh);
+    padding: 7rem 1rem 4rem;
+  }
+
+  .events-page-heading h1 {
+    font-size: clamp(2.45rem, 10vw, 3.5rem);
+  }
+
+  .events-page .events-grid {
+    margin-top: clamp(5rem, 12vh, 7rem);
+  }
 }
