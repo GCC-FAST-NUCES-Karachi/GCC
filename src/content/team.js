@@ -21,7 +21,7 @@ export const teamMembers = [
   { slug: "treasurer", tier: 2, name: "Talha Yousuf (DS)", id: "25K-2533", role: "Treasurer", photo: "/images/Team/fizza_batool.png" },
 
   { slug: "technical-head", tier: 3, name: "Hunza Shahzadi (DS)", id: "25K-2536", role: "Technical Head", photo: "/images/Team/fizza_batool.png" },
-  { slug: "event-manager", tier: 3, name: "Aryaan Taimur Saeed (DS)", id: "25K-2540", role: "Event Manager", photo: "/images/Team/fizza_batool.png" },
+  { slug: "event-manager", tier: 3, name: "Aryaan Taimur Saeed (DS)", id: "25K-2540", role: "Event Manager", photo: "/images/Team/Aryaan_Taimur.png" },
   { slug: "media-promotions-head", tier: 3, name: "Isbah Rani Abbasi (CS)", id: "24K-0698", role: "Media & Promotions Head", photo: "/images/Team/isbah_rani_abbasi.png" },
   { slug: "guest-relations-head", tier: 3, name: "Mahrukh Siddiqui (AI)", id: "25K-0147", role: "Guest Relations Head", photo: "/images/Team/fizza_batool.png" },
   { slug: "sop-compliance-head", tier: 3, name: "Syeda Maha Fatima (CS)", id: "24K-0624", role: "SOP Compliance Head", photo: "/images/Team/syeda_maha_fatima.png" },
