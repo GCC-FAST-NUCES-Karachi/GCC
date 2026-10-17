@@ -1,0 +1,139 @@
+/* Perks page. Uses your shared tokens when they exist, with fallbacks from design.md. */
+.perks-page {
+  --p-card: var(--bg-card, #161b22);
+  --p-border: var(--border-default, #30363d);
+  --p-blue: var(--accent-blue, #58a6ff);
+  --p-green: var(--accent-green, #3fb950);
+  --p-heading: var(--text-heading, #ffffff);
+  --p-body: var(--text-body, #c9d1d9);
+  --p-dim: var(--text-dim, #8b949e);
+
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 140px 24px 96px;
+}
+
+.perks-header {
+  text-align: center;
+  margin-bottom: 56px;
+}
+.perks-header h1 {
+  color: var(--p-heading);
+  font-size: clamp(2.2rem, 5vw, 3.2rem);
+  font-weight: 800;
+  margin: 0 0 8px;
+}
+.perks-subtitle {
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  color: var(--p-blue);
+  margin: 0;
+}
+
+/* align-items:start so opening one card does not stretch its neighbours */
+.perks-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+.perk-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  background: var(--p-card);
+  border: 1px solid var(--p-border);
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+/* The hover effect you asked for: scale up + deeper shadow (+ blue glow from design.md) */
+.perk-card:hover,
+.perk-card:focus-within {
+  transform: scale(1.04);
+  border-color: var(--p-blue);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.65), 0 0 24px rgba(88, 166, 255, 0.25);
+}
+
+.perk-file {
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 0.78rem;
+  color: var(--p-dim);
+}
+.perk-card h2 {
+  color: var(--p-heading);
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin: 0;
+}
+.perk-desc {
+  color: var(--p-body);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.perk-details {
+  color: var(--p-body);
+  font-size: 0.92rem;
+}
+.perk-details summary {
+  cursor: pointer;
+  color: var(--p-blue);
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 0.85rem;
+}
+.perk-details summary:focus-visible,
+.perk-btn:focus-visible {
+  outline: 2px solid var(--p-blue);
+  outline-offset: 3px;
+}
+.perk-details h3 {
+  color: var(--p-heading);
+  font-size: 0.95rem;
+  margin: 14px 0 6px;
+}
+.perk-details ul,
+.perk-details ol {
+  margin: 0;
+  padding-left: 20px;
+  line-height: 1.6;
+}
+
+.perk-btn {
+  margin-top: 4px;
+  align-self: flex-start;
+  padding: 10px 20px;
+  border-radius: 999px;
+  background: var(--p-green);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  transition: filter 0.2s ease;
+}
+.perk-btn:hover {
+  filter: brightness(1.15);
+}
+
+.perks-note {
+  max-width: 800px;
+  margin: 56px auto 0;
+  text-align: center;
+  color: var(--p-dim);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+/* Respect "reduce motion": keep the shadow change, drop the scaling */
+@media (prefers-reduced-motion: reduce) {
+  .perk-card {
+    transition: none;
+  }
+  .perk-card:hover,
+  .perk-card:focus-within {
+    transform: none;
+  }
+}

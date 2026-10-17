@@ -11,6 +11,7 @@ import "./Navbar.css";
 const navItems = [
   { href: "/", label: "~/home" },
   { href: "/learn", label: "~/learn" },
+  { href: "/perks", label: "~/perks" },
   { href: "/events", label: "~/events" },
   { href: "/games", label: "~/games" },
   { href: "/team", label: "~/team" },
