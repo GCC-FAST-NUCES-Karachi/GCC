@@ -10,7 +10,7 @@ export default function TeamPage() {
       <p className="eyebrow">{"// git checkout team"}</p>
       <h1>Team</h1>
       <p className="team-intro">
-        {"// hover or tap a card to see who's behind the commits"}
+        {"// meet the people behind the commits"}
       </p>
 
       <div className="team-tree">
