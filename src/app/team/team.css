@@ -6,15 +6,241 @@
     border-top: 1px solid var(--border-default);
 }
 
-.team-page>p:last-child {
-    margin-top: 1.5rem;
-    color: var(--text-body);
+.team-intro {
+    margin-top: 1rem;
+    color: var(--text-dim, #8b949e);
+    font-family: var(--font-mono, "JetBrains Mono", monospace);
+    font-size: 0.9rem;
     line-height: 1.6;
+}
+
+/* Hierarchy: each tier is a centred row; a connector joins one tier to the next */
+.team-tree {
+    margin-top: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tier {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tier + .tier {
+    margin-top: 3rem;
+}
+
+/* decorative connector line between tiers */
+.tier + .tier::before {
+    content: "";
+    position: absolute;
+    top: -3rem;
+    left: 50%;
+    height: 3rem;
+    border-left: 2px dashed var(--border-default);
+}
+
+.tier-heading {
+    margin: 0 0 0.5rem;
+    color: var(--text-heading, #ffffff);
+    font-weight: 800;
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    line-height: 1.2;
+    text-align: center;
+}
+
+.tier-label {
+    margin: 0 0 1rem;
+    color: var(--text-dim, #8b949e);
+    font-family: var(--font-mono, "JetBrains Mono", monospace);
+    font-size: 0.8rem;
+}
+
+.tier-row {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start; /* an opened card must not stretch its neighbours */
+    gap: 1.25rem;
+    width: 100%;
+    max-width: calc(3 * 280px + 2 * 1.25rem); /* tablet: balanced rows */
+}
+
+.member {
+    width: 280px;
+    container-type: inline-size; /* lets the code font scale with the card width */
+}
+
+/* Desktop: every member of a tier sits on ONE line (--cols is set in page.jsx) */
+@media (min-width: 1200px) {
+    .tier-row {
+        display: grid;
+        grid-template-columns: repeat(var(--cols, 1), minmax(0, 1fr));
+        /* may be wider than the 1200px page column so 5 cards stay roomy on one line */
+        width: min(calc(100vw - 4rem), 1380px, calc(var(--cols, 1) * 280px + (var(--cols, 1) - 1) * 1.25rem));
+        max-width: none;
+    }
+
+    .member {
+        width: auto;
+    }
+}
+
+.member {
+    background: var(--bg-card, #161b22);
+    border: 1px solid var(--border-default);
+    border-radius: 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.member-btn {
+    display: block;
+    width: 100%;
+    padding: 1.25rem;
+    background: none;
+    border: 0;
+    border-radius: inherit;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    min-height: 44px; /* tap target */
+}
+
+.member-btn:focus-visible {
+    outline: 2px solid var(--accent-blue, #58a6ff);
+    outline-offset: 2px;
+}
+
+.member-code {
+    display: block;
+    white-space: pre;   /* never wraps */
+    overflow: visible;  /* never clip a name; the font below is sized to fit with spare room */
+    font-family: var(--font-mono, "JetBrains Mono", monospace);
+    /* longest line is ~30 characters; a mono character is ~0.6em wide */
+    font-size: clamp(0.6rem, calc((100cqw - 2.5rem - 2px) / 20.5), 0.9rem);
+    line-height: 1.7;
+    min-height: calc(6 * 1.7em); /* same height for every card */
+    color: var(--text-body, #c9d1d9);
+}
+
+.py-var { color: var(--accent-blue, #58a6ff); }
+.py-op  { color: var(--text-dim, #8b949e); }
+.py-str { color: #bc8cff; }
+.py-val { color: var(--accent-green, #3fb950); }
+
+/* Reveal: grid-rows 0fr -> 1fr animates height without measuring it */
+.member-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition: grid-template-rows 0.3s ease, opacity 0.3s ease;
+}
+
+.member-panel-inner {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column; /* photo on top, title below: any photo size works */
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 0;
+    text-align: center;
+}
+
+.member.is-open .member-panel,
+.member-btn:focus-visible .member-panel {
+    grid-template-rows: 1fr;
+    opacity: 1;
+}
+
+.member.is-open .member-panel-inner {
+    padding-top: 1rem;
+    margin-top: 1rem;
+    border-top: 1px dashed var(--border-default);
+}
+
+.member-photo {
+    --photo-size: 128px; /* change this one value to resize every photo */
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: var(--photo-size);
+    height: var(--photo-size);
+    max-width: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--bg-base, #0d1117);
+    border: 1px solid var(--accent-blue, #58a6ff);
+}
+
+.member-photo svg {
+    width: 100%;
+    height: 100%;
+}
+
+.member-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.member-role {
+    color: var(--text-heading, #fff);
+    font-weight: 800;
+    font-size: 1.15rem;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+
+/* Hover only on devices that really hover; touch uses tap (is-open) */
+@media (hover: hover) {
+    .member:hover {
+        transform: translateY(-4px);
+        border-color: var(--accent-blue, #58a6ff);
+        box-shadow: 0 0 24px rgba(88, 166, 255, 0.25);
+    }
+
+    .member:hover .member-panel {
+        grid-template-rows: 1fr;
+        opacity: 1;
+    }
+
+    .member:hover .member-panel-inner {
+        padding-top: 1rem;
+        margin-top: 1rem;
+        border-top: 1px dashed var(--border-default);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .member,
+    .member-panel {
+        transition: none;
+    }
+    .member:hover {
+        transform: none;
+    }
 }
 
 @media (max-width: 700px) {
     .team-page {
         width: calc(100% - 2rem);
         padding: 4rem 0;
+    }
+
+    .tier-row {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .member {
+        width: 100%;
+        max-width: 360px;
     }
 }
