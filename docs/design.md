@@ -1,90 +1,79 @@
 # GCC Website — Design Specification
 
+This is the working visual reference derived from the GCC Figma handoff. The implementation map at the end records what is currently present in the repository. Design details that are not in that map are proposals/reference details, not shipped behavior. For current content and outstanding product work, see [plan.md](plan.md).
+
 ## Brand and foundations
 
-Confident, playful, technical, never corporate. Use code as a visual language: comment subtitles, path-like nav, and git-command section labels.
+Confident, playful, technical, and community-centered. Use code as a visual language for labels and navigation while keeping user-facing information plain and readable.
 
-| Token | Value |
+- **Palette:** near-black backgrounds, dark card surfaces, GitHub-inspired borders, blue and green accents, white headings, muted body text, and occasional purple/orange/yellow details. Shared CSS custom properties in `src/styles/tokens.css` are the code source of truth.
+- **Typography:** locally hosted Inter for primary copy and JetBrains Mono for commands, labels, and terminal content.
+- **Layout:** centered responsive content with generous spacing; the Figma desktop canvas is 1440px with a roughly 1200px content region.
+- **Cards and controls:** restrained borders and radii, visible keyboard focus, clear hover/focus feedback, and touch-friendly sizing.
+- **Motion:** decorative motion must not carry essential information. Respect `prefers-reduced-motion`; preserve static content and direct access to controls.
+
+If a handoff value conflicts with an established shared token or accessible implementation behavior, update the shared source of truth deliberately rather than introducing unrelated one-off styles.
+
+## Current route map
+
+| Route | Current content |
 | --- | --- |
-| `bg/space`, `bg/base`, `bg/card`, `bg/terminal` | `#010409`, `#0d1117`, `#161b22`, `#000000` |
-| `border/default` | `#30363d` |
-| `accent/blue`, `accent/green` | `#58a6ff`, `#3fb950` |
-| `text/heading`, `text/body`, `text/dim` | `#ffffff`, `#c9d1d9`, `#8b949e` |
-| `icon/yellow`, `icon/purple`, `icon/orange` | `#e3b341`, `#bc8cff`, `#f0883e` |
+| `/` | Hero, Core Functions, Highlights, Play/arcade teaser, upcoming events, Join section |
+| `/learn` | Learning paths and selected external resources |
+| `/events` | Shared upcoming-event list and empty state |
+| `/team` | Faculty mentors and student leadership directory |
+| `/perks` | GitHub programs and student resources |
+| `/games` | Arcade hub and contribution information |
+| `/games/commit-snake` | Playable Commit Snake |
+| `/terminal` | Simulated Git terminal |
 
-- Type: Inter ExtraBold headings; Inter Regular body; JetBrains Mono for labels, nav, comments, and terminal.
-- Layout: 1440px canvas, 1200px content width, 60px grid, 120px side margin.
-- Cards: 1px border, 12–16px radius; hover gives blue glow and 4px lift.
-- Navbar: glass pill with `rgba(13,17,23,.6)`, blur, and soft blue glow.
-- Buttons: filled green “Join the club”; outlined blue “View all”.
+The navbar and footer are shared. The terminal is available from the global navbar and its own route. Current route details and metadata live in the corresponding `src/app/**/page.jsx` files.
 
-Implement all values as shared CSS tokens. Decorative animation must never be required to understand or use content.
+## Landing-page visual direction
 
-## Routes and shared shell
+The intended section order is:
 
-| Route | v1 content |
-| --- | --- |
-| `/` | Landing L1–L6 |
-| `/learn`, `/events`, `/team` | “Content coming soon” placeholders |
-| Terminal | Overlay, not a route |
+`Navbar → Hero → Core Functions → Highlights → Play → Upcoming Events → Join → Footer`
 
-The floating pill navbar contains brand, `~/home`, `~/learn`, `~/events`, `~/team`, active underline, terminal switch, Join CTA, and GitHub icon. Footer: brand blurb, social icons, Navigate / Community / Build, and `main · a1b2c3d`. Community links are GitHub, Discord, Instagram, LinkedIn; Build links are projects, code of conduct, contact, brand kit.
+- **Hero:** strong club statement over a dark grid/galaxy background, with the GitHub mark and a scroll cue. Keep contrast stable across background states.
+- **Core Functions:** four cards for hackathons, workshops, tech talks, and community, with code-like filenames, simple icons, and concise descriptions.
+- **Highlights:** responsive cards for posts, recaps, and tutorials. Current items are illustrative sample content in `src/content/highlights.js`.
+- **Play:** terminal-inspired panel that promotes the playable Commit Snake route and the arcade contribution path. The game itself is on `/games/commit-snake`.
+- **Events:** shared event component used on the landing and `/events`. The content source is `src/content/events.js`; verify sample event details and RSVP links.
+- **Join:** direct email link from the landing section.
+- **Footer:** brand summary, navigation, community/build links, and build metadata. Audit external destinations before release.
 
-## Landing: L1–L6
+See [landingpage_design.md](landingpage_design.md) for more detailed visual notes and the comparison with current implementation.
 
-1. **L1 Hero:** galaxy, GitHub logo, “Where students ship code and build the future together.”, `// scroll to accelerate`, scroll hint, welcome terminal widget.
-2. **L2 Core Functions:** `Hackathons()`, `Workshops()`, `Tech Talks()`, `Community()` cards and designed hover state.
-3. **L3 Highlights:** `git log --highlights`; masonry of post, recap, and code cards; “View all highlights”.
-4. **L3b Play:** `./play --arcade`; terminal-framed 420×420 game placeholder and commentary—not a v1 game commitment.
-5. **L4 Events:** `git fetch origin --events`; timeline with date/title/place/time, cat mascot, green RSVP. Empty state: sleeping cat and “No events on this branch yet. git pull soon.”
-6. **L5 Footer / seam:** footer top gradient matches hero bottom gradient for invisible looping.
-7. **L6 Easter egg:** crack sequence and secret terminal entry.
+## Terminal design and behavior
 
-## Motion, galaxy, and loop
+The terminal is a safe fictional Git environment, not a shell. It displays boot/welcome output, command suggestions, a virtual filesystem and branches, and an optional exploration puzzle. Commands are parsed in `src/components/terminal/terminalCommands.js`; content and puzzle data live in `terminalData.js`; provider state is session-persisted. It is available as an overlay from the navbar and at `/terminal`.
 
-The Figma Animation Index is the visual target. Only the Play reveal is fixed: at 30% visible, opacity 0→1 and 24px rise over 400ms. Other values need tuning.
+Preserve keyboard history/input, usable command suggestions, clear close behavior, and focus/scroll restoration. Never execute real commands or read/write files from the user's machine. The puzzle's hidden branch and challenge behavior are implemented in code and may evolve with the terminal content; do not treat old Figma command tables as a complete current command list.
 
-| Index | Behaviour |
-| --- | --- |
-| 01–04 | Fixed galaxy, velocity-driven spin, GitHub-colour star fallback, brighter/denser footer stars |
-| 05 | Seamless full landing footer-to-hero loop; assumed four loops, pending design confirmation |
-| 06–08 | HIT 1 impact/tremor, HIT 2 spreading fractures/light leaks, shatter to black |
-| 09–10 | `fatal: merge conflict in reality.js`, +/-2px ghost layers, cursor, `git checkout secret` prompt |
-| 11–12 | Navbar terminal/go-back with restored scroll position; boot-copy reveal |
+## Motion and effects
 
-Core navigation, content, CTAs, and forms must work before galaxy, loop, crack, or terminal load. Isolate each as a client-side enhancement.
+- The canvas galaxy is a global visual layer. Reduced-motion users receive a static presentation.
+- `InfiniteLoop` wraps the landing route. Four progress interstitials lead to `BugFinale`, a crack/shatter sequence that transitions to `/terminal`; discovery is persisted in local storage.
+- Play uses the shared reveal-on-scroll component with a reduced-motion path.
+- Review the finale's scroll lock, Escape behavior, reduced-motion handling, and navigation recovery when changing it.
+- The current four-pass behavior is implemented in `src/components/effects/EasterBug.jsx`; treat any different Figma loop-count assumption as a historical annotation unless reconfirmed.
 
-- Start desktop galaxy with canvas/pre-rendered texture; only use 3D if needed.
-- Mobile defaults to static/star fallback; enable interactive galaxy only after real-device testing.
-- `prefers-reduced-motion`: static stars, no automatic loop/crack, terminal still explicitly reachable.
-- Preserve readable hero contrast regardless of background state.
+## Current implementation map
 
-Figma’s sequence is **full loop → HIT 1 → HIT 2 → shatter → fatal message → `git checkout secret` → terminal**. Keep it safe: never trap scroll or browser navigation; set a session flag after the first entry. The terminal is a proper modal: it traps keyboard focus while open, then releases it to its trigger on Escape, “go back”, or `exit`; it also restores saved scroll. Mobile and reduced-motion users get the navbar switch plus a footer “Open terminal” button, never automatic looping. Prototype iOS/browser scrolling first; if it is unreliable, keep terminal entry points and drop forced looping.
+| Design piece | Current source | Status |
+| --- | --- | --- |
+| Shared shell and navbar | `src/app/layout.jsx`, `src/components/layout/`, `src/components/terminal/` | Responsive site shell; working terminal trigger and overlay. |
+| Hero and galaxy | `src/app/page.jsx`, `src/app/landing/landing.css`, `src/components/effects/GalaxyBackground.jsx` | Landing hero and canvas galaxy are implemented; reduced-motion fallback is present. |
+| Core Functions and Highlights | `src/app/landing/LandingSections.jsx`, `src/content/highlights.js` | Implemented; highlight entries/previews are sample content. |
+| Play | `src/app/landing/LandingSections.jsx` | Arcade promotion links to Commit Snake and `/games#contribute`. |
+| Events | `src/components/events/EventsList.jsx`, `src/content/events.js`, route styles | Shared list and empty state; event content/destinations need verification. |
+| Join | `src/app/landing/LandingSections.jsx` | Mailto CTA. |
+| Team and Perks | `src/app/team/`, `src/content/team.js`, `src/app/perks/` | Populated routes; confirm copy/assets/destinations. |
+| Arcade | `src/app/games/`, `src/app/games/commit-snake/` | Hub and playable Commit Snake. See [games.md](../games.md). |
+| Terminal | `src/app/terminal/`, `src/components/terminal/` | Simulated terminal with virtual commands and puzzle flow. |
+| Loop interstitials and Easter egg | `src/components/effects/InfiniteLoop.jsx`, `EasterBug.jsx`, `BugFinale.jsx`, `src/lib/easterBug.js` | Four progress prompts lead to a crack/shatter finale and terminal route; local storage remembers discovery. |
 
-## Terminal: T1–T5
+## Content and handoff notes
 
-Black window, traffic-light dots, title `gcc-terminal`, “go back” top-right, prompt `visitor@gcc:~/club (main)$`. Boot: mounting, branch index, contributor key, `access granted: contributor level`, ASCII GCC logo, “Welcome, visitor. Type git help to begin.”
-
-| Commands | Behaviour |
-| --- | --- |
-| `git help`, `git log --oneline`, `git branch`, `git status`, `cat README.md`, `ls`, `clear`, `exit` | Designed command behaviour |
-| `git checkout main` | Terminal home |
-| `git checkout learn/events/team` | Structured branch content; instruct return via main |
-| `git checkout join` | `name`, `email`, `interest` prompts; submit membership |
-| `git checkout secret` | Easter-egg entry |
-
-Branches: `main`, `learn`, `events`, `team`, `join`, `secret-??????`. The design team must choose whether `secret` is an accepted alias (while `secret-??????` is only a teaser) or whether `git branch` reveals the exact secret branch name. Unknown branches emit the designed pathspec error and `git branch` hint. Tab completion/history are nice-to-have. Never execute actual commands.
-
-## Figma handoff and decisions
-
-Export approved mascot/logo/social assets; retain their intended geometry. The file has desktop 1440px only: obtain tablet/mobile designs. Confirm final external links, content, event source, and CTA destinations.
-
-Open questions:
-
-1. Four landing repeats only, or loop across pages?
-2. Does Join use form/modal, terminal `join`, or both?
-3. Does `/events` share the landing data and who owns it?
-4. Final Learn, Team, Events, Highlights, and footer copy?
-5. Which Play game, or placeholder-only in v1?
-6. Approve mobile/tablet layouts and the mobile galaxy decision after testing.
-7. Confirm the secret-branch parser behaviour: accept `secret` as an alias, or reveal and require the full branch name.
+The Figma reference includes sample copy, sample events, desktop-first layouts, and visual states. Verify factual content and external URLs with the club. Check phone and tablet behavior in the implementation rather than assuming the desktop frames define it. Keep decorative Figma annotations out of rendered copy.

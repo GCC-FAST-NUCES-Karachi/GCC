@@ -1,66 +1,54 @@
 # GCC Website — Progress and Plan
 
+This document tracks the repository's current implementation and product work still needed. For the intended visual direction, see [design.md](design.md) and [landingpage_design.md](landingpage_design.md). The code is authoritative for shipped behavior; Figma-derived details below are design references, not proof that a behavior is implemented.
+
 ## Current progress
 
-- The site uses Next.js App Router, React, locally hosted Inter and JetBrains Mono fonts, shared design tokens, and route-level stylesheets.
-- The shared navbar and footer are implemented. The navbar has a responsive menu, Join link, GitHub link, and an inert terminal-icon button. The terminal button is visual only and does not navigate or launch a terminal.
-- The landing page has the hero, core functions, highlights, a Play placeholder, three sample events, and the Join section.
-- `/events`, `/learn`, and `/team` routes exist, but their copy is still placeholder content.
-- The canvas galaxy rotates with scroll direction and uses a reduced particle count on narrow screens. Reduced-motion users get a static presentation.
-- The GCC cat is shown without hands; its pupils start centered and follow the pointer.
-- The blue constellation overlay and fast-scroll streaks, footer loop strip, glitch crack rays, and hidden glitch sequence were removed in the current implementation.
-- The full terminal experience and arcade game have not been implemented. The Play section remains a placeholder.
-- Page styles live beside their route; shared component styles live beside the component.
-- `npm run lint` and `npm run build` pass after the latest CSS organization changes.
+- Next.js App Router, React, and JavaScript/JSX form the application foundation. Inter and JetBrains Mono are served locally, with shared tokens in `src/styles/tokens.css`.
+- The shared shell includes responsive navigation, footer, a global canvas galaxy, and a terminal provider.
+- The landing page includes the hero, Core Functions, sample Highlights, an arcade teaser, the shared upcoming-events list, and a Join mail link.
+- `/events` renders the shared events list and its empty state. Current events are maintained in `src/content/events.js`; verify event details and RSVP destinations before public release.
+- `/learn` presents three learning paths, selected GitHub student resources, and a link to Events.
+- `/team` presents the roster from `src/content/team.js` with local team portraits.
+- `/perks` presents GitHub programs and student resources from `src/app/perks/perks.js`.
+- `/games` is the arcade hub. `/games/commit-snake` is playable with keyboard, on-screen direction controls, and swipe input; local storage keeps best-score records on the current device.
+- `/terminal` and the navbar terminal control open a simulated, read-only Git terminal. It has command history, tutorial/onboarding, virtual branch files, clues, an unlock flow, and a final challenge. State is saved in session storage.
+- The landing loop includes four progress interstitials and a crack/shatter finale that opens `/terminal`; discovery is persisted in local storage. Review its scroll-lock and reduced-motion behavior when tuning it.
+- Landing highlights, terminal repository text, events, and some social/footer destinations are sample or provisional content. Confirm them before release.
 
-## Planned work
+## Remaining work
 
-### 1. Finish page content and navigation
+### 1. Verify content and destinations
 
-- Replace placeholder copy on Events, Learn, and Team with accurate, approved club information.
-- Make the Events page useful for current and past events, with dates, locations, descriptions, and RSVP destinations.
-- Build the Learn page around approved workshops, tutorials, and learning resources.
-- Build the Team page with approved roles, names, bios, and contact links.
-- Review every internal and external link, including navigation, footer, social links, Join, event cards, and RSVP destinations. Remove placeholders or mark them clearly until their destinations exist.
-- Confirm all supplied club facts and calls to action with the club before release.
+- Confirm event information, RSVP destinations, team names/roles, learning copy, and the accuracy of claims across the site.
+- Review GitHub/social links, Join email address, footer destinations, highlight links, and downloadable brand assets. Replace any generic or personal-account destinations with approved club destinations.
+- Decide whether sample highlights and terminal puzzle history are intentionally fictional and label/update them as needed.
 
-### 2. Complete responsive behavior
+### 2. Responsive and accessibility review
 
-- Review the navbar, hero, galaxy placement, section layouts, cards, Join section, footer, and all route pages at narrow phones, large phones, tablets, laptops, and wide desktop sizes.
-- Verify the menu stays reachable and does not overlap content, and that the logo, terminal icon, Join button, GitHub icon, and menu fit at narrow widths.
-- Check for horizontal overflow, clipped text, and awkward empty space.
-- Test galaxy performance on real mobile hardware and preserve the reduced-motion fallback.
+- Review navigation, galaxy, landing sections, route layouts, arcade controls, and terminal at phone, tablet, laptop, and wide desktop widths.
+- Check keyboard access, visible focus, screen-reader names, heading/landmark structure, contrast, touch targets, page overflow, and terminal focus/scroll restoration.
+- Check the galaxy and game performance on mobile hardware and preserve the existing reduced-motion paths.
 
-### 3. Add the requested landing-page effects
+### 3. Review the landing-loop and Easter egg
 
-- Design and implement an infinite looping strip or carousel that fits the GCC content and pauses or reduces motion when appropriate.
-- Reintroduce a deliberate glitch effect with a clear visual trigger and controlled timing.
-- Add a breaking-glass effect as a separate, intentional interaction, with a reset/recovery state and a reduced-motion alternative.
-- Keep these effects distinct from the galaxy and ensure they do not obscure page text, controls, or accessibility focus.
+- The loop, four progress interstitials, and crack/shatter finale are implemented. Confirm that the endless scroll, progress prompts, and terminal transition remain the desired behavior.
+- Review the finale's scroll lock, Escape path, reduced-motion behavior, and local-storage persistence. Adjust implementation and docs together if product intent changes.
 
-### 4. Build the Terminal experience
+### 4. Grow the arcade
 
-- Keep the navbar terminal icon as an inert button until the terminal experience is ready.
-- Define what the terminal should do, which commands it supports, and whether it is a modal, panel, or page feature.
-- Implement keyboard operation, clear close behavior, safe command handling, and mobile-friendly sizing.
-- Connect the button only after the finished terminal experience is approved and working.
+- Commit Snake is the only listed game. Add games through the route structure and hub entry described in [games.md](../games.md).
+- Keep the landing Play section as an entry point to the playable game and arcade contribution path; it is no longer a game placeholder.
 
-### 5. Finish the Play section
+### 5. Release readiness
 
-- Choose the game and define its controls, goals, and audience before replacing the placeholder.
-- Implement a responsive game experience with keyboard and touch controls, clear instructions, and a restart path.
-- Respect reduced-motion preferences and avoid degrading the galaxy or page scrolling on mobile.
-
-### 6. SEO, accessibility, and release quality
-
-- Add page-specific titles and descriptions, canonical URLs, Open Graph/social preview metadata, and a site icon review.
-- Add and verify `sitemap.xml` and `robots.txt` for the production domain.
-- Confirm semantic headings, landmarks, descriptive link names, keyboard navigation, focus visibility, contrast, and screen-reader labels on every route.
-- Check that motion effects respect reduced-motion preferences and that interactive content works without a pointer.
-- Verify production links, metadata, responsive layouts, console output, and build behavior before release.
+- Confirm the canonical production domain and add canonical/social metadata, sitemap, and robots policy when known.
+- Review page metadata, favicon, external links, downloads, browser console output, responsive behavior, and accessibility before release.
+- Re-run `npm run lint` and `npm run build` after implementation changes.
 
 ## Scope notes
 
-- Keep the sample events and placeholder RSVP destinations until real event data and links are supplied; replace them before public launch.
-- The navbar terminal control is currently an inert visual button. It does not open a terminal or navigate.
-- The infinite loop, glitch effect, breaking-glass effect, full terminal, and final game are planned work and are not currently present.
+- The site currently uses sample event content and some provisional external destinations; confirm these before launch.
+- The terminal is a safe simulation. Its commands operate only on the in-memory/session-persisted virtual repository.
+- The arcade is live with Commit Snake; future games are not committed to scope until selected and implemented.
+- The landing infinite loop, four progress interstitials, and crack/shatter finale are implemented; the finale routes to `/terminal` and disables the loop after discovery.
