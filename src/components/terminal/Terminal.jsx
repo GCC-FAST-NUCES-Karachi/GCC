@@ -728,7 +728,9 @@ export default function Terminal() {
                 inputRef.current?.focus();
               }}
             >
-              ↵
+              <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+                <path d="M16 5v5a2 2 0 0 1-2 2H5m3-3-3 3 3 3" />
+              </svg>
             </button>
           </div>
         </div>

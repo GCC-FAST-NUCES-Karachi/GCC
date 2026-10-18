@@ -575,19 +575,22 @@
 
 .terminal-send {
   flex-shrink: 0;
-  width: 38px;
-  height: 38px;
-  border: 0;
-  border-radius: 9px;
-  background: var(--t-green);
-  color: #04110a;
-  font-size: 1.05rem;
-  font-weight: 700;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(63, 185, 80, 0.45);
+  border-radius: 10px;
+  background: rgba(63, 185, 80, 0.12);
+  color: var(--t-green);
   cursor: pointer;
-  transition: opacity 0.15s, transform 0.1s;
+  transition: opacity 0.15s, transform 0.1s, background 0.15s, border-color 0.15s;
 }
-.terminal-send:disabled { opacity: 0.28; cursor: default; }
+.terminal-send svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.12s ease; }
+.terminal-send:hover:not(:disabled) { background: rgba(63, 185, 80, 0.2); border-color: var(--t-green); }
+.terminal-send:disabled { opacity: 0.42; cursor: default; }
 .terminal-send:not(:disabled):active { transform: scale(0.94); }
+.terminal-send:not(:disabled):active svg { transform: translateX(-2px); }
 
 .terminal-autocomplete {
   position: absolute;
@@ -668,6 +671,9 @@
   /* >=16px stops iOS Safari from zooming in on focus */
   .terminal-input { font-size: 16px; }
 
+  .terminal-send { width: 44px; height: 44px; border-radius: 11px; }
+  .terminal-send svg { width: 20px; height: 20px; }
+
   .terminal-autocomplete { left: -0.85rem; right: -2.9rem; }
 }
 
@@ -727,5 +733,5 @@
   }
   .terminal-window::after { opacity: 0.6; }
   .terminal-output { scroll-behavior: auto; }
-  .terminal-pip, .term-chip, .term-cmd-btn, .terminal-send { transition: none; }
+  .terminal-pip, .term-chip, .term-cmd-btn, .terminal-send, .terminal-send svg { transition: none; }
 }
