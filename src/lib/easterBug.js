@@ -1,21 +1,37 @@
-// Persistence is temporarily disabled: discovery and terminal glow reset on reload.
 //   bug === true   the endless loop is running and the navbar terminal is hidden
 //   bug === false  the egg has been discovered; the loop is off and terminal is shown
 
 const listeners = new Set();
-// const DISCOVERED_KEY = "easter_bug_discovered";
-// const wasDiscoveredOnDevice = () => {
-//   if (typeof window === "undefined") return false;
-//   try {
-//     return window.localStorage.getItem(DISCOVERED_KEY) === "true";
-//   } catch {
-//     return false;
-//   }
-// };
+const DISCOVERED_KEY = "easter_bug_discovered";
+const TERMINAL_GLOW_KEY = "terminal_glow_shown";
 
-let bug = true; // was: !wasDiscoveredOnDevice()
+function readStorage(key) {
+  if (typeof window === "undefined") return null;
+  try {
+    return window.localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function writeStorage(key, value) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(key, value);
+  } catch {
+    // Storage may be unavailable in private browsing or restricted contexts.
+  }
+}
+
+// Start in the server-safe state and restore saved settings after hydration.
+let bug = true;
 let justUnlocked = false; // true only after the egg was finished in this page session
-let terminalGlowShown = false; // was read from localStorage; reset each page load
+let terminalGlowShown = false;
+
+if (typeof window !== "undefined") {
+  bug = readStorage(DISCOVERED_KEY) !== "true";
+  terminalGlowShown = readStorage(TERMINAL_GLOW_KEY) === "true";
+}
 
 export function getBug() {
   return bug;
@@ -36,9 +52,7 @@ export function subscribe(listener) {
 export function setBug(value) {
   bug = value;
   justUnlocked = !value;
-  // if (!value && typeof window !== "undefined") {
-  //   try { window.localStorage.setItem(DISCOVERED_KEY, "true"); } catch {}
-  // }
+  if (!value) writeStorage(DISCOVERED_KEY, "true");
   listeners.forEach((listener) => listener());
 }
 
@@ -51,8 +65,6 @@ export function wasJustUnlocked() {
 export function consumeTerminalGlow() {
   if (!justUnlocked || terminalGlowShown) return false;
   terminalGlowShown = true;
-  // if (typeof window !== "undefined") {
-  //   try { window.localStorage.setItem(TERMINAL_GLOW_KEY, "true"); } catch {}
-  // }
+  writeStorage(TERMINAL_GLOW_KEY, "true");
   return true;
 }
