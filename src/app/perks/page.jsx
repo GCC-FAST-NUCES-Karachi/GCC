@@ -1,4 +1,5 @@
 import { perks, perksNote } from "./perks";
+import PerkDetails from "./PerkDetails";
 import "./perks.css";
 
 export const metadata = {
@@ -18,25 +19,37 @@ export default function PerksPage() {
       <ul className="perks-grid">
         {perks.map((perk) => (
           <li key={perk.id} className="perk-card">
-            <span className="perk-file">{perk.file}</span>
-            <h2>{perk.title}</h2>
-            <p className="perk-desc">{perk.description}</p>
+            <div className="perk-card-meta">
+              <span className="perk-file">{perk.file}</span>
+              <span className="perk-index" aria-hidden="true" />
+            </div>
 
-            <details className="perk-details">
-              <summary>Benefits and how to get it</summary>
-              <h3>Benefits</h3>
-              <ul>
-                {perk.benefits.map((benefit) => (
-                  <li key={benefit}>{benefit}</li>
-                ))}
-              </ul>
-              <h3>Steps</h3>
-              <ol>
-                {perk.steps.map((step) => (
-                  <li key={step}>{step}</li>
-                ))}
-              </ol>
-            </details>
+            <div className="perk-card-grid">
+              <div className="perk-main-grid">
+                <section className="perk-intro">
+                  <h2>{perk.title}</h2>
+                  <p className="perk-desc">{perk.description}</p>
+                </section>
+
+                <div className="perk-category" aria-label={`Category: ${perk.category}`}>
+                  <span className="perk-tile-label">Type</span>
+                  <span>{perk.category}</span>
+                </div>
+              </div>
+
+              <div className="perk-bottom-grid">
+                <section className="perk-benefits">
+                  <h3 className="perk-tile-label">Benefits</h3>
+                  <ul>
+                    {perk.benefits.slice(0, 2).map((benefit) => (
+                      <li key={benefit}>{benefit}</li>
+                    ))}
+                  </ul>
+                </section>
+
+                <PerkDetails steps={perk.steps} />
+              </div>
+            </div>
 
             <a
               className="perk-btn"
@@ -45,7 +58,7 @@ export default function PerksPage() {
               rel="noopener noreferrer"
               aria-label={`${perk.cta}: ${perk.title} (opens in a new tab)`}
             >
-              {perk.cta}
+              <span>{perk.cta}</span>
             </a>
           </li>
         ))}

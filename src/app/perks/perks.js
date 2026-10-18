@@ -2,6 +2,7 @@
 export const perks = [
   {
     id: "student-developer-pack",
+    category: "Student benefit",
     file: "student_developer_pack.md",
     title: "GitHub Student Developer Pack",
     description:
@@ -22,6 +23,7 @@ export const perks = [
   },
   {
     id: "campus-experts",
+    category: "Leadership program",
     file: "campus_experts.md",
     title: "GitHub Campus Experts",
     description:
@@ -41,6 +43,7 @@ export const perks = [
   },
   {
     id: "copilot-student",
+    category: "Student benefit",
     file: "copilot_student.md",
     title: "GitHub Copilot Student",
     description:
@@ -61,6 +64,7 @@ export const perks = [
   },
   {
     id: "codespaces",
+    category: "Developer tool",
     file: "codespaces.md",
     title: "GitHub Codespaces",
     description:
@@ -81,6 +85,7 @@ export const perks = [
   },
   {
     id: "skills",
+    category: "Learning resource",
     file: "skills.md",
     title: "GitHub Skills",
     description:
@@ -100,6 +105,7 @@ export const perks = [
   },
   {
     id: "classroom",
+    category: "Teaching resource",
     file: "classroom.md",
     title: "GitHub Classroom",
     description:
@@ -119,6 +125,7 @@ export const perks = [
   },
   {
     id: "community-exchange",
+    category: "Community resource",
     file: "community_exchange.md",
     title: "GitHub Community Exchange",
     description:
