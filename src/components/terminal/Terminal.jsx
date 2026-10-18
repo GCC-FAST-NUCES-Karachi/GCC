@@ -13,10 +13,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useTerminal } from "./TerminalProvider.jsx";
 import {
   getCompletions,
-  getQuickCommands,
   isRunnableSuggestion,
 } from "./terminalCommands.js";
 import { CLUE_KEYS } from "./terminalData.js";
@@ -285,6 +285,8 @@ function TutorialBlock({ entry, isLatest, onSuggestionClick, onSkip }) {
 // Terminal
 // ---------------------------------------------------------------------------
 export default function Terminal() {
+  const pathname = usePathname();
+  const router = useRouter();
   const {
     isOpen,
     isClosing,
@@ -292,7 +294,6 @@ export default function Terminal() {
     state,
     runCommand,
     skipTutorial,
-    skipBoot,
     navigateHistory,
     historyValue,
   } = useTerminal();
@@ -313,9 +314,10 @@ export default function Terminal() {
 
   useEffect(() => setMounted(true), []);
 
-  const quickCommands = useMemo(() => getQuickCommands(state), [state]);
-
-  const handleClose = useCallback(() => closeTerminal(), [closeTerminal]);
+  const handleClose = useCallback(() => {
+    closeTerminal();
+    if (pathname === "/terminal") router.push("/");
+  }, [closeTerminal, pathname, router]);
   const handleNavigate = useCallback(
     () => closeTerminal({ restoreScroll: false }),
     [closeTerminal],
@@ -672,34 +674,6 @@ export default function Terminal() {
 
         {/* Input */}
         <div className="terminal-input-area">
-          <div
-            className="terminal-quickbar"
-            role="toolbar"
-            aria-label="Suggested commands"
-          >
-            {state.booting ? (
-              <button
-                type="button"
-                className="term-chip term-chip--skip"
-                onClick={skipBoot}
-              >
-                skip intro
-              </button>
-            ) : (
-              quickCommands.map((c) => (
-                <button
-                  key={c.command}
-                  type="button"
-                  className="term-chip"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => handleSuggestionClick(c.command)}
-                >
-                  {c.label}
-                </button>
-              ))
-            )}
-          </div>
-
           <div
             className={`terminal-input-row${engaged ? " is-engaged" : ""}`}
             onPointerDown={() => setEngaged(true)}

@@ -567,6 +567,10 @@
   outline: none;
   caret-color: var(--t-green);
 }
+.terminal-window .terminal-input:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
 .terminal-input::placeholder { color: #4a5362; }
 
 .terminal-send {

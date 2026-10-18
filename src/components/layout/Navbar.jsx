@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Menu, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { siGithub } from "simple-icons";
-import { useTerminal } from "@/components/terminal/TerminalProvider.jsx";
+import { consumeTerminalGlow, getBug, getServerBug, subscribe } from "@/lib/easterBug";
 import "./Navbar.css";
 const navItems = [
   { href: "/", label: "~/home" },
@@ -19,7 +19,14 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showTerminalGlow, setShowTerminalGlow] = useState(false);
   const navRef = useRef(null);
+  // The terminal appears after the easter egg is discovered.
+  const bug = useSyncExternalStore(subscribe, getBug, getServerBug);
+
+  useEffect(() => {
+    if (!bug && consumeTerminalGlow()) setShowTerminalGlow(true);
+  }, [bug]);
 
   useEffect(() => {
     if (!menuOpen) return undefined;
@@ -38,9 +45,9 @@ export default function Navbar() {
   }, [menuOpen]);
 
   const handleTerminalClick = () => {
-  setMenuOpen(false);
-  router.push("/terminal");
-};
+    setMenuOpen(false);
+    router.push("/terminal");
+  };
 
   return (
     <nav ref={navRef} aria-label="Primary navigation" className="site-nav">
@@ -79,23 +86,19 @@ export default function Navbar() {
       </div>
 
       <div className="nav-actions">
-        <button
-          className="terminal-button"
-          type="button"
-          aria-label="Open terminal"
-          title="Open terminal"
-          onClick={handleTerminalClick}
-        >
-          <span aria-hidden="true">&gt;_</span>
-          <span className="terminal-label" aria-hidden="true">
-            terminal
-          </span>
-        </button>
-        <Link
-          href="/#join"
-          className="join-button nav-join"
-          onClick={() => setMenuOpen(false)}
-        >
+        {!bug && (
+          <button
+            className={`terminal-button${showTerminalGlow ? " is-new" : ""}`}
+            type="button"
+            aria-label="Open terminal"
+            title="Open terminal"
+            onClick={handleTerminalClick}
+          >
+            <span aria-hidden="true">&gt;_</span>
+            <span className="terminal-label" aria-hidden="true">terminal</span>
+          </button>
+        )}
+        <Link href="/#join" className="join-button nav-join" onClick={() => setMenuOpen(false)}>
           <span className="join-label-desktop">Join the club</span>
           <span className="join-label-mobile">Join</span>
         </Link>
