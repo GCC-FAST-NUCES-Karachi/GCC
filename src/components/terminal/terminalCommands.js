@@ -64,23 +64,18 @@ export function isRunnableSuggestion(cmd) {
 // ---------------------------------------------------------------------------
 function cmdHelp(state) {
   const out = [
-    heading("Command reference"),
-    info("Tap a command to put it in the input, then press Enter."),
+    heading("Commands you can use"),
+    info("Tap a command to run it, or type it below."),
     blank(),
-    text("NAVIGATION", "dim"),
-    cmdRow("git branch", "List branches"),
-    cmdRow("git checkout <branch>", "Switch branch", "git checkout "),
-    cmdRow("git status", "Show your session progress"),
+    text("Explore", "dim"),
+    cmdRow("ls", "See files here"),
+    cmdRow("cat README.md", "Read the README"),
+    cmdRow("git branch", "See other branches"),
+    cmdRow("git checkout learn", "Explore the learning branch"),
     blank(),
-    text("HISTORY", "dim"),
-    cmdRow("git log --oneline", "Simulated commit history"),
-    blank(),
-    text("FILES", "dim"),
-    cmdRow("ls", "List files on this branch"),
-    cmdRow("cat <file>", "Read a file", "cat "),
-    blank(),
-    text("DISCOVERY", "dim"),
-    cmdRow("hint", "A nudge toward what's hidden"),
+    text("Need help?", "dim"),
+    cmdRow("git log --oneline", "Read the commit history"),
+    cmdRow("hint", "Get a nudge"),
   ];
 
   if (allCluesFound(state) && !state.secretUnlocked) {
@@ -96,8 +91,7 @@ function cmdHelp(state) {
     cmdRow("clear", "Clear the screen"),
     cmdRow("exit", "Close the terminal"),
     blank(),
-    info("Explore every branch. Read files all the way to the bottom."),
-    suggestion("Try: git branch", "git branch")
+    suggestion("Start exploring: ls", "ls")
   );
   return { output: out };
 }
@@ -297,15 +291,29 @@ function cmdCat(args, state) {
   if (clue) {
     const found = [...state.discoveredClues, clue.key];
     stateUpdates = { discoveredClues: found };
-    out.push(blank(), success(`Key word ${found.length}/${CLUE_KEYS.length} located.`));
-    if (found.length < CLUE_KEYS.length) {
-      out.push(info("The word itself is in the commit history. Keep exploring for the rest."));
+    out.push(blank(), success(`Clue ${found.length} of ${CLUE_KEYS.length} found.`));
+    if (found.length === 1) {
+      out.push(
+        info("Run git log --oneline. Find f4a9c1e, take the verb from its message, and remember it as word 1."),
+        suggestion("Read commit history: git log --oneline", "git log --oneline"),
+        blank(),
+        info("Keep exploring the other branches and their files to find the next clue."),
+        suggestion("See available branches: git branch", "git branch")
+      );
+    } else if (found.length === 2) {
+      out.push(
+        info("Run git log --oneline. Find e2c8f91, take the last word of its message, and remember it as word 2."),
+        suggestion("Read commit history: git log --oneline", "git log --oneline"),
+        blank(),
+        info("One clue remains. Explore the other branches and read their files to find it."),
+        suggestion("See available branches: git branch", "git branch")
+      );
     } else {
       out.push(
-        success("All three key words located."),
-        info("Read them from the commit history, in order, then unlock the hidden branch."),
-        suggestion("Check history: git log --oneline", "git log --oneline"),
-        suggestion("Unlock: git unlock ", "git unlock ")
+        success("All three clues found."),
+        info("Run git log --oneline. The event in d9b2c76 is word 3. Enter all three words in clue order."),
+        suggestion("Read commit history: git log --oneline", "git log --oneline"),
+        suggestion("Unlock with your words: git unlock ", "git unlock ")
       );
     }
   }
@@ -414,13 +422,13 @@ function cmdChallenge(args, state) {
 // ---------------------------------------------------------------------------
 const HINTS = {
   0: [
-    "Some files hold more than they first show. The files on this branch are a good start.",
-    "Read README.md to the very bottom. Look for a line starting with a key.",
-    "Run cat README.md, then git log --oneline to find the commit it mentions.",
+    "Start by opening a file. The README has your first clue.",
+    "Read README.md to the bottom, then look up its commit in the history.",
+    "Open README.md, then find the commit it mentions with git log --oneline.",
   ],
   1: [
-    "The README pointed at a commit, but there's more than one key word. Where does a club keep its learning material?",
-    "CONTRIBUTING.md says the next key word lives where learning begins.",
+    "The next clue is in the learning branch. First list the branches.",
+    "Switch to learn, then open git-basics.md.",
     "Run git checkout learn, then cat git-basics.md.",
   ],
   2: [
@@ -682,38 +690,38 @@ export function getCompletions(partial, state) {
 export const TUTORIAL_STEPS = [
   {
     id: "help",
-    message: "Step 1 of 5. git help lists every command. Tap it below, then press Enter.",
+    message: "Start here: see the commands you can use.",
     suggestedCommand: "git help",
     check: (cmd) => cmd.startsWith("git help") || cmd.startsWith("git --help"),
   },
   {
     id: "ls",
-    message: "Step 2 of 5. ls shows the files on your current branch.",
+    message: "Next: see the files on this branch.",
     suggestedCommand: "ls",
     check: (cmd) => cmd === "ls" || cmd === "dir",
   },
   {
     id: "cat",
-    message: "Step 3 of 5. cat opens a file. Start with the README.",
+    message: "Next: open the README to find your first clue.",
     suggestedCommand: "cat README.md",
     check: (cmd) => cmd.startsWith("cat "),
   },
   {
     id: "branch",
-    message: "Step 4 of 5. Branches are parallel versions of the repo. List them.",
+    message: "Next: see the other versions of this project (branches).",
     suggestedCommand: "git branch",
     check: (cmd) => cmd === "git branch" || cmd === "git branches",
   },
   {
     id: "checkout",
-    message: "Step 5 of 5. Switch to another branch to see its files.",
+    message: "Next: explore another branch to find more files.",
     suggestedCommand: "git checkout learn",
     check: (cmd) => cmd.startsWith("git checkout ") || cmd.startsWith("git switch "),
   },
   {
     id: "done",
     message:
-      "You're set. Explore freely and read files to the bottom. Some of them are hiding something.",
+      "Tutorial complete. Try another branch: use git branch to see your options, git checkout to explore one, and ls to find its files. Read them closely for clues.",
     suggestedCommand: null,
     check: () => false,
   },

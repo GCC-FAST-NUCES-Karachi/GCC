@@ -13,10 +13,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useTerminal } from "./TerminalProvider.jsx";
 import {
   getCompletions,
-  getQuickCommands,
   isRunnableSuggestion,
 } from "./terminalCommands.js";
 import { CLUE_KEYS } from "./terminalData.js";
@@ -252,11 +252,7 @@ function OutputLine({ entry, onSuggestionClick, onNavigate }) {
 // ---------------------------------------------------------------------------
 function TutorialBlock({ entry, isLatest, onSuggestionClick, onSkip }) {
   if (!isLatest) {
-    return (
-      <div className="term-tutorial-done">
-        ✓ {entry.content.replace(/^Step \d of \d\. /, "")}
-      </div>
-    );
+    return null;
   }
   return (
     <div className={`term-tutorial${entry.final ? " is-final" : ""}`}>
@@ -269,7 +265,7 @@ function TutorialBlock({ entry, isLatest, onSuggestionClick, onSkip }) {
               type="button"
               onClick={() => onSuggestionClick(entry.suggestedCommand)}
             >
-              {entry.suggestedCommand}
+              Run: {entry.suggestedCommand}
             </button>
           )}
           <button className="term-skip-btn" type="button" onClick={onSkip}>
@@ -285,6 +281,8 @@ function TutorialBlock({ entry, isLatest, onSuggestionClick, onSkip }) {
 // Terminal
 // ---------------------------------------------------------------------------
 export default function Terminal() {
+  const pathname = usePathname();
+  const router = useRouter();
   const {
     isOpen,
     isClosing,
@@ -292,7 +290,6 @@ export default function Terminal() {
     state,
     runCommand,
     skipTutorial,
-    skipBoot,
     navigateHistory,
     historyValue,
   } = useTerminal();
@@ -313,9 +310,10 @@ export default function Terminal() {
 
   useEffect(() => setMounted(true), []);
 
-  const quickCommands = useMemo(() => getQuickCommands(state), [state]);
-
-  const handleClose = useCallback(() => closeTerminal(), [closeTerminal]);
+  const handleClose = useCallback(() => {
+    closeTerminal();
+    if (pathname === "/terminal") router.push("/");
+  }, [closeTerminal, pathname, router]);
   const handleNavigate = useCallback(
     () => closeTerminal({ restoreScroll: false }),
     [closeTerminal],
@@ -342,20 +340,14 @@ export default function Terminal() {
     return () => clearTimeout(timer);
   }, [state.secretUnlocked, state.challengeCompleted]);
 
-  // Scroll: short output -> stick to bottom; long output -> show its first line
+  // Keep the newest output visible, including when reopening a long session.
   useEffect(() => {
     const out = outputRef.current;
     if (!out) return;
     requestAnimationFrame(() => {
       if (!outputRef.current) return;
       const el = outputRef.current;
-      const echoes = el.querySelectorAll("[data-echo]");
-      const last = echoes[echoes.length - 1];
-      if (last && el.scrollHeight - last.offsetTop > el.clientHeight) {
-        el.scrollTop = Math.max(0, last.offsetTop - 8);
-      } else {
-        el.scrollTop = el.scrollHeight;
-      }
+      el.scrollTop = el.scrollHeight;
     });
   }, [state.output]);
 
@@ -453,11 +445,18 @@ export default function Terminal() {
   // ---- Input handling -----------------------------------------------------
   const handleSuggestionClick = useCallback((command) => {
     setEngaged(true);
-    setInput(command);
     setCompletions([]);
     setActiveCompletion(-1);
+    // Complete suggestions are actions: run them with one tap. Keep templates
+    // in the input so the visitor can fill in the missing value.
+    if (!command.endsWith(" ") && !command.includes("<")) {
+      runCommand(command);
+      setInput("");
+      return;
+    }
+    setInput(command);
     inputRef.current?.focus();
-  }, []);
+  }, [runCommand]);
 
   const handleSubmit = useCallback(() => {
     const trimmed = input.trim();
@@ -672,34 +671,6 @@ export default function Terminal() {
 
         {/* Input */}
         <div className="terminal-input-area">
-          <div
-            className="terminal-quickbar"
-            role="toolbar"
-            aria-label="Suggested commands"
-          >
-            {state.booting ? (
-              <button
-                type="button"
-                className="term-chip term-chip--skip"
-                onClick={skipBoot}
-              >
-                skip intro
-              </button>
-            ) : (
-              quickCommands.map((c) => (
-                <button
-                  key={c.command}
-                  type="button"
-                  className="term-chip"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => handleSuggestionClick(c.command)}
-                >
-                  {c.label}
-                </button>
-              ))
-            )}
-          </div>
-
           <div
             className={`terminal-input-row${engaged ? " is-engaged" : ""}`}
             onPointerDown={() => setEngaged(true)}

@@ -348,9 +348,7 @@ export const BOOT_LINES = [
   { text: "[ OK ] starting simulated contributor session", delay: 280 },
 ];
 
-export const WELCOME_MESSAGE = `Welcome to GCC Terminal.
-A simulated Git environment for exploring GitHub Campus Club at FAST-NUCES.
-Type git help to see the available commands.`;
+export const WELCOME_MESSAGE = `Explore a practice version of the GCC project.
+Tap a suggested command to run it. Nothing here changes real files.`;
 
-export const RETURN_MESSAGE = `Welcome back. Your session is still active.
-Branch: {branch} | Key words found: {clues}/3`;
+export const RETURN_MESSAGE = `Session saved · branch: {branch} · clues: {clues}/3`;

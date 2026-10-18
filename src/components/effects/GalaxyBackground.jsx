@@ -17,6 +17,8 @@ const ROLL = -0.38; // in-plane lean, matches the Figma diagonal
 const IDLE_SPEED = 0.018; // rad/sec at rest
 const BOOST_SPEED = 0.95; // extra rad/sec at full scroll speed
 const FULL_BOOST_VELOCITY = 2800; // px/sec that counts as "fast"
+const POINTER_ROTATION = 0.035; // subtle left/right tilt at the screen edges
+const POINTER_PITCH = 0.025; // subtle up/down tilt at the screen edges
 const PARTICLES_DESKTOP = 7000;
 const PARTICLES_MOBILE = 2600;
 const PARTICLES_STATIC = 3500;
@@ -108,6 +110,10 @@ export default function GalaxyBackground() {
     let speed = IDLE_SPEED;
     let boostSmooth = 0;
     let scrollDirection = 1;
+    let pointerX = 0;
+    let pointerY = 0;
+    let targetPointerX = 0;
+    let targetPointerY = 0;
     let lastY = window.scrollY;
     let lastT = performance.now();
     let rafId = 0;
@@ -236,11 +242,33 @@ export default function GalaxyBackground() {
       ctx.globalAlpha = opacity;
       drawHaze();
       ctx.restore();
+      // Let the particle field tilt subtly while the haze and core stay fixed.
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(pointerX * POINTER_ROTATION);
+      ctx.scale(1, 1 + pointerY * POINTER_PITCH);
+      ctx.translate(-cx, -cy);
       drawParticles(opacity);
+      ctx.restore();
       ctx.save();
       ctx.globalAlpha = opacity;
       drawCore();
       ctx.restore();
+    }
+
+    function handlePointerMove(event) {
+      if (narrow || isStatic) return;
+      targetPointerX = (event.clientX / Math.max(w, 1) - 0.5) * 2;
+      targetPointerY = (event.clientY / Math.max(h, 1) - 0.5) * 2;
+    }
+
+    function handlePointerLeave() {
+      targetPointerX = 0;
+      targetPointerY = 0;
+    }
+
+    function handlePointerOut(event) {
+      if (!event.relatedTarget) handlePointerLeave();
     }
 
     function frame(now) {
@@ -264,12 +292,19 @@ export default function GalaxyBackground() {
       speed = lerp(speed, target, 1 - Math.exp(-6 * dt));
       rot += speed * dt;
 
+      // Ease toward the cursor and back to center when it leaves the window.
+      const pointerEase = 1 - Math.exp(-3.5 * dt);
+      pointerX = lerp(pointerX, targetPointerX, pointerEase);
+      pointerY = lerp(pointerY, targetPointerY, pointerEase);
+
       draw(now, galaxyOpacity());
       rafId = requestAnimationFrame(frame);
     }
 
     resize();
     window.addEventListener("resize", resize);
+    window.addEventListener("pointermove", handlePointerMove, { passive: true });
+    window.addEventListener("pointerout", handlePointerOut);
     const handlePreferenceChange = () => {
       resize();
       if (isStatic) {
@@ -292,6 +327,8 @@ export default function GalaxyBackground() {
     return () => {
       cancelAnimationFrame(rafId);
       window.removeEventListener("resize", resize);
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerout", handlePointerOut);
       narrowQuery.removeEventListener("change", resize);
       motionQuery.removeEventListener("change", handlePreferenceChange);
       window.removeEventListener("scroll", redrawStatic);

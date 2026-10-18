@@ -1,6 +1,5 @@
 import GalaxyBackground from "@/components/effects/GalaxyBackground";
-import Footer from "@/components/layout/Footer";
-import Navbar from "@/components/layout/Navbar";
+import SiteChrome from "@/components/layout/SiteChrome";
 import Terminal from "@/components/terminal/Terminal.jsx";
 import { TerminalProvider } from "@/components/terminal/TerminalProvider.jsx";
 import localFont from "next/font/local";
@@ -33,12 +32,7 @@ export default function RootLayout({ children }) {
       <body>
         <GalaxyBackground />
         <TerminalProvider>
-          <div className="site-content">
-            <a className="skip-link" href="#main-content">Skip to main content</a>
-            <Navbar />
-            {children}
-            <Footer />
-          </div>
+          <div className="site-content"><SiteChrome>{children}</SiteChrome></div>
           <Terminal />
         </TerminalProvider>
       </body>

@@ -567,6 +567,10 @@
   outline: none;
   caret-color: var(--t-green);
 }
+.terminal-window .terminal-input:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
 .terminal-input::placeholder { color: #4a5362; }
 
 .terminal-send {
@@ -698,6 +702,13 @@
     height: min(820px, calc(100vh - 4rem));
     height: min(820px, calc(100dvh - 4rem));
   }
+}
+/* global focus ring ko input par band karo; row ka halka green border kaafi hai */
+.terminal-window .terminal-input,
+.terminal-window .terminal-input:focus,
+.terminal-window .terminal-input:focus-visible {
+  outline: none;
+  box-shadow: none;
 }
 
 /* ---- Reduced motion ------------------------------------------------------ */

@@ -6,10 +6,12 @@ import {
   PlaySection,
   UpcomingEventsSection,
 } from "@/app/landing/LandingSections";
+import InfiniteLoop from "@/components/effects/InfiniteLoop";
 import "./landing/landing.css";
 
 export default function Home() {
   return (
+    <InfiniteLoop>
     <main id="main-content">
       <section className="hero" aria-labelledby="home-heading">
         <div className="hero-copy">
@@ -26,5 +28,6 @@ export default function Home() {
       <UpcomingEventsSection />
       <LandingJoinSection />
     </main>
+    </InfiniteLoop>
   );
 }
