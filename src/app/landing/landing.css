@@ -118,7 +118,6 @@
     .hero {
         min-height: clamp(600px, calc(100svh - 104px), 780px);
         grid-template-columns: minmax(0, 1fr);
-        align-items: start;
         padding-top: 2.5rem;
     }
 
@@ -599,6 +598,182 @@
 }
 
 /* ---------- Play ---------- */
+.arcade-window {
+    overflow: hidden;
+    max-width: 1000px;
+    margin: 0 auto;
+    border: 1px solid var(--border-default);
+    border-radius: 16px;
+    background:
+        radial-gradient(70% 90% at 0% 0%, rgb(63 185 80 / 7%), transparent 60%),
+        var(--bg-base);
+    box-shadow: 0 18px 48px rgb(0 0 0 / 22%);
+}
+
+.arcade-titlebar {
+    display: flex;
+    min-height: 48px;
+    align-items: center;
+    gap: .8rem;
+    padding: .65rem 1rem;
+    border-bottom: 1px solid var(--border-default);
+    background: rgb(13 17 23 / 72%);
+}
+
+.arcade-dots {
+    display: inline-flex;
+    flex: 0 0 auto;
+    gap: 6px;
+}
+
+.arcade-dots i {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #3a424d;
+}
+
+.arcade-dots i:first-child {
+    background: #ff7b72;
+}
+
+.arcade-dots i:nth-child(2) {
+    background: #d29922;
+}
+
+.arcade-dots i:nth-child(3) {
+    background: #3fb950;
+}
+
+.arcade-title {
+    color: var(--text-dim);
+    font: .72rem var(--font-mono);
+}
+
+.arcade-status {
+    margin-left: auto;
+    color: var(--accent-green);
+    font: .68rem var(--font-mono);
+}
+
+.arcade-status::before {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-right: .5rem;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 10px rgb(63 185 80 / 55%);
+    content: "";
+}
+
+.arcade-content {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(260px, .8fr);
+    gap: clamp(1rem, 2.4vw, 1.5rem);
+    padding: clamp(1rem, 2.4vw, 1.5rem);
+}
+
+.game-canvas {
+    display: grid;
+    min-height: 280px;
+    align-content: center;
+    justify-items: center;
+    gap: .85rem;
+    padding: 1.5rem;
+    border: 1px solid rgb(63 185 80 / 18%);
+    border-radius: 12px;
+    background:
+        linear-gradient(rgb(88 166 255 / 4%) 1px, transparent 1px),
+        linear-gradient(90deg, rgb(88 166 255 / 4%) 1px, transparent 1px),
+        radial-gradient(ellipse at center, rgb(63 185 80 / 9%), transparent 68%),
+        #080d12;
+    background-size: 28px 28px, 28px 28px, auto, auto;
+    color: var(--accent-green);
+    text-align: center;
+}
+
+.game-canvas svg {
+    filter: drop-shadow(0 0 18px rgb(63 185 80 / 28%));
+}
+
+.game-canvas strong {
+    color: var(--text-heading);
+    font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+}
+
+.game-canvas span,
+.commentary-label,
+.secret-hint strong {
+    color: var(--accent-green);
+    font: .72rem var(--font-mono);
+}
+
+.arcade-side {
+    display: grid;
+    align-content: start;
+    gap: .9rem;
+}
+
+.arcade-commentary,
+.secret-hint {
+    padding: 1rem;
+    border: 1px solid var(--border-default);
+    border-radius: 12px;
+    background: rgb(13 17 23 / 68%);
+}
+
+.arcade-commentary p,
+.secret-hint p {
+    margin: .6rem 0 1rem;
+    color: var(--text-dim);
+    font-size: .9rem;
+    line-height: 1.6;
+}
+
+.arcade-play-link,
+.secret-hint a {
+    display: inline-flex;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    color: var(--accent-blue);
+    font: .78rem var(--font-mono);
+    text-decoration: none;
+}
+
+.arcade-play-link {
+    padding: .65rem .9rem;
+    border: 1px solid rgb(63 185 80 / 38%);
+    border-radius: 8px;
+    background: rgb(63 185 80 / 10%);
+    color: var(--accent-green);
+    transition: background .18s ease, border-color .18s ease, transform .18s ease;
+}
+
+.arcade-play-link:hover {
+    transform: translateY(-1px);
+    border-color: var(--accent-green);
+    background: rgb(63 185 80 / 17%);
+}
+
+.secret-hint a:hover {
+    text-decoration: underline;
+    text-underline-offset: .2em;
+}
+
+.arcade-prompt {
+    max-width: 1000px;
+    margin: .75rem auto 0;
+    color: var(--text-dim);
+    font: .7rem var(--font-mono);
+}
+
+.arcade-prompt::first-letter {
+    color: var(--accent-green);
+}
+
 .play-card {
     display: grid;
     width: min(1000px, 100%);
@@ -788,6 +963,14 @@
 }
 
 @media (max-width: 760px) {
+    .arcade-content {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .game-canvas {
+        min-height: 220px;
+    }
+
     .play-card {
         grid-template-columns: minmax(0, 1fr);
     }
