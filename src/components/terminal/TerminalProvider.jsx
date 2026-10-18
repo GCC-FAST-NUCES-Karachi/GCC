@@ -58,6 +58,7 @@ function saveSession(s) {
       SESSION_KEY,
       JSON.stringify({
         currentBranch: s.currentBranch,
+        commandHistory: s.commandHistory,
         tutorialStep: s.tutorialStep,
         tutorialSkipped: s.tutorialSkipped,
         discoveredClues: s.discoveredClues,
@@ -263,7 +264,7 @@ export function TerminalProvider({ children }) {
         setState((prev) => ({
           ...prev,
           output: [],
-          commandHistory: pushHistory(prev.commandHistory, trimmed),
+          commandHistory: [],
           historyIndex: -1,
         }));
         return;

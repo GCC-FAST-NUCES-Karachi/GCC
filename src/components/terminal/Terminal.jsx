@@ -252,11 +252,7 @@ function OutputLine({ entry, onSuggestionClick, onNavigate }) {
 // ---------------------------------------------------------------------------
 function TutorialBlock({ entry, isLatest, onSuggestionClick, onSkip }) {
   if (!isLatest) {
-    return (
-      <div className="term-tutorial-done">
-        ✓ {entry.content.replace(/^Step \d of \d\. /, "")}
-      </div>
-    );
+    return null;
   }
   return (
     <div className={`term-tutorial${entry.final ? " is-final" : ""}`}>
@@ -269,7 +265,7 @@ function TutorialBlock({ entry, isLatest, onSuggestionClick, onSkip }) {
               type="button"
               onClick={() => onSuggestionClick(entry.suggestedCommand)}
             >
-              {entry.suggestedCommand}
+              Run: {entry.suggestedCommand}
             </button>
           )}
           <button className="term-skip-btn" type="button" onClick={onSkip}>
@@ -344,20 +340,14 @@ export default function Terminal() {
     return () => clearTimeout(timer);
   }, [state.secretUnlocked, state.challengeCompleted]);
 
-  // Scroll: short output -> stick to bottom; long output -> show its first line
+  // Keep the newest output visible, including when reopening a long session.
   useEffect(() => {
     const out = outputRef.current;
     if (!out) return;
     requestAnimationFrame(() => {
       if (!outputRef.current) return;
       const el = outputRef.current;
-      const echoes = el.querySelectorAll("[data-echo]");
-      const last = echoes[echoes.length - 1];
-      if (last && el.scrollHeight - last.offsetTop > el.clientHeight) {
-        el.scrollTop = Math.max(0, last.offsetTop - 8);
-      } else {
-        el.scrollTop = el.scrollHeight;
-      }
+      el.scrollTop = el.scrollHeight;
     });
   }, [state.output]);
 
@@ -455,11 +445,18 @@ export default function Terminal() {
   // ---- Input handling -----------------------------------------------------
   const handleSuggestionClick = useCallback((command) => {
     setEngaged(true);
-    setInput(command);
     setCompletions([]);
     setActiveCompletion(-1);
+    // Complete suggestions are actions: run them with one tap. Keep templates
+    // in the input so the visitor can fill in the missing value.
+    if (!command.endsWith(" ") && !command.includes("<")) {
+      runCommand(command);
+      setInput("");
+      return;
+    }
+    setInput(command);
     inputRef.current?.focus();
-  }, []);
+  }, [runCommand]);
 
   const handleSubmit = useCallback(() => {
     const trimmed = input.trim();
