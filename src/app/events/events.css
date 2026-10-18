@@ -30,7 +30,7 @@
   position: relative;
   z-index: 1;
   width: min(1120px, 100%);
-  margin: clamp(5.5rem, 17vh, 10rem) auto 0;
+  margin: clamp(2rem, 6vh, 4rem) auto 0;
 }
 
 @media (max-width: 700px) {
@@ -44,6 +44,6 @@
   }
 
   .events-page .events-grid {
-    margin-top: clamp(5rem, 12vh, 7rem);
+    margin-top: 2.5rem;
   }
 }
