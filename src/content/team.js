@@ -21,7 +21,7 @@ export const teamMembers = [
   // ExCom: management (order: VP, GS, Treasurer)
   { slug: "vice-president", tier: 2, name: "Aazan Noor Khuwaja (CS)", id: "24P-0706", role: "Vice President", photo: "/images/Team/aazan-noor-khuwaja.png" },
   { slug: "general-secretary", tier: 2, name: "Syeda Samana Zehra Rizvi (CS)", id: "24K-0710", role: "General Secretary", photo: "/images/Team/fizza_batool.png" },
-  { slug: "treasurer", tier: 2, name: "Talha Yousuf (DS)", id: "25K-2533", role: "Treasurer", photo: "/images/Team/fizza_batool.png" },
+  { slug: "treasurer", tier: 2, name: "Talha Yousuf (DS)", id: "25K-2533", role: "Treasurer", photo: "/images/Team/Talha_Yousuf.png" },
 
   // ExCom: department heads
   { slug: "technical-head", tier: 3, name: "Hunza Shahzadi (DS)", id: "25K-2536", role: "Technical Head", photo: "/images/Team/fizza_batool.png" },
