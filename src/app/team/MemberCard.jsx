@@ -19,44 +19,41 @@ function splitDept(fullName) {
   return m ? { name: m[1], dept: m[2] } : { name: fullName, dept: null };
 }
 
+// span (not div): it sits inside a <button>, where only phrasing content is valid HTML
 function Photo({ member }) {
   return (
-    <div className="member-photo">
+    <span className="member-photo">
       {member.photo ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={member.photo} alt="" loading="lazy" />
       ) : (
         <DefaultAvatar />
       )}
-    </div>
+    </span>
+  );
+}
+
+// One line of the dict. If the value is too long for the card it wraps at a space and the
+// continuation is indented under the key (hanging indent), like real word-wrapped code.
+function Line({ k, v }) {
+  return (
+    <span className="py-line">
+      <span className="py-str">&quot;{k}&quot;:</span> <span className="py-val">&quot;{v}&quot;,</span>
+    </span>
   );
 }
 
 function CodeBlock({ member, name, dept }) {
   return (
     <code className="member-code">
-      <span className="py-var">member</span> <span className="py-op">=</span> {"{"}
-      {"\n  "}
-      <span className="py-str">&quot;name&quot;</span>:{"\n    "}<span className="py-val">&quot;{name}&quot;</span>,
-      {dept && (
-        <>
-          {"\n  "}
-          <span className="py-str">&quot;dept&quot;</span>: <span className="py-val">&quot;{dept}&quot;</span>,
-        </>
-      )}
-      {"\n  "}
-      <span className="py-pos">
-        <span className="py-str">&quot;position&quot;:</span>
-        <span className="py-val">&quot;{member.role}&quot;,</span>
+      <span className="py-line py-line--edge">
+        <span className="py-var">member</span> <span className="py-op">=</span> {"{"}
       </span>
-      {member.id && (
-        <>
-          {"\n  "}
-          <span className="py-str">&quot;id&quot;</span>: <span className="py-val">&quot;{member.id}&quot;</span>,
-        </>
-      )}
-      {"\n"}
-      {"}"}
+      <Line k="name" v={name} />
+      {dept && <Line k="dept" v={dept} />}
+      <Line k="position" v={member.role} />
+      {member.id && <Line k="id" v={member.id} />}
+      <span className="py-line py-line--edge">{"}"}</span>
     </code>
   );
 }
