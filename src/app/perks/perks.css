@@ -80,6 +80,10 @@
   animation: perk-arrive .5s both;
 }
 
+.perks-grid>.perk-card:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
 .perks-grid>.perk-card:nth-child(4n + 2) {
   --perk-accent: var(--perk-blue);
 }
