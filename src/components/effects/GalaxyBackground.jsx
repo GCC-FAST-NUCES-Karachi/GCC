@@ -19,10 +19,10 @@ const BOOST_SPEED = 0.95; // extra rad/sec at full scroll speed
 const FULL_BOOST_VELOCITY = 2800; // px/sec that counts as "fast"
 const POINTER_ROTATION = 0.035; // subtle left/right tilt at the screen edges
 const POINTER_PITCH = 0.025; // subtle up/down tilt at the screen edges
-const PARTICLES_DESKTOP = 7000;
-const PARTICLES_MOBILE = 2600;
-const PARTICLES_STATIC = 3500;
-const STARS = 320;
+const PARTICLES_DESKTOP = 1600;
+const PARTICLES_MOBILE = 700;
+const PARTICLES_STATIC = 800;
+const STARS = 360;
 const STARS_MOBILE = 240;
 
 const COLORS = ["#ffffff", "#cfe3ff", "#9ec5ff", "#ffe6a8", "#3fb950"];
@@ -74,15 +74,25 @@ function makeGalaxy(count) {
 }
 
 function makeStars(count) {
-  return Array.from({ length: count }, () => ({
-    x: Math.random(),
-    y: Math.random(),
-    size: Math.random() < 0.06 ? rand(1.4, 2) : rand(0.5, 1.1),
-    alpha: rand(0.15, 0.7),
-    tw: Math.random() * Math.PI * 2,
-    green: Math.random() < 0.05,
-    blue: Math.random() < 0.2,
-  }));
+  return Array.from({ length: count }, () => {
+    // Keep most stars scattered, with a few loose clusters outside the galaxy.
+    const clustered = Math.random() < 0.3;
+    const cluster = Math.random() < 0.5
+      ? { x: 0.12, y: 0.24 }
+      : { x: 0.9, y: 0.82 };
+    const bright = Math.random() < 0.1;
+    return {
+      x: clustered ? Math.max(0, Math.min(1, cluster.x + gauss() * 0.12)) : Math.random(),
+      y: clustered ? Math.max(0, Math.min(1, cluster.y + gauss() * 0.16)) : Math.random(),
+      size: bright ? rand(1.5, 2.2) : rand(0.5, 1.15),
+      alpha: bright ? rand(0.55, 0.95) : rand(0.2, 0.7),
+      tw: Math.random() * Math.PI * 2,
+      depth: rand(0.35, 1),
+      green: Math.random() < 0.04,
+      blue: Math.random() < 0.24,
+      bright,
+    };
+  });
 }
 
 // ---- component --------------------------------------------------------------
@@ -98,7 +108,10 @@ export default function GalaxyBackground() {
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     let narrow = narrowQuery.matches;
     let isStatic = motionQuery.matches;
-    let galaxy = makeGalaxy(isStatic ? PARTICLES_STATIC : narrow ? PARTICLES_MOBILE : PARTICLES_DESKTOP);
+    let galaxy = COLORS.map(() => []);
+    let galaxyCount = 0;
+    const galaxyCanvas = document.createElement("canvas");
+    const galaxyCtx = galaxyCanvas.getContext("2d");
     let stars = makeStars(narrow ? STARS_MOBILE : STARS);
     let w = 0,
       h = 0,
@@ -116,12 +129,15 @@ export default function GalaxyBackground() {
     let targetPointerY = 0;
     let lastY = window.scrollY;
     let lastT = performance.now();
+    let lastDrawT = 0;
     let rafId = 0;
+    let setupFrame = 0;
 
     function resize() {
       narrow = narrowQuery.matches;
       isStatic = motionQuery.matches;
-      dpr = Math.min(window.devicePixelRatio || 1, narrow ? 1.5 : 2);
+      // A modest backing resolution keeps the full-screen canvas inexpensive.
+      dpr = Math.min(window.devicePixelRatio || 1, narrow ? 1 : 1.25);
       w = window.innerWidth;
       h = window.innerHeight;
       canvas.width = Math.round(w * dpr);
@@ -140,10 +156,12 @@ export default function GalaxyBackground() {
         R = Math.min(w * 0.3, h * 0.78);
       }
       const nextGalaxyCount = isStatic ? PARTICLES_STATIC : narrow ? PARTICLES_MOBILE : PARTICLES_DESKTOP;
-      if (galaxy.reduce((sum, bucket) => sum + bucket.length, 0) !== nextGalaxyCount) {
+      if (galaxyCount > 0 && galaxyCount !== nextGalaxyCount) {
         galaxy = makeGalaxy(nextGalaxyCount);
+        galaxyCount = nextGalaxyCount;
         stars = makeStars(narrow ? STARS_MOBILE : STARS);
       }
+      cacheGalaxy();
       if (isStatic) draw(0, galaxyOpacity());
     }
 
@@ -200,34 +218,48 @@ export default function GalaxyBackground() {
 
     function drawStars(t) {
       for (const s of stars) {
-        const tw = isStatic ? 1 : 0.75 + 0.25 * Math.sin(t * 0.0012 + s.tw);
+        const tw = isStatic ? 1 : 0.62 + 0.38 * Math.sin(t * 0.0012 + s.tw);
+        const scrollDrift = isStatic ? 0 : window.scrollY * 0.000025 * s.depth;
+        const x = ((s.x + pointerX * 0.018 * s.depth) % 1 + 1) % 1 * w;
+        const y = ((s.y + pointerY * 0.018 * s.depth + scrollDrift) % 1 + 1) % 1 * h;
         ctx.globalAlpha = s.alpha * tw;
         ctx.fillStyle = s.green ? "#3fb950" : s.blue ? "#9ec5ff" : "#ffffff";
-        ctx.fillRect(s.x * w, s.y * h, s.size, s.size);
+        ctx.fillRect(x, y, s.size, s.size);
+        if (s.bright) {
+          ctx.globalAlpha = s.alpha * tw * 0.45;
+          ctx.fillRect(x - s.size * 1.5, y + s.size / 2, s.size * 4, 0.6);
+          ctx.fillRect(x + s.size / 2, y - s.size * 1.5, 0.6, s.size * 4);
+        }
       }
       ctx.globalAlpha = 1;
     }
 
-    function drawParticles(opacity = 1) {
+    function cacheGalaxy() {
+      if (!R || !galaxyCount) return;
+      const size = Math.ceil(R * 2 + 4);
+      galaxyCanvas.width = Math.ceil(size * dpr);
+      galaxyCanvas.height = Math.ceil(size * dpr);
+      galaxyCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      galaxyCtx.clearRect(0, 0, size, size);
       const cosT = Math.cos(TILT);
       const sinR = Math.sin(ROLL);
       const cosR = Math.cos(ROLL);
-      ctx.globalCompositeOperation = "lighter";
-      // group by colour to keep fillStyle changes low
+      const center = size / 2;
+      galaxyCtx.globalCompositeOperation = "lighter";
       for (let c = 0; c < COLORS.length; c++) {
-        ctx.fillStyle = COLORS[c];
+        galaxyCtx.fillStyle = COLORS[c];
         for (const p of galaxy[c]) {
-          const ang = p.a + rot * (1.2 - Math.min(p.r, 1) * 0.7); // inner spins faster
+          const ang = p.a;
           const x = Math.cos(ang) * p.r;
           const y = Math.sin(ang) * p.r * cosT + p.z * Math.sin(TILT);
-          const sx = cx + (x * cosR - y * sinR) * R;
-          const sy = cy + (x * sinR + y * cosR) * R;
-          ctx.globalAlpha = p.alpha * opacity;
-          ctx.fillRect(sx, sy, p.size, p.size);
+          const sx = center + (x * cosR - y * sinR) * R;
+          const sy = center + (x * sinR + y * cosR) * R;
+          galaxyCtx.globalAlpha = p.alpha;
+          galaxyCtx.fillRect(sx, sy, p.size, p.size);
         }
       }
-      ctx.globalAlpha = 1;
-      ctx.globalCompositeOperation = "source-over";
+      galaxyCtx.globalAlpha = 1;
+      galaxyCtx.globalCompositeOperation = "source-over";
     }
 
     function galaxyOpacity() {
@@ -242,13 +274,16 @@ export default function GalaxyBackground() {
       ctx.globalAlpha = opacity;
       drawHaze();
       ctx.restore();
-      // Let the particle field tilt subtly while the haze and core stay fixed.
+      // Keep particle rasterization off the animation path: one cached image draw.
       ctx.save();
       ctx.translate(cx, cy);
       ctx.rotate(pointerX * POINTER_ROTATION);
       ctx.scale(1, 1 + pointerY * POINTER_PITCH);
-      ctx.translate(-cx, -cy);
-      drawParticles(opacity);
+      ctx.rotate(rot);
+      ctx.globalAlpha = opacity;
+      ctx.globalCompositeOperation = "lighter";
+      const size = Math.ceil(R * 2 + 4);
+      ctx.drawImage(galaxyCanvas, -size / 2, -size / 2, size, size);
       ctx.restore();
       ctx.save();
       ctx.globalAlpha = opacity;
@@ -273,6 +308,13 @@ export default function GalaxyBackground() {
 
     function frame(now) {
       rafId = 0;
+      // The background is decorative; 40 fps looks smooth while avoiding
+      // unnecessary full-canvas redraws on high-refresh displays.
+      if (now - lastDrawT < 25) {
+        rafId = requestAnimationFrame(frame);
+        return;
+      }
+      lastDrawT = now;
       const dt = Math.min((now - lastT) / 1000, 0.05);
       lastT = now;
 
@@ -302,6 +344,16 @@ export default function GalaxyBackground() {
     }
 
     resize();
+    setupFrame = requestAnimationFrame(() => {
+      setupFrame = requestAnimationFrame(() => {
+        setupFrame = 0;
+        const count = isStatic ? PARTICLES_STATIC : narrow ? PARTICLES_MOBILE : PARTICLES_DESKTOP;
+        galaxy = makeGalaxy(count);
+        galaxyCount = count;
+        cacheGalaxy();
+        if (isStatic) draw(0, galaxyOpacity());
+      });
+    });
     window.addEventListener("resize", resize);
     window.addEventListener("pointermove", handlePointerMove, { passive: true });
     window.addEventListener("pointerout", handlePointerOut);
@@ -326,6 +378,7 @@ export default function GalaxyBackground() {
 
     return () => {
       cancelAnimationFrame(rafId);
+      if (setupFrame) cancelAnimationFrame(setupFrame);
       window.removeEventListener("resize", resize);
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("pointerout", handlePointerOut);
