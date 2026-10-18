@@ -1,7 +1,7 @@
 import TerminalPage from "./TerminalPage.jsx";
 
 export const metadata = {
-  title: "Terminal | GCC",
+  title: "Terminal",
   description: "Explore GitHub Campus Club through a simulated Git terminal.",
 };
 

@@ -3,7 +3,7 @@ import PerkDetails from "./PerkDetails";
 import "./perks.css";
 
 export const metadata = {
-  title: "Perks | GCC",
+  title: "Perks",
   description:
     "GitHub programs and resources for students: Student Developer Pack, Campus Experts, Copilot, Codespaces, Skills, Classroom, and Community Exchange.",
 };
