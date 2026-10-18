@@ -99,10 +99,10 @@ export default function Navbar() {
             <span className="terminal-label" aria-hidden="true">terminal</span>
           </button>
         )}
-        <Link href="/#join" className="join-button nav-join" onClick={() => setMenuOpen(false)}>
+        {/* <Link href="/#join" className="join-button nav-join" onClick={() => setMenuOpen(false)}>
           <span className="join-label-desktop">Join the club</span>
           <span className="join-label-mobile">Join</span>
-        </Link>
+        </Link> */}
         <a
           aria-label="GitHub organization"
           className="github-button"
