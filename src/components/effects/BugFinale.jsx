@@ -32,16 +32,19 @@ const toPath = (pts) => pts.map((p, i) => `${i ? "L" : "M"}${f1(p[0])} ${f1(p[1]
 
 // Builds the cracks (SVG paths) and the glass shards for the current viewport.
 function buildGlass(w, h) {
-  const cx = w * (0.38 + rnd() * 0.24);
-  const cy = h * (0.36 + rnd() * 0.22);
+  // Mobile GPUs struggle with hundreds of independently animated fragments.
+  const compact = window.matchMedia("(max-width: 700px), (pointer: coarse)").matches;
+  // Keep the impact point centered so the crack network reaches each side evenly.
+  const cx = w / 2;
+  const cy = h / 2;
   const maxR = Math.hypot(Math.max(cx, w - cx), Math.max(cy, h - cy)) * 1.05;
 
   // Cracks: rays from the impact point, with branches and broken rings between them.
   const cracks = [];
   const rays = [];
-  const RAYS = 18;
+  const RAYS = compact ? 10 : 14;
   for (let r = 0; r < RAYS; r++) {
-    let angle = (r / RAYS) * Math.PI * 2 + (rnd() - 0.5) * 0.22;
+    let angle = (r / RAYS) * Math.PI * 2;
     let x = cx;
     let y = cy;
     let dist = 0;
@@ -87,9 +90,9 @@ function buildGlass(w, h) {
     }
     return null;
   };
-  [70, 150, 260, 410, 600, 820].forEach((base) => {
+  (compact ? [110, 320, 560] : [70, 180, 330, 520, 760]).forEach((base) => {
     for (let r = 0; r < RAYS; r++) {
-      if (rnd() < 0.3) continue;
+      if (rnd() < (compact ? 0.5 : 0.3)) continue;
       const R = base * (0.9 + rnd() * 0.2);
       const p = pointAt(rays[r], R);
       const q = pointAt(rays[(r + 1) % RAYS], R);
@@ -100,7 +103,7 @@ function buildGlass(w, h) {
   });
 
   // Shards: a jittered grid, every cell split into two triangles.
-  const cols = 11;
+  const cols = compact ? 6 : 9;
   const cellW = w / cols;
   const rows = Math.max(5, Math.round(h / cellW));
   const cellH = h / rows;
@@ -187,7 +190,7 @@ export default function BugFinale({ onDone }) {
     const id = setInterval(() => {
       const p = Math.min(1, Math.max(0, (performance.now() - start) / 1600));
       setIntegrity(Math.round(100 * (1 - p)));
-    }, 50);
+    }, 100);
     later(2400, () => clearInterval(id));
     const pending = timers.current;
     return () => { clearInterval(id); pending.forEach(clearTimeout); };
@@ -248,7 +251,7 @@ export default function BugFinale({ onDone }) {
     <div className={`fin-root is-${phase}`} role="dialog" aria-modal="true" aria-label="Easter egg">
       {/* The GitHub-style terminal, revealed when the glass falls away */}
       <div className={`fin-stage${opening ? " is-opening" : ""}`}>
-        <div className="terminal-window fin-term">
+        <div className="terminal-window fin-term" inert>
           <div className="terminal-titlebar">
             <div className="terminal-dots" aria-hidden="true"><i className="terminal-dot terminal-dot--red" /><i className="terminal-dot terminal-dot--yellow" /><i className="terminal-dot terminal-dot--green" /></div>
             <div className="terminal-title"><span className="terminal-title-name">gcc-terminal</span><span className="terminal-branch-pill">⎇ easter-bug</span></div>
@@ -280,7 +283,11 @@ export default function BugFinale({ onDone }) {
             <div className="terminal-input-row">
               <span className="terminal-prompt"><span className="terminal-prompt-branch">[easter-bug]</span><span className="terminal-prompt-sign">$</span></span>
               <div className="terminal-input-wrapper"><span className="fin-placeholder">type a command…</span></div>
-              <span className="terminal-send">↵</span>
+              <span className="terminal-send" aria-hidden="true">
+                <svg viewBox="0 0 20 20" focusable="false">
+                  <path d="M16 5v5a2 2 0 0 1-2 2H5m3-3-3 3 3 3" />
+                </svg>
+              </span>
             </div>
           </div>
         </div>
@@ -312,7 +319,7 @@ export default function BugFinale({ onDone }) {
           ))}
         </div>
         <svg className="fin-cracks" viewBox={`0 0 ${glass.w} ${glass.h}`} preserveAspectRatio="none">
-          {["mag", "glow", "core"].map((layer) => (
+          {["mag", "core"].map((layer) => (
             <g key={layer} className={`fin-layer-${layer}`}>
               {glass.cracks.map((c, i) => (
                 <path
