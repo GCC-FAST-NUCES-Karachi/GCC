@@ -1,29 +1,21 @@
-// The discovered flag persists on this device so the easter egg only plays once.
+// Persistence is temporarily disabled: discovery and terminal glow reset on reload.
 //   bug === true   the endless loop is running and the navbar terminal is hidden
 //   bug === false  the egg has been discovered; the loop is off and terminal is shown
 
 const listeners = new Set();
-const DISCOVERED_KEY = "easter_bug_discovered";
-const TERMINAL_GLOW_KEY = "terminal_glow_shown";
-const wasDiscoveredOnDevice = () => {
-  if (typeof window === "undefined") return false;
-  try {
-    return window.localStorage.getItem(DISCOVERED_KEY) === "true";
-  } catch {
-    return false;
-  }
-};
+// const DISCOVERED_KEY = "easter_bug_discovered";
+// const wasDiscoveredOnDevice = () => {
+//   if (typeof window === "undefined") return false;
+//   try {
+//     return window.localStorage.getItem(DISCOVERED_KEY) === "true";
+//   } catch {
+//     return false;
+//   }
+// };
 
-let bug = !wasDiscoveredOnDevice();
+let bug = true; // was: !wasDiscoveredOnDevice()
 let justUnlocked = false; // true only after the egg was finished in this page session
-let terminalGlowShown = (() => {
-  if (typeof window === "undefined") return false;
-  try {
-    return window.localStorage.getItem(TERMINAL_GLOW_KEY) === "true";
-  } catch {
-    return false;
-  }
-})();
+let terminalGlowShown = false; // was read from localStorage; reset each page load
 
 export function getBug() {
   return bug;
@@ -44,13 +36,9 @@ export function subscribe(listener) {
 export function setBug(value) {
   bug = value;
   justUnlocked = !value;
-  if (!value && typeof window !== "undefined") {
-    try {
-      window.localStorage.setItem(DISCOVERED_KEY, "true");
-    } catch {
-      // Keep the in-memory discovery for this session if storage is unavailable.
-    }
-  }
+  // if (!value && typeof window !== "undefined") {
+  //   try { window.localStorage.setItem(DISCOVERED_KEY, "true"); } catch {}
+  // }
   listeners.forEach((listener) => listener());
 }
 
@@ -63,12 +51,8 @@ export function wasJustUnlocked() {
 export function consumeTerminalGlow() {
   if (!justUnlocked || terminalGlowShown) return false;
   terminalGlowShown = true;
-  if (typeof window !== "undefined") {
-    try {
-      window.localStorage.setItem(TERMINAL_GLOW_KEY, "true");
-    } catch {
-      // The module flag still prevents repeats until this page session ends.
-    }
-  }
+  // if (typeof window !== "undefined") {
+  //   try { window.localStorage.setItem(TERMINAL_GLOW_KEY, "true"); } catch {}
+  // }
   return true;
 }

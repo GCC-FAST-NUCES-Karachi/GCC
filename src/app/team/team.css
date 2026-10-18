@@ -16,7 +16,8 @@
 
 /* Hierarchy: each tier is a centred row; a connector joins one tier to the next */
 .team-tree {
-    --card-w: 260px; /* every card in every tier has this width */
+    --card-w: 260px;
+    /* every card in every tier has this width */
     margin-top: 2.5rem;
     display: flex;
     flex-direction: column;
@@ -31,12 +32,12 @@
     align-items: center;
 }
 
-.tier + .tier {
+.tier+.tier {
     margin-top: 3rem;
 }
 
 /* decorative connector line between tiers */
-.tier + .tier::before {
+.tier+.tier::before {
     content: "";
     position: absolute;
     top: -3rem;
@@ -69,7 +70,8 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    align-items: start; /* only the hovered card grows, its neighbours keep their height */
+    align-items: start;
+    /* only the hovered card grows, its neighbours keep their height */
     gap: 1.25rem;
     width: 100%;
     max-width: calc(3 * var(--card-w) + 2 * 1.25rem);
@@ -99,7 +101,8 @@
     width: var(--card-w);
     --pad: 1.25rem;
     padding: var(--pad);
-    container-type: inline-size; /* lets the code font scale with the card width */
+    container-type: inline-size;
+    /* lets the code font scale with the card width */
     background: var(--bg-card, #161b22);
     border: 1px solid var(--border-default);
     border-radius: 12px;
@@ -107,13 +110,15 @@
 }
 
 .member-photo {
-    --photo-size: 128px; /* change this one value to resize every photo */
+    --photo-size: 128px;
+    /* change this one value to resize every photo */
     flex: 0 0 auto;
     display: grid;
     place-items: center;
     width: var(--photo-size);
     height: var(--photo-size);
-    aspect-ratio: 1; /* always a perfect circle */
+    aspect-ratio: 1;
+    /* always a perfect circle */
     max-width: 100%;
     border-radius: 50%;
     overflow: hidden;
@@ -160,14 +165,13 @@
     align-items: flex-end;
     padding: 1rem;
     border-radius: inherit;
-    background: linear-gradient(
-        to bottom,
-        rgba(1, 4, 9, 0.05) 0%,
-        rgba(1, 4, 9, 0.6) 35%,
-        rgba(1, 4, 9, 0.94) 100%
-    );
+    background: linear-gradient(to bottom,
+            rgba(1, 4, 9, 0.05) 0%,
+            rgba(1, 4, 9, 0.6) 35%,
+            rgba(1, 4, 9, 0.94) 100%);
     opacity: 0;
-    pointer-events: none; /* clicks and hover go to the photo button underneath */
+    pointer-events: none;
+    /* clicks and hover go to the photo button underneath */
     transition: opacity 0.3s ease;
 }
 
@@ -179,7 +183,8 @@
 .member-code {
     align-self: stretch;
     display: block;
-    white-space: pre;   /* never wraps */
+    white-space: pre;
+    /* never wraps */
     overflow: visible;
     font-family: var(--font-mono, "JetBrains Mono", monospace);
     /* 100cqw = the card's content width; the font scales with it so the longest line fits */
@@ -197,10 +202,21 @@
     vertical-align: top;
 }
 
-.py-var { color: var(--accent-blue, #58a6ff); }
-.py-op  { color: var(--text-dim, #8b949e); }
-.py-str { color: #bc8cff; }
-.py-val { color: var(--accent-green, #3fb950); }
+.py-var {
+    color: var(--accent-blue, #58a6ff);
+}
+
+.py-op {
+    color: var(--text-dim, #8b949e);
+}
+
+.py-str {
+    color: #bc8cff;
+}
+
+.py-val {
+    color: var(--accent-green, #3fb950);
+}
 
 @media (hover: hover) {
     .member:hover {
@@ -211,8 +227,11 @@
 }
 
 /* Touch devices and phones use the popup, so the hover panel is removed */
-@media (hover: none), (max-width: 700px) {
-    .member-reveal { display: none; }
+@media (hover: none),
+(max-width: 700px) {
+    .member-reveal {
+        display: none;
+    }
 }
 
 /* ---------- Laptop / tablet card: fixed size, photo grows to fill the card on hover ---------- */
@@ -220,7 +239,8 @@
     .member {
         padding: 0;
         aspect-ratio: 13 / 16;
-        overflow: hidden; /* the growing photo is clipped to the card's rounded corners */
+        overflow: hidden;
+        /* the growing photo is clipped to the card's rounded corners */
     }
 
     .member-trigger {
@@ -246,11 +266,13 @@
     }
 
     .member-trigger .member-photo img {
-        object-position: center 20%; /* keep faces in view when the photo is cropped to the card */
+        object-position: center 20%;
+        /* keep faces in view when the photo is cropped to the card */
     }
 }
 
 @media (min-width: 701px) and (hover: hover) {
+
     .member:hover .member-trigger .member-photo,
     .member:has(.member-trigger:focus-visible) .member-trigger .member-photo {
         width: 100%;
@@ -311,7 +333,8 @@
 }
 
 .member-dialog .member-photo {
-    --photo-size: 150px; /* popup photo: round, a bit bigger than the card photo */
+    --photo-size: 150px;
+    /* popup photo: round, a bit bigger than the card photo */
 }
 
 .member-dialog .member-code {
@@ -321,11 +344,13 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
     .member,
     .member-reveal,
     .member-trigger .member-photo {
         transition: none;
     }
+
     .member:hover {
         transform: none;
     }
@@ -339,7 +364,8 @@
     }
 
     .tier-row {
-        align-items: stretch; /* cards in the same row always have equal height */
+        align-items: stretch;
+        /* cards in the same row always have equal height */
         gap: 0.75rem;
     }
 
