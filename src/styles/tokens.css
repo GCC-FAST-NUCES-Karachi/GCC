@@ -11,6 +11,10 @@
   --icon-yellow: #e3b341;
   --icon-purple: #bc8cff;
   --icon-orange: #f0883e;
+  --control-radius: 8px;
+  --control-focus: 3px solid var(--accent-blue);
+  --control-focus-offset: 3px;
+  --control-transition: 160ms ease;
   --font-mono: var(--font-jetbrains-mono), monospace;
   --font-sans: var(--font-inter), Arial, Helvetica, sans-serif;
 }

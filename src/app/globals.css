@@ -42,15 +42,15 @@ a {
     color: inherit;
 }
 
-a:focus-visible {
-    outline: 3px solid var(--accent-blue);
-    outline-offset: 4px;
-}
-
+a:focus-visible,
 button:focus-visible,
 input:focus-visible {
-    outline: 3px solid var(--accent-blue);
-    outline-offset: 3px;
+    outline: var(--control-focus);
+    outline-offset: var(--control-focus-offset);
+}
+
+button:disabled {
+    cursor: not-allowed;
 }
 
 .eyebrow {
@@ -93,14 +93,30 @@ h2 {
 }
 
 .join-button {
-    display: inline-block;
+    display: inline-flex;
     min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    gap: .55rem;
     padding: .7rem 1rem;
-    border-radius: .5rem;
+    border: 1px solid transparent;
+    border-radius: var(--control-radius);
     background: var(--accent-green);
     color: #061208;
     font-weight: 700;
     text-decoration: none;
+    transition: transform var(--control-transition), background-color var(--control-transition), box-shadow var(--control-transition);
+}
+
+.join-button:hover {
+    transform: translateY(-2px);
+    background: #56d364;
+    box-shadow: 0 6px 18px rgb(63 185 80 / 20%);
+}
+
+.join-button:active {
+    transform: translateY(1px) scale(.98);
+    box-shadow: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

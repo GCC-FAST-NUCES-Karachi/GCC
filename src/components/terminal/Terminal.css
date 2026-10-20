@@ -211,8 +211,18 @@
 }
 
 .terminal-dot--red {
-  background: #ff5f57;
+  width: 32px;
+  height: 32px;
+  background: transparent;
   cursor: pointer;
+}
+
+.terminal-dot--red::before {
+  position: absolute;
+  inset: 10px;
+  border-radius: 50%;
+  background: #ff5f57;
+  content: "";
 }
 
 .terminal-dot--yellow {
@@ -300,17 +310,17 @@
 .terminal-close-btn {
   display: inline-flex;
   align-items: center;
-  min-height: 34px;
+  min-height: 40px;
   padding: 0 0.8rem;
   border: 1px solid #2b333d;
-  border-radius: 8px;
+  border-radius: var(--control-radius);
   background: transparent;
   color: var(--t-dim);
   font-family: var(--t-mono);
   font-size: 0.75rem;
   cursor: pointer;
   flex-shrink: 0;
-  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  transition: color var(--control-transition), border-color var(--control-transition), background-color var(--control-transition), transform var(--control-transition);
 }
 
 .terminal-close-btn:hover {
@@ -319,12 +329,7 @@
   background: rgba(255, 255, 255, 0.04);
 }
 
-/* shared visible keyboard focus */
-.terminal-window button:focus-visible,
-.terminal-window a:focus-visible {
-  outline: 2px solid var(--t-blue);
-  outline-offset: 2px;
-}
+.terminal-close-btn:active { transform: scale(.97); }
 
 /* ---- Output ------------------------------------------------------------- */
 .terminal-output {
@@ -482,9 +487,9 @@
 
 .term-cmd-btn {
   padding: 0.3rem 0.65rem;
-  min-height: 32px;
+  min-height: 40px;
   border: 1px solid rgba(88, 166, 255, 0.22);
-  border-radius: 8px;
+  border-radius: var(--control-radius);
   background: rgba(88, 166, 255, 0.07);
   color: var(--t-green);
   font-family: var(--t-mono);
@@ -616,7 +621,7 @@
 .tf-clue {
   padding: 0.55rem 0.75rem;
   border: 1px solid rgba(227, 179, 65, 0.35);
-  border-radius: 8px;
+  border-radius: var(--control-radius);
   background: rgba(227, 179, 65, 0.07);
   color: var(--t-yellow);
 }
@@ -686,7 +691,7 @@
 .term-link {
   display: inline-flex;
   align-items: center;
-  min-height: 34px;
+  min-height: 40px;
   margin: 0.2rem 0.4rem 0.2rem 0;
   padding: 0.3rem 0.7rem;
   border-radius: 8px;
@@ -769,10 +774,10 @@
 }
 
 .term-skip-btn {
-  min-height: 34px;
+  min-height: 40px;
   padding: 0.2rem 0.6rem;
   border: 1px solid #2b333d;
-  border-radius: 8px;
+  border-radius: var(--control-radius);
   background: transparent;
   color: var(--t-dim);
   font-family: var(--t-mono);
@@ -812,7 +817,7 @@
 
 .term-chip {
   flex-shrink: 0;
-  min-height: 34px;
+  min-height: 40px;
   padding: 0 0.75rem;
   border: 1px solid #2b333d;
   border-radius: 999px;
@@ -906,7 +911,7 @@
   width: 40px;
   height: 40px;
   border: 1px solid rgba(63, 185, 80, 0.45);
-  border-radius: 10px;
+  border-radius: var(--control-radius);
   background: rgba(63, 185, 80, 0.12);
   color: var(--t-green);
   cursor: pointer;
@@ -1046,11 +1051,11 @@
   }
 
   .term-cmd-btn {
-    min-height: 40px;
+    min-height: 44px;
   }
 
   .term-chip {
-    min-height: 38px;
+    min-height: 44px;
   }
 
   /* >=16px stops iOS Safari from zooming in on focus */
