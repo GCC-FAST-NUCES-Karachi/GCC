@@ -1,6 +1,9 @@
 // Single source of truth for Bug Bash tuning, labels, and the editor backdrop.
 
 export const MAX_LIVES = 3;
+// Build health lost when one half of a split bug escapes. The player already hit the
+// split bug once, so letting both halves through costs 0.5 instead of a full point.
+export const MINI_ESCAPE_DAMAGE = 0.25;
 
 // ---------- progression ----------
 // Timings are in game time; the debugger power-up slows game time down.
@@ -26,6 +29,13 @@ export const MOVE_CHANCE_END = 0.65;
 export const MOVE_SPEED_MIN = 30; // px per second; doubles once fully ramped
 export const MOVE_SPEED_MAX = 80;
 
+// Chips fall from the top of the editor and escape when they reach the bottom, so
+// their lifetime is how long the fall takes. false makes them pop up in place on a
+// code line instead. FALL_TIME_SCALE stretches lifetimes while falling, because a
+// moving chip takes longer to read and only becomes visible as it slides in.
+export const CHIP_FALL = true;
+export const FALL_TIME_SCALE = 1.35;
+
 // How often each chip kind is picked, relative to the others.
 //   after:      seconds into a run before it can appear
 //   rampWeight: extra weight added as the run ramps up
@@ -37,11 +47,11 @@ export const SPAWN_TABLE = {
   feature: { weight: 10 },
   disguise: { weight: 16, rampWeight: 6, after: 6, life: 1.25 },
   big: { weight: 7, after: 8, life: 1.7 },
-  debug: { weight: 1.4, after: 12, life: 0.9 },
+  debug: { weight: 2.2, after: 12, life: 0.9 },
   bomb: { weight: 4, rampWeight: 4, after: 15, life: 1.15 },
   split: { weight: 8, after: 18, life: 1.1 },
-  linter: { weight: 1.2, after: 22, life: 0.9 },
-  hotfix: { weight: 1.4, whenHurt: true, life: 0.9 },
+  linter: { weight: 1.8, after: 22, life: 0.9 },
+  hotfix: { weight: 2.2, whenHurt: true, life: 0.9 },
 };
 
 export const LEVEL_MS = 15000; // one "sprint speed" level on the scorecard

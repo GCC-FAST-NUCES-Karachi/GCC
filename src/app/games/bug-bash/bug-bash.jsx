@@ -17,10 +17,12 @@ import {
   BOSS_SPAWN_RATE,
   CHIP_TTL_END_MS,
   CHIP_TTL_JITTER,
+  CHIP_FALL,
   CHIP_TTL_START_MS,
   CODE,
   COMBO_STEP,
   DISGUISED_BUGS,
+  FALL_TIME_SCALE,
   FEATURES,
   FIRST_BOSS_MS,
   FIRST_SPAWN_MS,
@@ -29,6 +31,7 @@ import {
   LINES,
   MAX_LIVES,
   MAX_MULT,
+  MINI_ESCAPE_DAMAGE,
   MINI_TTL_MS,
   POINTS,
   POWERS,
@@ -104,8 +107,34 @@ function chipWidth(it) {
 // Leave the line-number gutter clear unless the board is too narrow for it.
 const gutter = (g) => (g.width < 480 ? 8 : 56);
 
+// Height of the chip body, and of the whole chip including its countdown bar.
+const bodyHeight = (it) => (it.kind === "big" ? 40 : it.kind === "mini" ? 26 : 30);
+const chipHeight = (it) => bodyHeight(it) + 5;
+const lineTop = (line, kind) => BOARD_PAD + line * LINE_H - (kind === "big" ? 6 : 1);
+
 function center(it) {
-  return [it.x + chipWidth(it) / 2, BOARD_PAD + it.line * LINE_H + (it.kind === "big" ? 19 : 15)];
+  return [it.x + chipWidth(it) / 2, it.y + bodyHeight(it) / 2];
+}
+
+// A falling chip escapes once its middle crosses the bottom edge of the board.
+const fallSpeed = (g, it) => ((g.height - it.y - chipHeight(it) / 2) / it.ttl) * 1000;
+
+// Pick a column for a falling chip: clear of every chip on the board if possible,
+// otherwise at least clear of chips that are still entering at the top.
+function fallX(g, it) {
+  const min = gutter(g);
+  const w = chipWidth(it);
+  const room = Math.max(0, g.width - w - min - 14);
+  const clear = (x, others) => others.every((o) => x + w + 12 < o.x || x > o.x + chipWidth(o) + 12);
+  const live = g.items.filter((o) => !o.hit);
+  const entering = live.filter((o) => o.y < chipHeight(o) * 2);
+  let fallback = null;
+  for (let i = 0; i < 12; i += 1) {
+    const x = min + Math.random() * room;
+    if (clear(x, live)) return x;
+    if (fallback === null && clear(x, entering)) fallback = x;
+  }
+  return fallback;
 }
 
 /* ---------- game state ---------- */
@@ -181,13 +210,13 @@ function breakCombo(g) {
   g.fever = false;
 }
 
-function hurt(g, text, it, color, flashColor) {
+function hurt(g, text, it, color, flashColor, damage = 1) {
   const [cx, cy] = center(it);
-  g.lives -= 1;
+  g.lives -= damage;
   breakCombo(g);
   floatText(g, text, cx - 60, cy - 24, color, 18);
   flash(g, flashColor);
-  g.announce = `${text.replace(" −1", "")}. Build health ${Math.max(0, g.lives)} of ${MAX_LIVES}.`;
+  g.announce = `${text.replace(/ −[\d.]+$/, "")}. Build health ${Math.max(0, g.lives)} of ${MAX_LIVES}.`;
 }
 
 function end(g, reason) {
@@ -216,29 +245,40 @@ function spawn(g) {
     }
   }
 
-  // one chip per line, with an empty line between neighbours
-  const used = new Set(g.items.map((it) => it.line));
-  const free = [];
-  for (let line = 0; line < LINES - 1; line += 1) {
-    if (!used.has(line) && !used.has(line - 1) && !used.has(line + 1)) free.push(line);
-  }
-  if (!free.length) return;
-
   let label;
   let halves = null;
   if (kind === "split") ({ label, halves } = pick(SPLIT_BUGS));
   else if (POWERS[kind]) label = POWERS[kind];
   else label = pick(LABELS[kind]);
 
-  const it = { id: ++g.uid, kind, label, halves, line: pick(free), born: g.elapsed, vx: 0, hp: 0, maxHp: 0, hitAt: -1e9, hit: false, good: false };
-  const min = gutter(g);
-  it.x = min + Math.random() * Math.max(0, g.width - chipWidth(it) - min - 14);
-  it.x0 = it.x; // rendered position; motion is painted as an offset from it
+  const it = { id: ++g.uid, kind, label, halves, born: g.elapsed, vx: 0, vy: 0, hp: 0, maxHp: 0, hitAt: -1e9, hit: false, good: false };
+  if (CHIP_FALL) {
+    const x = fallX(g, it);
+    if (x === null) return;
+    it.x = x;
+    it.y = -chipHeight(it); // starts just above the board and slides in
+  } else {
+    // one chip per line, with an empty line between neighbours
+    const used = new Set(g.items.map((other) => other.line));
+    const free = [];
+    for (let line = 0; line < LINES - 1; line += 1) {
+      if (!used.has(line) && !used.has(line - 1) && !used.has(line + 1)) free.push(line);
+    }
+    if (!free.length) return;
+    it.line = pick(free);
+    const min = gutter(g);
+    it.x = min + Math.random() * Math.max(0, g.width - chipWidth(it) - min - 14);
+    it.y = lineTop(it.line, kind);
+  }
+  // rendered position; motion is painted as an offset from it
+  it.x0 = it.x;
+  it.y0 = it.y;
   if ((kind === "bug" || kind === "split") && Math.random() < lerp(MOVE_CHANCE_START, MOVE_CHANCE_END, ramp)) {
     it.vx = (Math.random() < 0.5 ? -1 : 1) * lerp(MOVE_SPEED_MIN, MOVE_SPEED_MAX, Math.random()) * (1 + ramp);
   }
   if (kind === "big") it.hp = it.maxHp = Math.random() < 0.5 ? 2 : 3;
-  it.ttl = lerp(CHIP_TTL_START_MS, CHIP_TTL_END_MS, ramp) * jitter(CHIP_TTL_JITTER) * (SPAWN_TABLE[kind].life || 1);
+  it.ttl = lerp(CHIP_TTL_START_MS, CHIP_TTL_END_MS, ramp) * jitter(CHIP_TTL_JITTER) * (SPAWN_TABLE[kind].life || 1) * (CHIP_FALL ? FALL_TIME_SCALE : 1);
+  if (CHIP_FALL) it.vy = fallSpeed(g, it);
   g.items.push(it);
 }
 
@@ -268,9 +308,11 @@ function tick(g, real) {
         it.vx = -Math.abs(it.vx);
       }
     }
+    if (it.vy) it.y += (it.vy * dt) / 1000;
     if (now - it.born > it.ttl) {
       if (isBug(it)) {
-        hurt(g, "shipped to prod −1", it, "#ff7b72", RED);
+        const damage = it.kind === "mini" ? MINI_ESCAPE_DAMAGE : 1;
+        hurt(g, `shipped to prod −${damage}`, it, "#ff7b72", RED, damage);
         sfx(g, "escape");
       }
       continue;
@@ -401,9 +443,21 @@ function hit(g, id) {
 
   if (it.kind === "split") {
     it.halves.forEach((label, i) => {
-      const half = { id: ++g.uid, kind: "mini", label, line: Math.max(0, Math.min(LINES - 1, it.line + (i ? 1 : -1))), born: now, vx: (i ? 1 : -1) * (70 + Math.random() * 40), hp: 0, maxHp: 0, hitAt: -1e9, hit: false, good: false, ttl: MINI_TTL_MS };
+      const half = { id: ++g.uid, kind: "mini", label, born: now, vx: (i ? 1 : -1) * (70 + Math.random() * 40), vy: 0, hp: 0, maxHp: 0, hitAt: -1e9, hit: false, good: false, ttl: MINI_TTL_MS };
       half.x = Math.max(gutter(g), Math.min(g.width - chipWidth(half) - 14, it.x + (i ? 40 : -20)));
+      if (CHIP_FALL) {
+        // halves keep falling a little faster than the bug they came from, but always
+        // get a moment on screen even when the bug was squashed right at the bottom
+        half.y = it.y + (i ? 14 : -14);
+        const span = Math.max(0, g.height - half.y - chipHeight(half) / 2);
+        half.ttl = Math.max(700, (span / (it.vy * 1.15)) * 1000);
+        half.vy = (span / half.ttl) * 1000;
+      } else {
+        half.line = Math.max(0, Math.min(LINES - 1, it.line + (i ? 1 : -1)));
+        half.y = lineTop(half.line, "mini");
+      }
       half.x0 = half.x;
+      half.y0 = half.y;
       g.items.push(half);
     });
   }
@@ -473,7 +527,7 @@ function buildView(g) {
       hit: it.hit,
       good: it.good,
       pips: it.kind === "big" ? Array.from({ length: it.maxHp }, (_, i) => i < it.hp) : null,
-      top: BOARD_PAD + it.line * LINE_H - (it.kind === "big" ? 6 : 1),
+      top: it.y0,
       left: it.x0,
     })),
     boss: g.boss ? { done: g.boss.max - g.boss.hp, max: g.boss.max } : null,
@@ -493,7 +547,7 @@ function paint(board, canvas, g, reduced) {
     const el = board.querySelector(`[data-chip="${it.id}"]`);
     if (!el) continue;
     const age = now - it.born;
-    let scale = reduced ? 1 : Math.min(1, 0.5 + age / 240);
+    let scale = reduced || CHIP_FALL ? 1 : Math.min(1, 0.5 + age / 240);
     let opacity = 1;
     let shift = 0;
     let rotate = 0;
@@ -516,7 +570,7 @@ function paint(board, canvas, g, reduced) {
       }
       if (POWERS[it.kind] && !reduced) scale *= 1 + 0.05 * Math.sin(now / 120);
     }
-    el.style.transform = `translate3d(${(it.x - it.x0 + shift).toFixed(1)}px, 0, 0) scale(${scale.toFixed(3)}) rotate(${rotate.toFixed(1)}deg)`;
+    el.style.transform = `translate3d(${(it.x - it.x0 + shift).toFixed(1)}px, ${(it.y - it.y0).toFixed(1)}px, 0) scale(${scale.toFixed(3)}) rotate(${rotate.toFixed(1)}deg)`;
     el.style.opacity = opacity.toFixed(3);
     const bar = el.querySelector(".bug-chip-ttl i");
     if (bar) bar.style.transform = `scaleX(${it.hit ? 0 : Math.max(0, 1 - age / it.ttl).toFixed(4)})`;
@@ -654,7 +708,7 @@ function createSound(isMuted) {
 /* ---------- static copy ---------- */
 
 const RULES = [
-  ["Squash bugs.", "Click, tap or slash them before their timer runs out. Escaped bugs cost 1 health."],
+  ["Squash bugs.", `Click, tap or slash them before ${CHIP_FALL ? "they fall off the bottom" : "their timer runs out"}. Escaped bugs cost 1 health, or ${MINI_ESCAPE_DAMAGE} for half of a split bug.`],
   ["Spare the code.", "Hitting working code or a feature costs 1 health and breaks your combo."],
   ["Never force push.", "Hitting a ⚠ command ends the run instantly."],
   ["Chain it.", `Every ${COMBO_STEP} squashes raises the multiplier. At ×${MAX_MULT} you enter fever mode for double points.`],
@@ -757,7 +811,7 @@ const Scorecard = memo(function Scorecard({ status, fever, score, lives, best, t
         </div>
         <ol className="bug-health-cells" aria-label={`Build health ${lives} of ${MAX_LIVES}`}>
           {Array.from({ length: MAX_LIVES }, (_, i) => (
-            <li key={i} className={i < lives ? "on" : ""} />
+            <li key={i} className={i < lives ? "on" : ""} style={{ "--fill": Math.min(1, Math.max(0, lives - i)) }} />
           ))}
         </ol>
       </div>
@@ -1043,7 +1097,7 @@ export default function BugBash() {
   const { rank, next } = rankFor(score);
 
   const overlay = {
-    idle: { kicker: "// unstaged changes", title: "Ready to squash some bugs?", text: "Bugs pop up across the editor. Squash them before they ship, leave working code alone, and never force push.", cta: "Start run", Icon: Play },
+    idle: { kicker: "// unstaged changes", title: "Ready to squash some bugs?", text: `Bugs ${CHIP_FALL ? "rain down" : "pop up across"} the editor. Squash them before they ship, leave working code alone, and never force push.`, cta: "Start run", Icon: Play },
     paused: { kicker: "// git stash", title: "Paused", text: "Your build is waiting.", cta: "Resume", Icon: Play },
     lost: {
       kicker: bomb ? "// you force pushed to main" : "// build failed",
