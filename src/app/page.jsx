@@ -1,4 +1,5 @@
 import { siGithub } from "simple-icons";
+import { ArrowRight } from "lucide-react";
 import {
   CoreFunctionsSection,
   HighlightsSection,
@@ -18,8 +19,12 @@ export default function Home() {
           <div className="hero-github-mark" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d={siGithub.path} /></svg>
           </div>
-          <h1 id="home-heading">Where students ship code and build the future together.</h1>
-          <p className="eyebrow">{"// scroll to accelerate"}</p>
+          <h1 id="home-heading">Ideas become code. Students become builders.</h1>
+          <p className="hero-description">Learn by doing, ship real projects, and find your people at GCC.</p>
+          <div className="hero-actions">
+            <a className="hero-cta join-button" href="#functions">See what we do <ArrowRight size={17} aria-hidden="true" /></a>
+            <a className="hero-secondary" href="#join">Meet the community</a>
+          </div>
         </div>
       </section>
       <CoreFunctionsSection />

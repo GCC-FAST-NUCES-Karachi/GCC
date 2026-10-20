@@ -20,7 +20,7 @@ The current landing route is composed in `src/app/page.jsx`; section components 
 
 ### Hero
 
-The hero presents the message “Where students ship code and build the future together.” with a GitHub mark and `// scroll to accelerate` cue. The galaxy/grid background is decorative; maintain text contrast and retain a static/reduced-motion presentation.
+The hero presents “Ideas become code. Students become builders.” as a concise headline, short supporting copy, and two paths: “See what we do” links to Core Functions and “Meet the community” links to Join. Keep the GitHub mark restrained and the galaxy/grid background decorative; maintain text contrast and retain a static/reduced-motion presentation.
 
 ### Core Functions
 
