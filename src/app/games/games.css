@@ -897,13 +897,13 @@
   height: 12px;
   border: 1px solid var(--border-default);
   border-radius: 3px;
-  background: var(--bg-card);
-  transition: background 0.2s ease, border-color 0.2s ease;
+  /* --fill is 0 to 1, so a cell can show a partly lost point of health */
+  background: linear-gradient(90deg, var(--accent-green) calc(var(--fill, 0) * 100%), var(--bg-card) 0);
+  transition: border-color 0.2s ease;
 }
 
 .bug-health-cells li.on {
   border-color: var(--accent-green);
-  background: var(--accent-green);
 }
 
 .score-stats .bug-mult dd {
