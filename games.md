@@ -13,14 +13,17 @@ The arcade lives at `/games`. It is a collection of small, self-contained games 
 | Game | Route | Goal and controls |
 | --- | --- | --- |
 | Commit Snake | `/games/commit-snake` | Collect 15 commits before the run ends. Use arrow keys or WASD, the on-screen direction pad, or swipe on the board. Press Space to start or pause; press R to restart an active or completed run. |
+| Bug Bash | `/games/bug-bash` | Keep the build green for as long as you can. Click or tap bugs to squash them, or hold and drag to slash several. Keyboard players can Tab to a chip and press Enter. Press Space to start or pause, R to reset, and M to mute. |
 
 Commit Snake pickups expire after 10 seconds and move to another open cell without a penalty. The board wraps at its edges. Hitting a GCC block or the snake's own body ends the run. The snake speeds up as commits are collected. The game saves the best score and fastest winning time in the browser's local storage on that device.
+
+Bug Bash chips appear on the lines of a code file and expire after a few seconds. An escaped bug, a hit on working code or a feature, or a surviving boss costs 1 of 3 build health. Hitting a ⚠ command such as `git push --force` ends the run at once. Every 3 squashes in a row raise the score multiplier, and reaching ×5 starts fever mode for double points. Bigger bugs take several hits, split bugs break into two smaller ones, and disguised bugs look like code with a wavy red underline. Power-ups restore health, slow time, or fix every bug on screen. A `legacy_monolith.js` boss appears after 40 seconds and then about once a minute. The game gets faster for the first 90 seconds; tune the pace with the progression values in `src/app/games/bug-bash/config.js`. It saves the best score and the sound setting in local storage on that device.
 
 ## How the arcade is organized
 
 - `src/app/games/page.jsx` renders the arcade hub and its game cards. Its `games` list is the directory of games currently shown on the page.
 - `src/app/games/games.css` contains styles shared by the arcade hub and games.
-- Each game has a route folder under `src/app/games/`. For example, Commit Snake is in `src/app/games/commit-snake/`.
+- Each game has a route folder under `src/app/games/`. For example, Commit Snake is in `src/app/games/commit-snake/` and Bug Bash is in `src/app/games/bug-bash/`.
 - A route's `page.jsx` should stay small: export page metadata and render the game component.
 - Put game behavior in a client component (`"use client"`) when it needs browser APIs, state, input events, canvas, or animation. Keep reusable, non-UI constants in a nearby `config.js` when that makes the game easier to maintain.
 

@@ -28,6 +28,7 @@ npm run start
 - `/perks` — GitHub programs and student resources.
 - `/games` — arcade hub and game contribution guide.
 - `/games/commit-snake` — playable Commit Snake game.
+- `/games/bug-bash` — playable Bug Bash game.
 - `/terminal` — simulated, read-only Git terminal and exploration puzzle.
 
 The shared navbar and footer are part of the site shell. The terminal can also be opened from the navbar. It simulates a virtual repository and never runs shell commands or accesses the real filesystem.

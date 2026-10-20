@@ -15,6 +15,7 @@ The repository is a JavaScript/JSX Next.js App Router application. It has a shar
 | `/perks` | GitHub programs/resources with expandable details | `src/app/perks/` |
 | `/games` | Arcade directory and contribution section | `src/app/games/page.jsx`, `src/app/games/games.css`, `games.md` |
 | `/games/commit-snake` | Keyboard, touch-pad, and swipe playable game; per-device records | `src/app/games/commit-snake/` |
+| `/games/bug-bash` | Click, tap, slash, and keyboard playable game; per-device best score | `src/app/games/bug-bash/` |
 | `/terminal` and navbar terminal | Safe simulated terminal with virtual files, branch navigation, clues, challenge, history, onboarding, and session persistence | `src/app/terminal/`, `src/components/terminal/` |
 | Shared shell | Galaxy, navigation, footer, terminal context and overlay | `src/app/layout.jsx`, `src/components/layout/`, `src/components/effects/GalaxyBackground.jsx`, `src/components/terminal/` |
 
@@ -48,7 +49,7 @@ Review the shared shell and all routes at narrow/mobile, tablet, laptop, and wid
 
 ### 4. Extend the arcade when there is a selected game
 
-The current hub lists Commit Snake. Follow [games.md](../games.md) to add a focused route, clear rules and controls, and a truthful hub entry. Keep the landing Play panel linked to the actual game and contribution route.
+The current hub lists Commit Snake and Bug Bash. Follow [games.md](../games.md) to add a focused route, clear rules and controls, and a truthful hub entry. Keep the landing Play panel linked to the actual game and contribution route.
 
 **Done when:** each listed game is reachable, playable, and accurately described in both the UI and game guide.
 

@@ -25,6 +25,7 @@ If a handoff value conflicts with an established shared token or accessible impl
 | `/perks` | GitHub programs and student resources |
 | `/games` | Arcade hub and contribution information |
 | `/games/commit-snake` | Playable Commit Snake |
+| `/games/bug-bash` | Playable Bug Bash |
 | `/terminal` | Simulated Git terminal |
 
 The navbar and footer are shared. The terminal is available from the global navbar and its own route. Current route details and metadata live in the corresponding `src/app/**/page.jsx` files.
@@ -70,7 +71,7 @@ Preserve keyboard history/input, usable command suggestions, clear close behavio
 | Events | `src/components/events/EventsList.jsx`, `src/content/events.js`, route styles | Shared list and empty state; event content/destinations need verification. |
 | Join | `src/app/landing/LandingSections.jsx` | Mailto CTA. |
 | Team and Perks | `src/app/team/`, `src/content/team.js`, `src/app/perks/` | Populated routes; confirm copy/assets/destinations. |
-| Arcade | `src/app/games/`, `src/app/games/commit-snake/` | Hub and playable Commit Snake. See [games.md](../games.md). |
+| Arcade | `src/app/games/`, `src/app/games/commit-snake/`, `src/app/games/bug-bash/` | Hub, playable Commit Snake, and playable Bug Bash. See [games.md](../games.md). |
 | Terminal | `src/app/terminal/`, `src/components/terminal/` | Simulated terminal with virtual commands and puzzle flow. |
 | Loop interstitials and Easter egg | `src/components/effects/InfiniteLoop.jsx`, `EasterBug.jsx`, `BugFinale.jsx`, `src/lib/easterBug.js` | Four progress prompts lead to a crack/shatter finale and terminal route; local storage remembers discovery. |
 

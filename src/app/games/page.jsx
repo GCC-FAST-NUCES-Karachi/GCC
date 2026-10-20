@@ -7,6 +7,7 @@ import {
   GitBranch,
   GitPullRequest,
   Keyboard,
+  MousePointerClick,
   Target,
 } from "lucide-react";
 import { BLOCK_LIST, COLS, ROWS } from "./commit-snake/config";
@@ -54,6 +55,18 @@ const games = [
       { Icon: Keyboard, label: "Controls", value: "Keys or swipe" },
     ],
     Preview: SnakePreview,
+  },
+  {
+    href: "/games/bug-bash",
+    name: "Bug Bash",
+    command: "./play bug-bash",
+    status: "PLAYABLE",
+    description: "Squash bugs before they ship, spare the working code and never force push. Chain combos into fever mode and take down the legacy monolith.",
+    meta: [
+      { Icon: Target, label: "Goal", value: "Keep the build green" },
+      { Icon: Clock, label: "Run time", value: "1 to 3 min" },
+      { Icon: MousePointerClick, label: "Controls", value: "Click, tap or slash" },
+    ],
   },
 ];
 
