@@ -1,5 +1,5 @@
 .perks-page {
-  --perk-green: #b7f36a;
+  --perk-green: var(--accent-green, #3fb950);
   --perk-blue: #8fc7ff;
   --perk-yellow: #f2d675;
   --perk-orange: #ffad78;
@@ -17,7 +17,7 @@
 .perks-header {
   position: relative;
   margin: 0 0 42px;
-  padding: 0 0 30px;
+  padding: 0 0 34px;
   border-bottom: 1px solid var(--perk-border);
   text-align: left;
 }
@@ -33,22 +33,53 @@
 }
 
 .perks-page .perks-header h1 {
-  max-width: none;
-  margin: 0 0 12px;
+  max-width: 760px;
+  margin: 0 0 16px;
   color: var(--text-heading);
-  font-size: 4.25rem;
+  font-size: clamp(3rem, 6vw, 5rem);
   font-weight: 850;
-  line-height: .98;
-  letter-spacing: 0;
+  line-height: 1.02;
+  letter-spacing: -.045em;
+}
+
+.perks-page .perks-header h1 span {
+  color: var(--perk-green);
+}
+
+.perks-hero-copy {
+  max-width: 760px;
 }
 
 .perks-subtitle {
-  margin: 0;
+  margin: 0 0 14px;
   color: var(--perk-green);
   font-family: var(--font-mono);
   font-size: .9rem;
   line-height: 1.6;
 }
+
+.perks-intro {
+  max-width: 620px;
+  margin: 0;
+  color: var(--perk-muted);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.perks-hero-link {
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  margin-top: 22px;
+  color: var(--text-heading);
+  font-size: .9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.perks-hero-link svg { color: var(--perk-green); }
+.perks-hero-link:hover { color: var(--perk-green); }
+.perks-hero-link:focus-visible { outline: var(--control-focus); outline-offset: var(--control-focus-offset); }
 
 .perks-grid {
   display: grid;
@@ -253,7 +284,7 @@
 
 .perk-details-summary {
   display: flex;
-  min-height: 26px;
+  min-height: 44px;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
@@ -265,6 +296,16 @@
   cursor: pointer;
   font: inherit;
   font-weight: 650;
+  text-align: left;
+  transition: color var(--control-transition);
+}
+
+.perk-details-summary:hover {
+  color: var(--text-heading);
+}
+
+.perk-details-summary:hover .perk-details-icon {
+  border-color: color-mix(in srgb, var(--perk-accent) 45%, var(--perk-border));
 }
 
 .perk-details-icon {
@@ -337,8 +378,8 @@
 }
 
 .perk-details-summary:focus-visible {
-  outline: 2px solid var(--perk-accent);
-  outline-offset: 3px;
+  outline: var(--control-focus);
+  outline-offset: var(--control-focus-offset);
 }
 
 .perk-details h3 {
@@ -373,13 +414,13 @@
   margin-top: 12px;
   padding: 0 16px;
   border: 1px solid color-mix(in srgb, var(--perk-accent) 55%, transparent);
-  border-radius: 7px;
+  border-radius: var(--control-radius);
   background: color-mix(in srgb, var(--perk-accent) 12%, transparent);
   color: var(--text-heading);
   font-size: .9rem;
   font-weight: 700;
   text-decoration: none;
-  transition: background .18s ease, border-color .18s ease, box-shadow .18s ease;
+  transition: transform var(--control-transition), background-color var(--control-transition), border-color var(--control-transition), box-shadow var(--control-transition);
 }
 
 .perk-btn::after {
@@ -389,14 +430,17 @@
 }
 
 .perk-btn:hover {
+  transform: translateY(-2px);
   border-color: var(--perk-accent);
   background: color-mix(in srgb, var(--perk-accent) 20%, transparent);
   box-shadow: 0 0 22px color-mix(in srgb, var(--perk-accent) 17%, transparent);
 }
 
+.perk-btn:active { transform: translateY(1px) scale(.98); box-shadow: none; }
+
 .perk-btn:focus-visible {
-  outline: 2px solid var(--perk-accent);
-  outline-offset: 3px;
+  outline: var(--control-focus);
+  outline-offset: var(--control-focus-offset);
 }
 
 .perks-note {
@@ -467,7 +511,7 @@
   }
 
   .perks-page .perks-header h1 {
-    font-size: 3.25rem;
+    font-size: clamp(2.7rem, 12vw, 3.5rem);
   }
 
   .perks-grid {

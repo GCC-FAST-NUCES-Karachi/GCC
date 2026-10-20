@@ -1,5 +1,6 @@
 import { perks, perksNote } from "./perks";
 import PerkDetails from "./PerkDetails";
+import { ArrowDown } from "lucide-react";
 import "./perks.css";
 
 export const metadata = {
@@ -11,12 +12,16 @@ export const metadata = {
 export default function PerksPage() {
   return (
     <main className="perks-page">
-      <header className="perks-header">
-        <h1>Perks</h1>
-        <p className="perks-subtitle">{"// GitHub programs & resources for students"}</p>
+      <header className="perks-header" aria-labelledby="perks-title">
+        <div className="perks-hero-copy">
+          <p className="perks-subtitle">{"// git checkout perks"}</p>
+          <h1 id="perks-title">More tools for <span>what you build.</span></h1>
+          <p className="perks-intro">Explore GitHub programs and resources that help students learn, build, and bring projects to life.</p>
+          <a className="perks-hero-link" href="#perks-list">Explore student perks <ArrowDown size={16} aria-hidden="true" /></a>
+        </div>
       </header>
 
-      <ul className="perks-grid">
+      <ul className="perks-grid" id="perks-list">
         {perks.map((perk) => (
           <li key={perk.id} className="perk-card">
             <div className="perk-card-meta">
