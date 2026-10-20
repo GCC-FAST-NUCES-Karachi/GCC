@@ -64,15 +64,15 @@
 
 .social-links a {
   display: grid;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   place-items: center;
   border: 1px solid var(--border-default);
-  border-radius: 10px;
+  border-radius: var(--control-radius);
   background: rgb(13 17 23 / 72%);
   color: var(--text-body);
   text-decoration: none;
-  transition: border-color .18s ease, color .18s ease, transform .18s ease;
+  transition: border-color var(--control-transition), color var(--control-transition), background-color var(--control-transition), transform var(--control-transition);
 }
 
 .social-links svg {
@@ -86,6 +86,8 @@
   border-color: var(--accent-blue);
   color: var(--accent-blue);
 }
+
+.social-links a:active { transform: scale(.96); }
 
 .footer-columns {
   display: grid;

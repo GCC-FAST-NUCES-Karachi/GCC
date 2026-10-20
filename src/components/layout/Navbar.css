@@ -56,7 +56,44 @@
   border-radius: 50%;
   background: transparent;
   color: var(--text-body);
+  cursor: pointer;
+  transition: border-color var(--control-transition), color var(--control-transition), background-color var(--control-transition), transform var(--control-transition);
 }
+
+.nav-menu-toggle:hover {
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+  background: rgb(88 166 255 / 7%);
+}
+
+.nav-menu-toggle:active { transform: scale(.96); }
+
+.nav-menu-icon {
+  position: relative;
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
+.nav-menu-icon span {
+  position: absolute;
+  top: 50%;
+  left: 1px;
+  width: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transform-origin: center;
+  transition: transform 220ms cubic-bezier(.2, .8, .2, 1), opacity 140ms ease;
+}
+
+.nav-menu-icon span:nth-child(1) { transform: translateY(-6px); }
+.nav-menu-icon span:nth-child(2) { transform: translateY(0); }
+.nav-menu-icon span:nth-child(3) { transform: translateY(6px); }
+
+.nav-menu-icon.is-open span:nth-child(1) { transform: rotate(45deg); }
+.nav-menu-icon.is-open span:nth-child(2) { opacity: 0; }
+.nav-menu-icon.is-open span:nth-child(3) { transform: rotate(-45deg); }
 
 .nav-links a {
   position: relative;
@@ -107,7 +144,7 @@
   font-size: .9rem;
   font-weight: 700;
   cursor: pointer;
-  transition: border-color .18s ease, box-shadow .18s ease;
+  transition: border-color var(--control-transition), color var(--control-transition), background-color var(--control-transition), box-shadow var(--control-transition), transform var(--control-transition);
 }
 
 .terminal-button:hover {
@@ -115,13 +152,16 @@
   box-shadow: 0 0 12px rgba(63, 185, 80, 0.15);
 }
 
+.terminal-button:active { transform: scale(.97); }
+
 .terminal-label { color: var(--text-body); font-weight: 400; }
 .join-label-mobile { display: none; }
 
 .github-button {
   display: inline-flex;
-  width: 40px;
-  min-height: 40px;
+  width: 44px;
+  min-width: 44px;
+  min-height: 44px;
   align-items: center;
   justify-content: center;
   border: 1px solid #252d35;
@@ -130,6 +170,7 @@
   color: #c9d1d9;
   text-decoration: none;
   white-space: nowrap;
+  transition: border-color var(--control-transition), color var(--control-transition), background-color var(--control-transition), transform var(--control-transition);
 }
 
 .github-button svg {
@@ -144,6 +185,8 @@
   color: var(--text-heading);
 }
 
+.github-button:active { transform: scale(.96); }
+
 .nav-join {
   display: flex;
   min-height: 48px;
@@ -151,7 +194,7 @@
   align-items: center;
   justify-content: center;
   padding: .7rem 1.3rem;
-  border-radius: 12px;
+  border-radius: var(--control-radius);
   font-size: 1rem;
   font-weight: 700;
   line-height: 1;
@@ -203,7 +246,7 @@
     top: calc(100% + .5rem);
     right: 0;
     left: 0;
-    display: none;
+    display: flex;
     justify-self: auto;
     align-items: stretch;
     flex-direction: column;
@@ -214,10 +257,21 @@
     background: rgb(13 17 23 / 96%);
     box-shadow: 0 12px 36px rgb(1 4 9 / 40%);
     backdrop-filter: blur(20px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    clip-path: inset(0 0 100% 0 round 20px);
+    transition:
+      opacity 180ms ease,
+      clip-path 260ms cubic-bezier(.2, .8, .2, 1),
+      visibility 220ms;
   }
 
   .nav-links.is-open {
-    display: flex;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    clip-path: inset(0 0 0 0 round 20px);
   }
 
   .nav-links a {
@@ -247,17 +301,17 @@
 
   .github-button {
     display: inline-flex;
-    width: 40px;
-    min-width: 40px;
-    min-height: 40px;
-    flex: 0 0 40px;
+    width: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    flex: 0 0 44px;
   }
 
   .terminal-button {
-    width: 40px;
-    min-width: 40px;
-    min-height: 40px;
-    flex-basis: 40px;
+    width: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    flex-basis: 44px;
     gap: 0;
     padding: 0;
     border-radius: 50%;
@@ -273,6 +327,17 @@
 
   .join-label-mobile {
     display: inline;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-links {
+    transition: none;
+    clip-path: none;
+  }
+
+  .nav-menu-icon span {
+    transition: none;
   }
 }
 
@@ -335,17 +400,17 @@
   }
 
   .github-button {
-    width: 36px;
-    min-width: 36px;
-    min-height: 36px;
-    flex-basis: 36px;
+    width: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    flex-basis: 40px;
   }
 
   .terminal-button {
-    width: 36px;
-    min-width: 36px;
-    min-height: 36px;
-    flex-basis: 36px;
+    width: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    flex-basis: 40px;
   }
 
   .nav-join {

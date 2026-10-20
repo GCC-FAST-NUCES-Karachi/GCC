@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, X } from "lucide-react";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { siGithub } from "simple-icons";
 import { consumeTerminalGlow, getBug, getServerBug, subscribe } from "@/lib/easterBug";
@@ -124,11 +123,14 @@ export default function Navbar() {
           aria-controls="primary-nav-links"
           onClick={() => setMenuOpen((open) => !open)}
         >
-          {menuOpen ? (
-            <X size={20} aria-hidden="true" />
-          ) : (
-            <Menu size={20} aria-hidden="true" />
-          )}
+          <span
+            aria-hidden="true"
+            className={`nav-menu-icon${menuOpen ? " is-open" : ""}`}
+          >
+            <span />
+            <span />
+            <span />
+          </span>
         </button>
       </div>
     </nav>
