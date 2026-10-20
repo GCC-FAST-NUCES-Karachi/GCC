@@ -31,6 +31,10 @@
   right: 50%;
 }
 
+.event-item-planned::before {
+  background: rgb(139 148 158 / 30%);
+}
+
 .event-mascot {
   display: grid;
   align-items: end;
@@ -97,11 +101,42 @@
 }
 
 @media (hover: hover) {
-  .event-card:hover {
+  .event-item:not(.event-item-planned) .event-card:hover {
     transform: translateY(-4px);
     border-color: var(--accent-blue);
     box-shadow: 0 12px 32px rgb(88 166 255 / 12%);
   }
+}
+
+.event-card-planned {
+  border-style: dashed;
+  border-color: rgb(139 148 158 / 42%);
+  background: linear-gradient(145deg, rgb(22 27 34 / 78%), rgb(13 17 23 / 80%));
+}
+
+.event-item-planned .event-marker {
+  border-color: #6e7781;
+  box-shadow: 0 0 0 5px rgb(139 148 158 / 9%);
+}
+
+.event-item-planned .event-connector {
+  background: rgb(139 148 158 / 38%);
+}
+
+.event-item-planned:last-child .event-connector {
+  background: linear-gradient(rgb(139 148 158 / 38%), transparent 70%);
+}
+
+.event-item-planned .event-mascot .gcc-cat {
+  opacity: .82;
+}
+
+.event-planned-icon {
+  display: grid;
+  min-height: 52px;
+  align-content: center;
+  color: var(--text-dim);
+  font: .75rem var(--font-mono);
 }
 
 .event-card-top {
@@ -116,7 +151,7 @@
   width: 52px;
   padding: .35rem;
   border: 1px solid rgb(88 166 255 / 45%);
-  border-radius: 8px;
+  border-radius: var(--control-radius);
   background: rgb(88 166 255 / 9%);
   text-align: center;
 }
@@ -125,6 +160,11 @@
   color: var(--accent-blue);
   font-family: var(--font-mono);
   font-size: .75rem;
+}
+
+.event-date small:last-child {
+  color: var(--text-dim);
+  font-size: .62rem;
 }
 
 .event-date strong {
@@ -148,6 +188,12 @@
   border-color: rgb(240 136 62 / 40%);
   background: rgb(240 136 62 / 8%);
   color: #f0a465;
+}
+
+.event-state.planned {
+  border-color: rgb(139 148 158 / 35%);
+  background: rgb(139 148 158 / 8%);
+  color: #aeb7c1;
 }
 
 .event-card h3 {
@@ -178,25 +224,33 @@
   margin-top: 0;
 }
 
-.event-rsvp {
-  display: grid;
-  min-height: 44px;
-  place-items: center;
-  margin-top: auto;
-  padding: .65rem;
-  border-radius: 8px;
-  background: var(--accent-green);
-  color: #061208;
-  font-weight: 700;
-  text-decoration: none;
+.event-card .event-summary {
+  display: block;
+  margin: auto 0 0;
+  padding-top: 1rem;
+  color: var(--text-dim);
+  font: .82rem/1.5 var(--font-sans);
 }
 
-.event-card .event-rsvp {
-  margin-top: 1.25rem;
+.event-card .event-placeholder-copy {
+  margin: .6rem 0 0;
+  color: var(--text-dim);
+  font: .84rem/1.55 var(--font-sans);
 }
 
-.event-rsvp:hover {
-  background: #56d364;
+.event-card .event-placeholder-footnote {
+  margin: auto 0 0;
+  padding-top: 1rem;
+  color: #8b949e;
+  font: .68rem/1.4 var(--font-mono);
+}
+
+.events-planning-note {
+  width: min(1120px, 100%);
+  margin: 1.25rem auto 0;
+  color: var(--text-dim);
+  font: .85rem/1.6 var(--font-mono);
+  text-align: center;
 }
 
 .events-empty-state {
