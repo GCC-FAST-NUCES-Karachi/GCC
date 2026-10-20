@@ -10,7 +10,7 @@ import {
   MousePointerClick,
   Target,
 } from "lucide-react";
-import { BLOCK_LIST, COLS, ROWS } from "./commit-snake/config";
+import { siGithub } from "simple-icons";
 import "./games.css";
 
 export const metadata = {
@@ -18,43 +18,21 @@ export const metadata = {
   description: "Play small games made by the GitHub Campus Club community.",
 };
 
-const PREVIEW_SNAKE = [9, 8, 7, 6, 5, 4].map((x) => ({ x, y: 12 }));
-const PREVIEW_FOOD = { x: 13, y: 12 };
-
-function SnakePreview() {
-  return (
-    <svg className="arcade-preview-svg" viewBox={`0 0 ${COLS} ${ROWS}`} aria-hidden="true">
-      <defs>
-        <pattern id="preview-grid" width="1" height="1" patternUnits="userSpaceOnUse">
-          <path d="M 1 0 L 0 0 0 1" fill="none" stroke="rgb(88 166 255 / 8%)" strokeWidth="0.03" />
-        </pattern>
-      </defs>
-      <rect width={COLS} height={ROWS} fill="#080d12" />
-      <rect width={COLS} height={ROWS} fill="url(#preview-grid)" />
-      {BLOCK_LIST.map(({ x, y }) => (
-        <rect key={`${x},${y}`} x={x + 0.08} y={y + 0.08} width="0.84" height="0.84" rx="0.15" fill="#38404a" stroke="#525a65" strokeWidth="0.04" />
-      ))}
-      {PREVIEW_SNAKE.map(({ x, y }, i) => (
-        <rect key={x} x={x + 0.1} y={y + 0.1} width="0.8" height="0.8" rx="0.2" fill={i === 0 ? "#56d364" : "#2ea043"} />
-      ))}
-      <rect className="arcade-preview-food" x={PREVIEW_FOOD.x + 0.33} y={PREVIEW_FOOD.y + 0.33} width="0.34" height="0.34" rx="0.05" fill="#3fb950" transform={`rotate(45 ${PREVIEW_FOOD.x + 0.5} ${PREVIEW_FOOD.y + 0.5})`} />
-    </svg>
-  );
-}
-
 const games = [
   {
     href: "/games/commit-snake",
     name: "Commit Snake",
     command: "./play commit-snake",
     status: "PLAYABLE",
-    description: "Collect commits before they expire, dodge the GCC blocks and ship the release. Every commit makes you faster.",
+    description: "Collect commits before they expire and dodge the GCC blocks. Ship the release, grow your branch, and build speed with every commit.",
     meta: [
       { Icon: Target, label: "Goal", value: "15 commits" },
       { Icon: Clock, label: "Run time", value: "about 2 min" },
       { Icon: Keyboard, label: "Controls", value: "Keys or swipe" },
     ],
-    Preview: SnakePreview,
+    contributors: [
+      { username: "ismailsilat7", href: "https://github.com/ismailsilat7" },
+    ],
   },
   {
     href: "/games/bug-bash",
@@ -67,6 +45,7 @@ const games = [
       { Icon: Clock, label: "Run time", value: "1 to 3 min" },
       { Icon: MousePointerClick, label: "Controls", value: "Click, tap or slash" },
     ],
+    contributors: [{ username: "maybethemuhammadibrahim", href: "https://github.com/maybethemuhammadibrahim" }],
   },
 ];
 
@@ -79,8 +58,6 @@ const steps = [
 ];
 
 export default function GamesPage() {
-  const [featured, ...others] = games;
-
   return (
     <main id="main-content" className="games-page">
       <header className="games-hero">
@@ -111,44 +88,35 @@ export default function GamesPage() {
           <span className="games-live"><i /> ARCADE ONLINE</span>
         </div>
 
-        <article className="arcade-feature">
-          <div className="arcade-feature-copy">
-            <span className="game-status"><i />{featured.status}</span>
-            <p className="game-command">{`$ ${featured.command}`}</p>
-            <h3>
-              <Link href={featured.href} className="arcade-stretched">{featured.name}</Link>
-            </h3>
-            <p className="game-description">{featured.description}</p>
-            <ul className="arcade-meta">
-              {featured.meta.map(({ Icon, label, value }) => (
-                <li key={label}>
-                  <Icon size={16} aria-hidden="true" />
-                  <span>{label}</span>
-                  <strong>{value}</strong>
-                </li>
-              ))}
-            </ul>
-            <span className="arcade-cta">Play now <ArrowRight size={16} aria-hidden="true" /></span>
-          </div>
-          <div className="arcade-preview" aria-hidden="true">
-            <div className="arcade-preview-bar"><i /><i /><i /><span>commit-snake</span></div>
-            <featured.Preview />
-          </div>
-        </article>
-
-        {others.length > 0 && (
-          <div className="games-grid">
-            {others.map((game) => (
-              <Link key={game.name} href={game.href} className="game-card">
-                <span className="game-status"><i />{game.status}</span>
-                <p className="game-command">{`$ ${game.command}`}</p>
-                <h3>{game.name}</h3>
-                <p className="game-description">{game.description}</p>
-                <span className="arcade-cta">Play now <ArrowRight size={16} aria-hidden="true" /></span>
-              </Link>
-            ))}
-          </div>
-        )}
+        <div className="games-grid">
+          {games.map((game) => (
+            <article key={game.name} className="game-card">
+              <div className="game-card-top"><span className="game-status"><i />{game.status}</span><code>{`$ ${game.command}`}</code></div>
+              <h3>{game.name}</h3>
+              <p className="game-description">{game.description}</p>
+              <ul className="arcade-meta">
+                {game.meta.map(({ Icon, label, value }) => (
+                  <li key={label}><Icon size={16} aria-hidden="true" /><span>{label}</span><strong>{value}</strong></li>
+                ))}
+              </ul>
+              <div className="game-card-footer">
+                <div className="game-contributor-group" aria-label={`Contributors to ${game.name}`}>
+                  <span className="game-contributors-label">Contributed by</span>
+                  <div className="game-contributors">
+                    {game.contributors.map(({ username, href }) => (
+                      <a key={username} href={href} target="_blank" rel="noreferrer" aria-label={`${username} on GitHub`}>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d={siGithub.path} /></svg><span>{username}</span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+                <div className="game-card-action">
+                  <Link href={game.href} className="arcade-cta">Play now <ArrowRight size={16} aria-hidden="true" /></Link>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
       </section>
 
       <section id="contribute" className="arcade-contribute" aria-labelledby="contribute-heading">
