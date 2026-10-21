@@ -13,4 +13,16 @@
   --icon-orange: #f0883e;
   --font-mono: var(--font-jetbrains-mono), monospace;
   --font-sans: var(--font-inter), Arial, Helvetica, sans-serif;
+
+  /* Octo Dive — ocean depth zones */
+  --octo-zone-sunlit:   #58a6ff;
+  --octo-zone-twilight: #3d7cbf;
+  --octo-zone-midnight: #1e3d6b;
+  --octo-zone-abyss:    #7d3cbf;
+
+  /* Octo Dive — answer tile colours (A, B, C, D) */
+  --octo-tile-a: #2563eb;   /* blue   */
+  --octo-tile-b: #16a34a;   /* green  */
+  --octo-tile-c: #ea580c;   /* orange */
+  --octo-tile-d: #7c3aed;   /* purple */
 }

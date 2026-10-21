@@ -55,6 +55,18 @@ const games = [
     ],
     Preview: SnakePreview,
   },
+  {
+    href: "/games/octo-dive",
+    name: "Octo Dive",
+    command: "./play octo-dive",
+    status: "PLAYABLE",
+    description: "Answer 15 multiple-choice GitHub and Git questions. Octocat dives deeper with every correct answer — speed and streak bonuses send you further.",
+    meta: [
+      { Icon: Target, label: "Goal", value: "Reach the Abyss" },
+      { Icon: Clock, label: "Run time", value: "about 3 min" },
+      { Icon: Keyboard, label: "Controls", value: "Tap tiles or 1–4" },
+    ],
+  },
 ];
 
 const CONTRIBUTE_URL = "https://github.com/ismailsilat7/ghcc/blob/main/games.md";

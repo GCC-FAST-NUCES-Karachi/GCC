@@ -1014,3 +1014,746 @@
     display: none;
   }
 }
+
+/* =========================================================
+   Octo Dive  (/games/octo-dive)
+   All selectors use the octo- prefix to avoid conflicts.
+   ========================================================= */
+
+/* ── page wrapper ── */
+.octo-page {
+  padding-top: clamp(3.5rem, 7vw, 6rem);
+}
+
+/* ── mute button (top-right) ── */
+.octo-mute-btn {
+  position: fixed;
+  top: 5rem;
+  right: 1rem;
+  z-index: 20;
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  background: var(--bg-card);
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: border-color 0.15s ease;
+}
+
+.octo-mute-btn:hover {
+  border-color: var(--accent-blue);
+}
+
+/* ── back link ── */
+.octo-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+.octo-back:hover,
+.octo-back-link:hover {
+  color: var(--text-heading);
+}
+
+.octo-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+/* ── game wrapper — receives shake + tint classes ── */
+.octo-game-wrap {
+  position: relative;
+  max-width: 760px;
+  margin: 0 auto;
+  padding-bottom: 4rem;
+}
+
+/* shake: stepped blocky jitter (CSS only, no canvas) */
+@keyframes octo-shake-anim {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  15% {
+    transform: translate(-8px, 0);
+  }
+
+  30% {
+    transform: translate(8px, 2px);
+  }
+
+  45% {
+    transform: translate(-6px, -2px);
+  }
+
+  60% {
+    transform: translate(6px, 0);
+  }
+
+  75% {
+    transform: translate(-4px, 2px);
+  }
+
+  90% {
+    transform: translate(4px, 0);
+  }
+
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+.octo-shake {
+  animation: octo-shake-anim 0.42s steps(4, end) both;
+}
+
+/* pink/red tint overlay */
+.octo-tint::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  background: rgb(239 68 68 / 18%);
+  transition: opacity 0.4s ease;
+}
+
+/* ── shared screen centering ── */
+.octo-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 4rem;
+  text-align: center;
+}
+
+/* ── start title ── */
+.octo-title {
+  max-width: none;
+  margin: 0;
+  font-size: clamp(3rem, 10vw, 5rem);
+  letter-spacing: -0.06em;
+  background: linear-gradient(135deg, var(--accent-blue), var(--icon-purple));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.octo-intro {
+  max-width: 48ch;
+  margin: 0;
+  color: var(--text-body);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+/* ── rules box ── */
+.octo-rules-box {
+  width: 100%;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--border-default);
+  border-radius: 14px;
+  background: var(--bg-card);
+  text-align: left;
+}
+
+.octo-rules-heading {
+  margin: 0 0 0.75rem;
+  color: var(--text-heading);
+  font-size: 1rem;
+}
+
+.octo-rules-list {
+  margin: 0 0 0.9rem;
+  padding-left: 1.3rem;
+  color: var(--text-body);
+  font-size: 0.88rem;
+  line-height: 1.7;
+}
+
+.octo-rules-list li {
+  margin-bottom: 0.3rem;
+}
+
+.octo-rules-list kbd {
+  padding: 0.15rem 0.35rem;
+  border: 1px solid var(--border-default);
+  border-radius: 4px;
+  background: var(--bg-base);
+  color: var(--text-body);
+  font: 0.75rem var(--font-mono);
+}
+
+.octo-scoring-note {
+  margin: 0;
+  color: var(--text-dim);
+  font: 0.8rem var(--font-mono);
+}
+
+.octo-hint-text {
+  margin: 0;
+  color: var(--text-dim);
+  font: 0.78rem var(--font-mono);
+}
+
+.octo-hint-text kbd {
+  padding: 0.12rem 0.32rem;
+  border: 1px solid var(--border-default);
+  border-radius: 4px;
+  background: var(--bg-base);
+  font: inherit;
+}
+
+/* ── buttons ── */
+.octo-btn {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.3rem;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  font: 700 0.9rem var(--font-sans);
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  text-decoration: none;
+}
+
+.octo-btn:hover {
+  transform: translateY(-2px);
+}
+
+.octo-btn-primary {
+  background: var(--accent-green);
+  border-color: var(--accent-green);
+  color: #061208;
+}
+
+.octo-btn-primary:hover {
+  box-shadow: 0 0 22px rgb(63 185 80 / 40%);
+}
+
+.octo-btn-outline {
+  background: transparent;
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+}
+
+.octo-btn-outline:hover {
+  background: rgb(88 166 255 / 10%);
+  box-shadow: 0 0 18px rgb(88 166 255 / 20%);
+}
+
+/* ── mascot ── */
+.octo-mascot-wrap {
+  position: relative;
+  z-index: 0;
+  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.octo-mascot-no-motion {
+  transition: none;
+}
+
+.octo-mascot-img {
+  image-rendering: pixelated;
+  display: block;
+}
+
+/* ── playing layout ── */
+.octo-play-layout {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+  padding-bottom: 3rem;
+}
+
+/* ── side column: mascot + depth ── */
+.octo-side-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  position: sticky;
+  top: 6rem;
+}
+
+.octo-depth-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  text-align: center;
+}
+
+.octo-depth-num {
+  font: 700 1.4rem var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+}
+
+.octo-depth-zone-label {
+  font: 0.5rem var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.octo-streak-badge {
+  padding: 0.2rem 0.5rem;
+  border: 1px solid rgb(227 179 65 / 45%);
+  border-radius: 999px;
+  color: var(--icon-yellow);
+  font: 700 0.78rem var(--font-sans);
+}
+
+/* ── main column ── */
+.octo-main-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+/* ── question header ── */
+.octo-q-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.octo-round-badge {
+  color: var(--text-dim);
+  font: 0.75rem var(--font-mono);
+}
+
+.octo-level-badge {
+  padding: 0.18rem 0.5rem;
+  border: 1px solid currentcolor;
+  border-radius: 999px;
+  font: 700 0.65rem var(--font-mono);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.octo-level-easy {
+  color: var(--accent-green);
+}
+
+.octo-level-tech {
+  color: var(--accent-blue);
+}
+
+/* ── timer bar ── */
+.octo-timer-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.octo-timer-track {
+  flex: 1;
+  height: 8px;
+  border-radius: 999px;
+  background: #1a2030;
+  overflow: hidden;
+  border: 1px solid var(--border-default);
+}
+
+.octo-timer-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent-green);
+  transition: width 1s linear, background 0.3s ease;
+}
+
+.octo-timer-locked .octo-timer-fill {
+  transition: none;
+}
+
+.octo-timer-warn .octo-timer-fill {
+  background: var(--icon-orange);
+}
+
+.octo-timer-text {
+  min-width: 2.5ch;
+  color: var(--text-dim);
+  font: 0.78rem var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.octo-timer-warn .octo-timer-text {
+  color: var(--icon-orange);
+  font-weight: 700;
+}
+
+/* ── question card ── */
+.octo-question-card {
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--zone-color, var(--border-default));
+  border-radius: 14px;
+  background: linear-gradient(145deg, rgb(22 27 34 / 96%), rgb(13 17 23 / 96%));
+  box-shadow: 0 0 24px rgb(88 166 255 / 6%);
+}
+
+.octo-question-text {
+  margin: 0;
+  color: var(--text-heading);
+  font-size: clamp(1.1rem, 3vw, 1.4rem);
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+}
+
+/* ── result pop ── */
+.octo-result-pop {
+  padding: 0.55rem 0.9rem;
+  border-radius: 8px;
+  font: 700 0.9rem var(--font-sans);
+  animation: octo-pop-in 0.2s ease;
+}
+
+@keyframes octo-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.octo-result-correct {
+  background: rgb(63 185 80 / 12%);
+  border: 1px solid rgb(63 185 80 / 35%);
+  color: var(--accent-green);
+}
+
+.octo-result-wrong {
+  background: rgb(239 68 68 / 12%);
+  border: 1px solid rgb(239 68 68 / 35%);
+  color: #f87171;
+}
+
+.octo-pts-earned {
+  color: var(--text-heading);
+}
+
+/* ── why text ── */
+.octo-why-text {
+  margin: 0;
+  padding: 0.6rem 0.9rem;
+  border-left: 3px solid var(--zone-color, var(--accent-blue));
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  line-height: 1.55;
+  background: rgb(88 166 255 / 5%);
+  border-radius: 0 8px 8px 0;
+}
+
+/* ── answer tiles (2×2 grid) ── */
+.octo-tiles-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.octo-tile {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 62px;
+  padding: 0.75rem 1rem;
+  border: 3px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  font: 700 0.88rem var(--font-sans);
+  text-align: left;
+  color: #fff;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.2s ease;
+  line-height: 1.3;
+}
+
+.octo-tile:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgb(0 0 0 / 30%);
+}
+
+.octo-tile:disabled {
+  cursor: default;
+}
+
+/* tile base colors */
+.octo-tile-color-0 {
+  background: var(--octo-tile-a);
+  border-color: var(--octo-tile-a);
+}
+
+.octo-tile-color-1 {
+  background: var(--octo-tile-b);
+  border-color: var(--octo-tile-b);
+}
+
+.octo-tile-color-2 {
+  background: var(--octo-tile-c);
+  border-color: var(--octo-tile-c);
+}
+
+.octo-tile-color-3 {
+  background: var(--octo-tile-d);
+  border-color: var(--octo-tile-d);
+}
+
+/* result states */
+.octo-tile-correct {
+  border-color: #22c55e !important;
+  box-shadow: 0 0 0 2px #22c55e, 0 0 20px rgb(34 197 94 / 40%);
+  opacity: 1 !important;
+}
+
+.octo-tile-wrong {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 2px #ef4444;
+  opacity: 0.85;
+}
+
+.octo-tile-dim {
+  opacity: 0.35;
+}
+
+/* tile shapes via border-radius */
+.octo-tile-square {
+  border-radius: 6px;
+}
+
+.octo-tile-pill {
+  border-radius: 16px;
+}
+
+.octo-tile-diamond {
+  border-radius: 14px 4px 14px 4px;
+}
+
+.octo-tile-notch {
+  border-radius: 4px 16px 4px 16px;
+}
+
+/* tile letter badge */
+.octo-tile-letter {
+  display: grid;
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border-radius: 6px;
+  background: rgb(0 0 0 / 22%);
+  font: 700 0.78rem var(--font-mono);
+}
+
+.octo-tile-text {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── end screen ── */
+.octo-end-rank {
+  margin: 0;
+  font: 800 1.8rem var(--font-sans);
+  letter-spacing: -0.03em;
+}
+
+.octo-end-score {
+  margin: 0;
+  color: var(--text-heading);
+  font: 800 2.8rem var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.06em;
+}
+
+.octo-pb-badge {
+  font-size: 1.2rem;
+}
+
+.octo-end-depth {
+  margin: 0;
+  color: var(--text-body);
+  font-size: 1rem;
+}
+
+.octo-end-stats {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 0.6rem 1.4rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  background: var(--bg-card);
+  text-align: center;
+}
+
+.octo-end-stats dt {
+  color: var(--text-dim);
+  font: 0.65rem var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.octo-end-stats dd {
+  margin: 0.2rem 0 0;
+  color: var(--text-heading);
+  font: 700 1.1rem var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.octo-end-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  justify-content: center;
+}
+
+/* ── responsive ── */
+@media (max-width: 600px) {
+  .octo-tiles-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .octo-tile {
+    min-height: 52px;
+  }
+}
+
+/* ── prefers-reduced-motion overrides ── */
+@media (prefers-reduced-motion: reduce) {
+  .octo-mascot-wrap {
+    transition: none;
+  }
+
+  .octo-shake {
+    animation: none;
+  }
+
+  .octo-timer-fill {
+    transition: none;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Octo Dive arena-hosted layout
+   The game sits inside the same snake-arena / arena-screen shell.
+   ────────────────────────────────────────────────────────────── */
+
+/* Give the arena-screen a usable height — no fixed aspect-ratio because
+   15 questions of content need to scroll inside the window. */
+[data-game="octo-dive"] .arena-screen {
+  min-height: 340px;
+  max-height: 70vh;
+  overflow-y: auto;
+  touch-action: auto;
+  user-select: auto;
+  /* Force GPU compositing so border-radius clips scroll content on mobile */
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+}
+
+/* Content container inside arena-screen */
+.octo-arena-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.85rem 1rem;
+}
+
+/* Question card inside the arena (slightly smaller than standalone) */
+.octo-arena-inner .octo-question-card {
+  padding: 0.75rem 1rem;
+}
+
+.octo-arena-inner .octo-question-text {
+  font-size: clamp(0.95rem, 2.5vw, 1.2rem);
+}
+
+/* Tiles inside arena get more compact min-height */
+.octo-arena-inner .octo-tile {
+  min-height: 48px;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.82rem;
+}
+
+.octo-scorecard-mascot {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0.7rem 0 0.25rem;
+  min-height: 125px;
+  box-sizing: border-box;
+}
+
+.octo-scorecard-mascot .octo-mascot-wrap {
+  position: relative;
+  z-index: 0;
+  flex-shrink: 0;
+}
+
+/* Streak inside scorecard — never affects other columns */
+.octo-streak-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.65rem;
+  margin-bottom: 0.2rem;
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  background: var(--bg-card);
+}
+
+.octo-streak-label {
+  color: var(--text-dim);
+  font: 0.62rem var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.octo-streak-value {
+  color: var(--text-dim);
+  font: 700 0.9rem var(--font-mono);
+}
+
+.octo-streak-value.octo-streak-active {
+  color: var(--icon-yellow);
+}
+
+/* End-screen action buttons inside arena overlay */
+.octo-end-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+/* snake-heading h1 span colour for octo-dive */
+.octo-page .snake-heading h1 span {
+  color: var(--accent-blue);
+}
+
+/* layout override: snake-layout uses 1fr 300px on desktop;
+   no extra overrides needed — the scorecard and rules fit as-is */

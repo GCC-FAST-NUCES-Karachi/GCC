@@ -13,6 +13,7 @@ The arcade lives at `/games`. It is a collection of small, self-contained games 
 | Game | Route | Goal and controls |
 | --- | --- | --- |
 | Commit Snake | `/games/commit-snake` | Collect 15 commits before the run ends. Use arrow keys or WASD, the on-screen direction pad, or swipe on the board. Press Space to start or pause; press R to restart an active or completed run. |
+| Octo Dive | `/games/octo-dive` | Answer 15 multiple-choice GitHub and Git questions before the 15-second timer runs out. Tap one of the 4 coloured answer tiles or press 1–4 / A–D. Speed bonus + streak bonus reward quick correct answers. Total score equals depth in metres. |
 
 Commit Snake pickups expire after 10 seconds and move to another open cell without a penalty. The board wraps at its edges. Hitting a GCC block or the snake's own body ends the run. The snake speeds up as commits are collected. The game saves the best score and fastest winning time in the browser's local storage on that device.
 
