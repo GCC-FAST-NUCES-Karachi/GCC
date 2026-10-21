@@ -77,10 +77,17 @@ export default function MemberCard({ member }) {
   return (
     <li className="member">
       <button type="button" className="member-trigger" onClick={handleClick} aria-label={label}>
-        <Photo member={member} />
+        <span className="member-orbit">
+          <span className="member-ring" aria-hidden="true" />
+          <Photo member={member} />
+        </span>
+        <span className="member-caption" aria-hidden="true">
+          <strong>{name}</strong>
+          <span>{member.role}</span>
+        </span>
       </button>
 
-      {/* Laptop: dark layer over the photo on hover / keyboard focus */}
+      {/* Laptop: dark glass panel under the photo on hover / keyboard focus */}
       <div className="member-reveal" aria-hidden="true">
         <CodeBlock member={member} name={name} dept={dept} />
       </div>
