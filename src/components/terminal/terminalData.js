@@ -4,18 +4,21 @@
  * Fictional, read-only repository used by the terminal simulation.
  * It never touches the real Git repository or filesystem.
  *
- * PUZZLE DESIGN (read this before editing clues)
- * ----------------------------------------------
- * Three files each hold one "key word" line. Each key word is NOT written in
- * the file; the visitor must derive it from a commit message in `git log --oneline`:
+ * PUZZLE DESIGN
+ * -------------
+ * All hints live only in KEY.md (present on every branch, content is dynamic).
+ * Other files contain no hints. learn / events / team files are generated from
+ * the website's content (see branchFiles.js).
  *
- *   1. main/README.md           -> verb in commit f4a9c1e            -> "launch"
- *   2. learn/git-basics.md      -> last word of commit e2c8f91       -> "pathway"
- *   3. events/TIMELINE.md       -> event named in commit d9b2c76     -> "hackathon"
+ *   main   -> cat KEY.md -> word 1: the action in commit f4a9c1e   -> "launch"
+ *   learn  -> cat KEY.md -> word 2: how commit e2c8f91 ends        -> "pathway"
+ *   events -> cat KEY.md -> word 3: what commit d9b2c76 hosted      -> "hackathon"
  *
  * `git unlock launch pathway hackathon` reveals the hidden branch.
- * If you change COMMIT_LOG messages, update KEY_WORDS to match.
+ * If you change COMMIT_LOG, also update KEY_WORDS and CLUE_STEPS below.
  */
+
+import { buildBranchFiles } from "./branchFiles.js";
 
 // ---------------------------------------------------------------------------
 // ASCII helpers
@@ -57,7 +60,7 @@ export const COMMIT_LOG = [
 ];
 
 // ---------------------------------------------------------------------------
-// Discovery clues
+// Clues (all defined BEFORE BRANCH_FILES, which needs KEY_SENTINEL)
 // ---------------------------------------------------------------------------
 export const CLUE_KEYS = ["clue-readme", "clue-learn", "clue-events"];
 
@@ -145,105 +148,9 @@ export const KEY_WORDS = ["launch", "pathway", "hackathon"];
 export const PUBLIC_BRANCHES = ["main", "learn", "events", "team", "join"];
 
 // ---------------------------------------------------------------------------
-// Virtual filesystem per branch
+// Virtual filesystem per branch (built from website content, see branchFiles.js)
 // ---------------------------------------------------------------------------
-export const BRANCH_FILES = {
-  main: {
-    "KEY.md": KEY_SENTINEL,
-    "README.md": `# GitHub Campus Club — FAST-NUCES
-
-A community of students who ship code and build together.
-
-Stuck? Run \`cat KEY.md\`.`,
-    "CONTRIBUTING.md": `# Contributing
-
-1. Attend a workshop
-2. Join a build session
-3. Propose a project
-4. Help others learn`,
-    "MEMBERS.md": `# Members
-
-Open to all FAST-NUCES students. See /team.`,
-  },
-
-  learn: {
-    "KEY.md": KEY_SENTINEL,
-    "README.md": `# Learn with GCC
-
-Workshops, guides and resources. See /learn.`,
-    "workshops.md": `# Workshops
-
-- Git & GitHub basics
-- Branching for teams
-- Code review practice`,
-    "git-basics.md": `# Git Basics
-
-- git init: start a repository
-- git add: stage changes
-- git commit: save a snapshot
-- git branch: list branches
-- git checkout: switch branches
-- git log: read history`,
-  },
-
-  events: {
-    "KEY.md": KEY_SENTINEL,
-    "README.md": `# GCC Events
-
-Hackathons, workshops and meetups. See /events.`,
-    "events.md": `# Schedule
-
-- Git workshop series (monthly)
-- Open-source sessions (bi-weekly)
-- Community showcase (end of semester)`,
-    "TIMELINE.md": `# Timeline
-
-- Club founded
-- First workshop
-- First hackathon
-- Community showcase
-- Website launched`,
-  },
-
-  team: {
-    "KEY.md": KEY_SENTINEL,
-    "README.md": `# GCC Team
-
-The people behind the club. See /team.`,
-    "team.md": `# Roles
-
-President, Vice President, Tech Lead, Community Lead, Content Lead.`,
-    "ROLES.md": `# Open Roles
-
-Be a FAST-NUCES student and love building things. Apply at /#join.`,
-  },
-
-  join: {
-    "KEY.md": KEY_SENTINEL,
-    "README.md": `# Join GCC
-
-Click "Join the club" on the website: /#join`,
-    "JOIN.md": `# Membership
-
-Workshops, talks, open-source projects and a community of builders.
-No prior experience needed.`,
-  },
-
-  secret: {
-    "KEY.md": KEY_SENTINEL,
-    "README.md": `# The Secret Branch
-
-You found it. Not everyone makes it here.
-
-Run \`cat BADGE.md\` to continue.`,
-    "BADGE.md": `__CHALLENGE__`,
-    "LORE.md": `# The GCC Origin Story
-
-A terminal, a blinking cursor, and students who believed building together is the best way to learn.
-
-You are one of the curious ones. Now go build something.`,
-  },
-};
+export const BRANCH_FILES = buildBranchFiles(KEY_SENTINEL);
 
 // ---------------------------------------------------------------------------
 // Unlock banner + final challenge

@@ -4,7 +4,8 @@
  * TerminalProvider.jsx — Global Terminal State
  *
  * Single source of truth for: open/close, branch, history, output buffer,
- * tutorial, clues, secret/challenge state. Persists progress in sessionStorage.
+ * tutorial, clues, secret/challenge state. Persists progress AND the visible
+ * output in sessionStorage, so a page reload restores the terminal as it was.
  *
  * Exposes (in addition to the original API):
  *   isClosing   — true during the exit animation (Terminal reads it for CSS)
@@ -20,6 +21,7 @@ const TerminalContext = createContext(null);
 
 const SESSION_KEY = "gcc-terminal-state";
 const CLOSE_MS = 220;
+const MAX_SAVED_OUTPUT = 300; // keep storage small; newest lines win
 
 // ---------------------------------------------------------------------------
 // State helpers
@@ -45,7 +47,14 @@ function loadSession() {
   if (typeof window === "undefined") return null;
   try {
     const raw = sessionStorage.getItem(SESSION_KEY);
-    return raw ? JSON.parse(raw) : null;
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") return null;
+    // Guard against corrupted/old shapes
+    if (!Array.isArray(parsed.output)) parsed.output = [];
+    if (!Array.isArray(parsed.commandHistory)) parsed.commandHistory = [];
+    if (!Array.isArray(parsed.discoveredClues)) parsed.discoveredClues = [];
+    return parsed;
   } catch {
     return null;
   }
@@ -59,6 +68,7 @@ function saveSession(s) {
       JSON.stringify({
         currentBranch: s.currentBranch,
         commandHistory: s.commandHistory,
+        output: s.output.slice(-MAX_SAVED_OUTPUT),
         tutorialStep: s.tutorialStep,
         tutorialSkipped: s.tutorialSkipped,
         discoveredClues: s.discoveredClues,
@@ -69,7 +79,7 @@ function saveSession(s) {
       })
     );
   } catch {
-    // Storage unavailable — continue without persistence.
+    // Storage unavailable or full — continue without persistence.
   }
 }
 
@@ -122,21 +132,39 @@ export function TerminalProvider({ children }) {
   const stateRef = useRef(state);
   stateRef.current = state;
 
+  const hydratedRef = useRef(false);
   const triggerRef = useRef(null);
   const scrollPosRef = useRef(0);
   const bootTimers = useRef([]);
   const closeTimer = useRef(null);
   const closingRef = useRef(false);
+  // Why the terminal last closed: "close" (go back / Escape / exit) or "navigate" (a link was followed)
+  const closeIntentRef = useRef("close");
+
+  /**
+   * Load the saved session exactly once. It is also called from openTerminal,
+   * because a child component can open the terminal before the mount effect
+   * below has run (child effects fire before parent effects).
+   */
+  const hydrate = useCallback(() => {
+    if (hydratedRef.current) return;
+    hydratedRef.current = true;
+    const saved = loadSession();
+    if (!saved) return;
+    const merged = { ...stateRef.current, ...saved, booting: false, historyIndex: -1 };
+    stateRef.current = merged;
+    setState(merged);
+  }, []);
 
   // Hydrate from session on mount (client only)
   useEffect(() => {
-    const saved = loadSession();
-    if (saved) setState((prev) => ({ ...prev, ...saved, booting: false }));
-  }, []);
+    hydrate();
+  }, [hydrate]);
 
-  // Persist progress
+  // Persist progress + output (only after hydration, so we never overwrite
+  // a saved session with the empty default state)
   useEffect(() => {
-    if (state.hasBooted) saveSession(state);
+    if (hydratedRef.current && state.hasBooted) saveSession(state);
   }, [state]);
 
   // Clear timers on unmount
@@ -201,6 +229,8 @@ export function TerminalProvider({ children }) {
   // ---- Open / close -------------------------------------------------------
   const openTerminal = useCallback(
     (triggerElement) => {
+      hydrate(); // make sure saved progress/output is loaded before deciding what to show
+
       // Accept an element, an event, or nothing.
       const el = triggerElement?.currentTarget ?? triggerElement;
       triggerRef.current = el instanceof HTMLElement ? el : document.activeElement;
@@ -208,6 +238,7 @@ export function TerminalProvider({ children }) {
 
       clearTimeout(closeTimer.current);
       closingRef.current = false;
+      closeIntentRef.current = "close";
       setIsClosing(false);
       document.body.style.overflow = "hidden";
       setIsOpen(true);
@@ -216,18 +247,19 @@ export function TerminalProvider({ children }) {
       if (!s.hasBooted) {
         startBoot();
       } else if (s.output.length === 0) {
-        // Returning after a page reload: output buffer is empty, show a short message once.
+        // Only happens if the visitor ran `clear` before reloading.
         setState((prev) => ({ ...prev, output: buildReturnOutput(prev) }));
       }
-      // Otherwise the previous output is still there — don't append anything.
+      // Otherwise the restored/previous output is already there — don't append anything.
     },
-    [startBoot]
+    [hydrate, startBoot]
   );
 
   const closeTerminal = useCallback(
     (opts) => {
       if (closingRef.current) return;
       closingRef.current = true;
+      closeIntentRef.current = opts?.navigating ? "navigate" : "close";
       skipBoot(); // never leave a half-finished boot behind
       setIsClosing(true);
 
@@ -337,6 +369,7 @@ export function TerminalProvider({ children }) {
       skipBoot,
       navigateHistory,
       historyValue,
+      closeIntentRef,
     }),
     [isOpen, isClosing, openTerminal, closeTerminal, state, runCommand, skipTutorial, skipBoot, navigateHistory, historyValue]
   );

@@ -20,7 +20,12 @@
 /* ---- Overlay ------------------------------------------------------------ */
 .terminal-overlay {
   position: fixed;
-  inset: 0;
+  inset: auto;
+  top: var(--vvt, 0px);
+  left: 0;
+  width: 100%;
+  height: var(--vvh, 100vh);
+  height: var(--vvh, 100dvh);
   z-index: 100;
   display: flex;
   align-items: center;
@@ -56,7 +61,7 @@
   flex-direction: column;
   width: min(1040px, calc(100vw - 2rem));
   height: min(760px, calc(100vh - 3rem));
-  height: min(760px, calc(100dvh - 3rem));
+  height: min(760px, calc(var(--vvh, 100dvh) - 3rem));
   border: 1px solid rgba(48, 54, 61, 0.95);
   border-radius: 16px;
   background: linear-gradient(180deg, rgba(13, 17, 23, 0.97), rgba(5, 8, 13, 0.98));
@@ -195,19 +200,19 @@
   user-select: none;
 }
 
+/* Decorative only: not clickable */
 .terminal-dots {
   display: flex;
   gap: 8px;
   flex-shrink: 0;
+  pointer-events: none;
 }
 
 .terminal-dot {
-  position: relative;
   width: 12px;
   height: 12px;
-  padding: 0;
-  border: none;
   border-radius: 50%;
+  flex-shrink: 0;
 }
 
 .terminal-dot--red {
@@ -231,17 +236,6 @@
 
 .terminal-dot--green {
   background: #28c840;
-}
-
-.terminal-dot--red::after {
-  content: "";
-  position: absolute;
-  inset: -8px;
-}
-
-/* bigger tap area */
-.terminal-dot--red:hover {
-  filter: brightness(1.15);
 }
 
 .terminal-title {
@@ -886,6 +880,7 @@
   flex: 1;
   min-width: 0;
   min-height: 38px;
+  padding: 0;
   border: none;
   background: transparent;
   color: var(--t-heading);
@@ -902,6 +897,84 @@
 
 .terminal-input::placeholder {
   color: #4a5362;
+}
+
+/* ---- Inline (ghost) autocomplete ---------------------------------------- */
+/* Sits exactly on top of the input; the typed part is invisible so only the
+   suggested remainder shows, directly after what the visitor typed. */
+.terminal-ghost {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  white-space: pre;
+  pointer-events: none;
+  font-family: var(--t-mono);
+  font-size: 0.92rem;
+}
+
+.terminal-ghost-typed {
+  visibility: hidden;
+}
+
+.terminal-ghost-hint {
+  color: #5b6573;
+}
+
+.terminal-ghost-key {
+  margin-left: 0.6rem;
+  padding: 0.05rem 0.35rem;
+  border: 1px solid #2b333d;
+  border-radius: 5px;
+  color: var(--t-dim);
+  font-family: var(--t-mono);
+  font-size: 0.68rem;
+  line-height: 1.4;
+}
+
+/* One-tap autocomplete chip: touch / small screens only (hidden by default) */
+.terminal-suggest {
+  display: none;
+  position: absolute;
+  left: 0.75rem;
+  bottom: calc(100% + 6px);
+  max-width: calc(100% - 1.5rem);
+  z-index: 10;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 38px;
+  padding: 0 0.85rem;
+  border: 1px solid rgba(63, 185, 80, 0.45);
+  border-radius: 999px;
+  background: #161b22;
+  color: var(--t-green);
+  font-family: var(--t-mono);
+  font-size: 0.84rem;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.4);
+  animation: termLineIn 0.15s ease;
+}
+
+.terminal-suggest span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.terminal-suggest svg {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.terminal-suggest:active {
+  transform: scale(0.97);
 }
 
 .terminal-send {
@@ -947,43 +1020,19 @@
   transform: translateX(-2px);
 }
 
-.terminal-autocomplete {
-  position: absolute;
-  bottom: calc(100% + 14px);
-  left: -0.85rem;
-  right: -2.9rem;
-  max-height: 180px;
-  overflow-y: auto;
-  border: 1px solid #2b333d;
-  border-radius: 10px;
-  background: #161b22;
-  box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.4);
-  z-index: 10;
-  animation: termLineIn 0.15s ease;
-}
+/* ---- Touch devices & small screens: show the chip, hide the Tab keycap -- */
+@media (max-width: 768px), (pointer: coarse) {
+  .terminal-suggest {
+    display: inline-flex;
+  }
 
-.terminal-autocomplete-item {
-  display: block;
-  width: 100%;
-  min-height: 38px;
-  padding: 0.45rem 0.85rem;
-  border: none;
-  background: transparent;
-  color: var(--t-body);
-  font-family: var(--t-mono);
-  font-size: 0.82rem;
-  text-align: left;
-  cursor: pointer;
-}
-
-.terminal-autocomplete-item:hover,
-.terminal-autocomplete-item.is-active {
-  background: rgba(88, 166, 255, 0.1);
-  color: var(--t-heading);
+  .terminal-ghost-key {
+    display: none;
+  }
 }
 
 /* ---- Phones & small tablets (primary target) ---------------------------- */
-@media (max-width: 768px) {
+@media (max-width: 768px), (max-height: 520px) {
 
   /* Overlay follows the visual viewport (set from JS), so the keyboard
      never covers the input. Falls back to 100dvh. */
@@ -1058,8 +1107,10 @@
     min-height: 44px;
   }
 
-  /* >=16px stops iOS Safari from zooming in on focus */
-  .terminal-input {
+  /* >=16px stops iOS Safari from zooming in on focus.
+     The ghost layer must use the same size so it stays aligned. */
+  .terminal-input,
+  .terminal-ghost {
     font-size: 16px;
   }
 
@@ -1072,11 +1123,6 @@
   .terminal-send svg {
     width: 20px;
     height: 20px;
-  }
-
-  .terminal-autocomplete {
-    left: -0.85rem;
-    right: -2.9rem;
   }
 }
 
@@ -1114,7 +1160,7 @@
   .terminal-window {
     width: min(900px, calc(100vw - 3rem));
     height: min(680px, calc(100vh - 4rem));
-    height: min(680px, calc(100dvh - 4rem));
+    height: min(680px, calc(var(--vvh, 100dvh) - 4rem));
   }
 }
 
@@ -1122,7 +1168,7 @@
   .terminal-window {
     width: min(1120px, calc(100vw - 4rem));
     height: min(820px, calc(100vh - 4rem));
-    height: min(820px, calc(100dvh - 4rem));
+    height: min(820px, calc(var(--vvh, 100dvh) - 4rem));
   }
 }
 
@@ -1144,7 +1190,7 @@
   .terminal-window::after,
   .terminal-fx,
   .terminal-branch-pill,
-  .terminal-autocomplete,
+  .terminal-suggest,
   .term-line,
   .term-cmd,
   .term-log,
