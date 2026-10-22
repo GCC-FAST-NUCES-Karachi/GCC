@@ -10,6 +10,8 @@ import {
 import InfiniteLoop from "@/components/effects/InfiniteLoop";
 import "./landing/landing.css";
 
+export const metadata = { title: "Home" };
+
 export default function Home() {
   return (
     <InfiniteLoop>

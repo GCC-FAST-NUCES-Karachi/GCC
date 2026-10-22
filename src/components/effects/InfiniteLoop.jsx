@@ -6,11 +6,9 @@ import { getBug, getServerBug, subscribe } from "@/lib/easterBug";
 import EasterBug from "./EasterBug";
 
 /**
- * Endless scroll. The children are rendered three times back to back. The page
- * opens at its normal top. Once the visitor scrolls past the end (or up from the
- * top) the scroll position is kept inside the middle copy by jumping exactly one
- * copy height. The copies are identical, so the jump is invisible and the page
- * never ends in either direction.
+ * Repeat the landing page as visitors scroll down. The page opens at its real
+ * top; upward scrolling remains ordinary page scrolling. Progress is preserved
+ * across each downward wrap for the Easter egg hints and background effects.
  */
 export default function InfiniteLoop({ children }) {
   const topRef = useRef(null);
@@ -27,24 +25,23 @@ export default function InfiniteLoop({ children }) {
       return undefined;
     }
     wasBug.current = true;
-    const top = topRef.current;
-    const mid = midRef.current;
-    if (!top || !mid) return undefined;
+    const first = topRef.current;
+    const second = midRef.current;
+    if (!first || !second) return undefined;
 
-    // Only the middle copy keeps its ids so #hash links and aria references hit it.
-    const outer = [top, mid.nextElementSibling].filter(Boolean);
+    // The first copy is the interactive copy and owns the page IDs.
+    const outer = [second, second.nextElementSibling, second.nextElementSibling?.nextElementSibling].filter(Boolean);
     outer.forEach((copy) => copy.querySelectorAll("[id]").forEach((el) => el.removeAttribute("id")));
 
     document.body.classList.add("is-looping");
 
     let period = 0; // height of one copy
     let offset = 0; // total distance jumped, so scroll stays continuous for other effects
-    let looped = false; // false until the first jump, so the page opens at its normal top
+    let looped = false;
     let frame = 0;
-    let touchY = 0;
 
     const measure = () => {
-      period = mid.getBoundingClientRect().top - top.getBoundingClientRect().top;
+      period = second.getBoundingClientRect().top - first.getBoundingClientRect().top;
     };
 
     const jump = (copies) => {
@@ -58,37 +55,21 @@ export default function InfiniteLoop({ children }) {
       if (period < 1) return;
       const y = window.scrollY;
       // Browsers snap scroll positions to whole pixels, so allow 1px of slack.
-      if (y >= 2 * period - 1) {
-        jump(Math.floor((y - period + 1) / period)); // past the end: back one copy
-      } else if (looped && y < period - 1) {
-        jump(-1); // scrolled up out of the middle copy: forward one copy
+      if (y >= 3 * period - 1) {
+        // Return to the first copy while preserving the scroll progress value.
+        const copies = Math.floor(y / period);
+        jump(copies);
       }
-    };
-
-    // Scrolling up from the very top: reveal the end of the previous copy.
-    const revealAbove = () => {
-      if (looped || period < 1 || window.scrollY > 0) return;
-      jump(-1);
     };
 
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(normalize);
     };
-    const onWheel = (event) => { if (event.deltaY < 0) revealAbove(); };
-    const onKeyDown = (event) => { if (event.key === "ArrowUp" || event.key === "PageUp") revealAbove(); };
-    const onTouchStart = (event) => { touchY = event.touches[0].clientY; };
-    const onTouchMove = (event) => { if (event.touches[0].clientY > touchY) revealAbove(); };
-
     measure();
     if (window.location.hash) {
-      // Hash navigation lands on the middle copy, which owns the page IDs.
-      // Keep that position and make its loop offset start at zero.
-      offset = -period;
+      // Hash navigation targets IDs in the first interactive copy.
+      offset = 0;
       looped = true;
-    } else {
-      // The first copy is decorative/inert. Start at the visually identical
-      // middle copy so the controls visible on first load are interactive.
-      jump(-1);
     }
     normalize();
 
@@ -113,19 +94,11 @@ export default function InfiniteLoop({ children }) {
       }
       onScroll();
     });
-    resizeObserver.observe(mid);
+    resizeObserver.observe(second);
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("wheel", onWheel, { passive: true });
-    window.addEventListener("keydown", onKeyDown);
-    window.addEventListener("touchstart", onTouchStart, { passive: true });
-    window.addEventListener("touchmove", onTouchMove, { passive: true });
 
     return () => {
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("wheel", onWheel);
-      window.removeEventListener("keydown", onKeyDown);
-      window.removeEventListener("touchstart", onTouchStart);
-      window.removeEventListener("touchmove", onTouchMove);
       resizeObserver.disconnect();
       if (frame) cancelAnimationFrame(frame);
       delete window.__gccLoop;
@@ -137,8 +110,9 @@ export default function InfiniteLoop({ children }) {
     <>
       {bug ? (
         <>
-          <div ref={topRef} className="infinite-loop-copy" aria-hidden="true" inert>{children}</div>
-          <div ref={midRef} className="infinite-loop-copy">{children}</div>
+          <div ref={topRef} className="infinite-loop-copy">{children}</div>
+          <div ref={midRef} className="infinite-loop-copy" aria-hidden="true" inert>{children}</div>
+          <div className="infinite-loop-copy" aria-hidden="true" inert>{children}</div>
           <div className="infinite-loop-copy" aria-hidden="true" inert>{children}</div>
         </>
       ) : children}

@@ -7,3 +7,12 @@
 body.is-looping .site-footer {
   display: none;
 }
+
+/* The repeated copies are an effect; don't expose their finite document height. */
+html:has(body.is-looping) {
+  scrollbar-width: none;
+}
+
+html:has(body.is-looping)::-webkit-scrollbar {
+  display: none;
+}
