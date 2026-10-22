@@ -25,7 +25,7 @@ export const teamMembers = [
 
   // ExCom: department heads
   { slug: "technical-head", tier: 3, name: "Hunza Shahzadi (DS)", id: "25K-2536", role: "Technical Head", photo: "/images/Team/hunza.webp" },
-  { slug: "event-manager", tier: 3, name: "Aryaan Taimur Saeed (DS)", id: "25K-2540", role: "Event Manager", photo: "/images/Team/Aryaan_Taimur(1).webp" },
+  { slug: "event-manager", tier: 3, name: "Aryaan Taimur Saeed (DS)", id: "25K-2540", role: "Event Manager", photo: "/images/Team/aryaan_taimur(1).webp" },
   { slug: "media-promotions-head", tier: 3, name: "Isbah Rani Abbasi (CS)", id: "24K-0698", role: "Media & Promotions Head", photo: "/images/Team/isbah_rani_abbasi(1).webp" },
   { slug: "guest-relations-head", tier: 3, name: "Mahrukh Siddiqui (AI)", id: "25K-0147", role: "Guest Relations Head", photo: "/images/Team/Mahrukh.webp" },
 ];
