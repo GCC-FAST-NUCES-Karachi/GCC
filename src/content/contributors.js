@@ -9,15 +9,15 @@ export const technicalGroups = [
     title: "Tech Dev",
     members: [
       { name: "Ismail Silat", role: "Head", github: "https://github.com/ismailsilat7" },
-      { name: "Abdul Rahman", role: "Co-Head", github: "https://github.com/" },
-      { name: "Urwa Rafique", role: "Co-Head", github: "https://github.com/" },
-      { name: "Hamza Safdar", role: "Co-Head", github: "https://github.com/" },
+      { name: "Abdul Rahman", role: "Co-Head", github: "https://github.com/Abdulrahman10724" },
+      { name: "Urwa Rafique", role: "Co-Head", github: "https://github.com/Urwa5618" },
+      { name: "Hamza Safdar", role: "Co-Head", github: "https://github.com/Hamza-04-mav" },
     ],
   },
   {
     title: "Tech Product Design",
     members: [
-      { name: "Ali Hussain", role: "Head", github: "https://github.com/" },
+      { name: "Ali Hussain", role: "Head", github: "https://github.com/Zidarc" },
       { name: "Wajiha", role: "Co-Head", github: "https://github.com/" },
       { name: "Ayesha", role: "Co-Head", github: "https://github.com/" },
     ],
