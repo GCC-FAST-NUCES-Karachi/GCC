@@ -216,18 +216,7 @@
 }
 
 .terminal-dot--red {
-  width: 32px;
-  height: 32px;
-  background: transparent;
-  cursor: pointer;
-}
-
-.terminal-dot--red::before {
-  position: absolute;
-  inset: 10px;
-  border-radius: 50%;
   background: #ff5f57;
-  content: "";
 }
 
 .terminal-dot--yellow {
