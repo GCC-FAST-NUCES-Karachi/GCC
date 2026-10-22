@@ -20,6 +20,8 @@ Commit Snake pickups expire after 10 seconds and move to another open cell witho
 
 Bug Bash chips fall down a code file, and a bug escapes when it reaches the bottom. Set `CHIP_FALL` to `false` in `src/app/games/bug-bash/config.js` to make chips pop up in place on the code lines instead. An escaped bug, a hit on working code or a feature, or a surviving boss costs 1 of 3 build health. Hitting a ⚠ command such as `git push --force` ends the run at once. Every 3 squashes in a row raise the score multiplier, and reaching ×5 starts fever mode for double points. Bigger bugs take several hits, split bugs break into two smaller ones that cost only 0.25 build health each if they escape, and disguised bugs look like code with a wavy red underline. Power-ups restore health, slow time, or fix every bug on screen. A `legacy_monolith.js` boss appears after 40 seconds and then about once a minute. The game gets faster for the first 90 seconds; tune the pace with the progression values in `src/app/games/bug-bash/config.js`. It saves the best score and the sound setting in local storage on that device.
 
+Bug Bash watches its own frame times during a run. If too many frames run long, it switches to a lite mode for the rest of the visit: no glows, fewer particles and a lower-resolution effects canvas. Phones that report 2 GB of memory or less start in lite mode. Add `?quality=lite` or `?quality=full` to the URL to pin a mode while testing. The site's animated galaxy background pauses while a run is live.
+
 ## How the arcade is organized
 
 - `src/app/games/page.jsx` renders the arcade hub and its game cards. Its `games` list is the directory of games currently shown on the page.

@@ -1039,13 +1039,29 @@
 
 .bug-board.is-fever {
   border-color: var(--accent-green);
-  box-shadow: inset 0 0 40px rgb(63 185 80 / 22%), 0 0 20px rgb(63 185 80 / 25%);
+  box-shadow: 0 0 30px rgb(63 185 80 / 25%);
+}
+
+/* The fever glow pulses through opacity only, so the GPU animates it without
+   repainting the board. Animating box-shadow repainted the whole board every frame. */
+.bug-board::before {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 70px rgb(63 185 80 / 22%);
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+}
+
+.bug-board.is-fever::before {
+  opacity: 0.55;
   animation: bug-fever 0.9s ease-in-out infinite alternate;
 }
 
 @keyframes bug-fever {
   to {
-    box-shadow: inset 0 0 70px rgb(63 185 80 / 22%), 0 0 40px rgb(63 185 80 / 25%);
+    opacity: 1;
   }
 }
 
@@ -1081,6 +1097,7 @@
 
 .bug-flash {
   opacity: 0;
+  will-change: opacity;
 }
 
 .bug-tint {
@@ -1225,11 +1242,13 @@
   background: var(--bg-card);
 }
 
+/* its own layer, so the countdown never repaints the chip it sits in */
 .bug-chip-ttl i {
   display: block;
   height: 100%;
   background: var(--chip-border);
   transform-origin: left;
+  will-change: transform;
 }
 
 /* ---------- boss ---------- */
@@ -1251,6 +1270,7 @@
   font: 0.75rem/1.3 var(--font-mono);
   text-align: left;
   cursor: pointer;
+  will-change: transform;
 }
 
 .bug-boss>span {
@@ -1286,6 +1306,7 @@
   background: #f85149;
   transform: scaleX(0);
   transform-origin: left;
+  will-change: transform;
 }
 
 .bug-boss .bug-boss-bar.is-time {
@@ -1326,6 +1347,7 @@
   line-height: 1.4;
   text-align: center;
   pointer-events: none;
+  will-change: transform, opacity;
 }
 
 .bug-banner strong {
@@ -1368,6 +1390,7 @@
   display: block;
   font-size: 2.125rem;
   font-weight: 800;
+  will-change: transform;
 }
 
 .bug-combo span {
@@ -1477,8 +1500,39 @@
   color: #ffa657;
 }
 
+/* ---------- lite mode ----------
+   Switched on by the game when frames run long. Drops the blurred glows and the
+   overlay blur, which are the costliest things to paint on a low-end phone. */
+
+.bug-board.is-lite .bug-chip,
+.bug-board.is-lite .bug-tag {
+  --chip-glow: none;
+}
+
+.bug-board.is-lite .bug-boss {
+  box-shadow: none;
+}
+
+.bug-board.is-lite .bug-banner strong {
+  text-shadow: none;
+}
+
+.bug-board.is-lite.is-fever {
+  box-shadow: none;
+}
+
+.bug-board.is-lite.is-fever::before {
+  opacity: 0.8;
+  animation: none;
+}
+
+.bug-board.is-lite .arena-overlay {
+  background: rgb(1 4 9 / 84%);
+  backdrop-filter: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .bug-board.is-fever {
+  .bug-board.is-fever::before {
     animation: none;
   }
 }

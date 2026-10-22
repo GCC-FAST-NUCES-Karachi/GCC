@@ -65,6 +65,17 @@ const BUG_KINDS = new Set(["bug", "big", "split", "mini", "disguise"]);
 const LABELS = { bug: BUGS, big: BIG_BUGS, disguise: DISGUISED_BUGS, code: CODE, feature: FEATURES, bomb: BOMBS };
 const ICONS = { bug: "●", mini: "•", split: "◆", big: "⬤", feature: "✓", bomb: "⚠", hotfix: "★", debug: "★", linter: "★" };
 const HIT_MS = 260; // squash / miss animation length
+// Extra reach around chips worth hitting, so a tap that lands just off a moving
+// chip on a slow phone still counts. Code, features and bombs need a direct hit.
+const TOUCH_SLACK = 12;
+const MOUSE_SLACK = 4;
+// Particle budget, and the share of each burst that is drawn, in full and lite mode.
+const MAX_PARTICLES = { full: 220, lite: 70 };
+const LITE_BURST = 0.35;
+// Lite mode turns on when, over a window of live play, too many frames run long.
+const SLOW_FRAME_MS = 25;
+const SLOW_WINDOW_MS = 2000;
+const SLOW_SHARE = 0.25;
 const RED = "#f85149";
 const GREEN = "#3fb950";
 const PURPLE = "#bc8cff";
@@ -139,9 +150,11 @@ function fallX(g, it) {
 
 /* ---------- game state ---------- */
 
-function createGame(width = 820, height = 560, font = "monospace") {
+function createGame(width = 820, height = 560, font = "monospace", lite = false) {
   return {
     status: "idle",
+    rev: 0, // bumped whenever something React renders changes
+    lite, // low-end mode: fewer particles, simpler effects
     score: 0,
     combo: 0,
     maxCombo: 0,
@@ -174,7 +187,9 @@ function createGame(width = 820, height = 560, font = "monospace") {
 const sfx = (g, kind, n = 0) => g.sounds.push([kind, n]);
 
 function burst(g, x, y, color, count, spread = 1) {
-  for (let i = 0; i < count; i += 1) {
+  const room = (g.lite ? MAX_PARTICLES.lite : MAX_PARTICLES.full) - g.fx.length;
+  const n = Math.min(room, g.lite ? Math.ceil(count * LITE_BURST) : count);
+  for (let i = 0; i < n; i += 1) {
     const angle = Math.random() * Math.PI * 2;
     const speed = (90 + Math.random() * 220) * spread;
     g.fx.push({
@@ -193,10 +208,12 @@ function burst(g, x, y, color, count, spread = 1) {
 
 function floatText(g, text, x, y, color, size) {
   const left = Math.max(4, Math.min(x, g.width - text.length * size * 0.62 - 4));
-  g.fx.push({ id: ++g.uid, type: "text", text, x: left, y, color, size, born: g.elapsed });
+  // w is measured once, on the first frame it is drawn
+  g.fx.push({ id: ++g.uid, type: "text", text, x: left, y, color, size, font: `800 ${size}px ${g.font}`, w: 0, born: g.elapsed });
 }
 
 function setBanner(g, text, sub, color) {
+  g.rev += 1;
   g.banner = { text, sub, color, born: g.elapsed };
   g.announce = `${text}. ${sub}.`;
 }
@@ -212,6 +229,7 @@ function breakCombo(g) {
 
 function hurt(g, text, it, color, flashColor, damage = 1) {
   const [cx, cy] = center(it);
+  g.rev += 1;
   g.lives -= damage;
   breakCombo(g);
   floatText(g, text, cx - 60, cy - 24, color, 18);
@@ -220,6 +238,7 @@ function hurt(g, text, it, color, flashColor, damage = 1) {
 }
 
 function end(g, reason) {
+  g.rev += 1;
   g.status = "lost";
   g.endReason = reason;
   if (reason === "health") g.lives = 0;
@@ -280,6 +299,7 @@ function spawn(g) {
   it.ttl = lerp(CHIP_TTL_START_MS, CHIP_TTL_END_MS, ramp) * jitter(CHIP_TTL_JITTER) * (SPAWN_TABLE[kind].life || 1) * (CHIP_FALL ? FALL_TIME_SCALE : 1);
   if (CHIP_FALL) it.vy = fallSpeed(g, it);
   g.items.push(it);
+  g.rev += 1;
 }
 
 function tick(g, real) {
@@ -287,14 +307,25 @@ function tick(g, real) {
   const dt = real * (g.slowLeft > 0 ? SLOW_FACTOR : 1);
   g.elapsed += dt;
   const now = g.elapsed;
-  g.fx = g.fx.filter((f) => now - f.born < (f.type === "particle" ? 700 : 900));
+  // compact both lists in place, so a busy board does not allocate every frame
+  let live = 0;
+  for (const f of g.fx) {
+    if (now - f.born < (f.type === "particle" ? 700 : 900)) g.fx[live++] = f;
+  }
+  g.fx.length = live;
 
-  const kept = [];
-  for (const it of g.items) {
+  const items = g.items;
+  const count = items.length;
+  let kept = 0;
+  for (let i = 0; i < count; i += 1) {
+    const it = items[i];
     if (it.hit) {
-      if (now - it.hitAt < HIT_MS) kept.push(it);
+      if (now - it.hitAt < HIT_MS) items[kept++] = it;
       continue;
     }
+    // where the chip was last frame, which may be what the player saw when they tapped
+    it.px = it.x;
+    it.py = it.y;
     if (it.vx) {
       it.x += (it.vx * dt) / 1000;
       const min = gutter(g);
@@ -317,9 +348,10 @@ function tick(g, real) {
       }
       continue;
     }
-    kept.push(it);
+    items[kept++] = it;
   }
-  g.items = kept;
+  items.length = kept;
+  if (kept !== count) g.rev += 1;
 
   g.nextSpawn -= dt * (g.boss ? BOSS_SPAWN_RATE : 1);
   if (g.nextSpawn <= 0) {
@@ -379,6 +411,7 @@ function hit(g, id) {
   if (g.status !== "running") return;
   const it = g.items.find((item) => item.id === id);
   if (!it || it.hit) return;
+  g.rev += 1;
   const now = g.elapsed;
   const [cx, cy] = center(it);
   const settle = (good) => {
@@ -465,6 +498,7 @@ function hit(g, id) {
 
 function hitBoss(g) {
   if (g.status !== "running" || !g.boss) return;
+  g.rev += 1;
   const now = g.elapsed;
   const feverMult = g.fever ? 2 : 1;
   const points = BOSS_HIT_POINTS * multFor(g.combo) * feverMult;
@@ -494,15 +528,17 @@ function hitBoss(g) {
 
 /* ---------- rendering ----------
    React only re-renders when the board's structure changes: a chip spawns, is hit or
-   expires, a number on screen changes, a banner appears. Everything that moves every
-   frame (chip motion and fading, countdown bars, the boss, particles and floating
-   points) is painted straight onto the DOM and a canvas by paint() below, the same way
-   Commit Snake draws its board. */
+   expires, a number on screen changes, a banner appears. Game code bumps g.rev for
+   those, so the frame loop can tell without rebuilding the view. Everything that moves
+   every frame (chip motion and fading, countdown bars, the boss, particles and floating
+   points) is painted straight onto the DOM and a canvas by paint() below, through
+   element references kept in a scene object, the same way Commit Snake draws its board. */
 
 function buildView(g) {
   const now = g.elapsed;
   const running = g.status === "running";
-  const openBugs = g.items.filter((it) => !it.hit && isBug(it)).length;
+  let openBugs = 0;
+  for (const it of g.items) if (!it.hit && isBug(it)) openBugs += 1;
   return {
     status: g.status,
     endReason: g.endReason,
@@ -526,26 +562,54 @@ function buildView(g) {
       icon: ICONS[it.kind] || "",
       hit: it.hit,
       good: it.good,
-      pips: it.kind === "big" ? Array.from({ length: it.maxHp }, (_, i) => i < it.hp) : null,
+      hp: it.hp,
+      maxHp: it.maxHp,
       top: it.y0,
       left: it.x0,
     })),
     boss: g.boss ? { done: g.boss.max - g.boss.hp, max: g.boss.max } : null,
     banner: running && g.banner && now - g.banner.born < 1400 ? { text: g.banner.text, sub: g.banner.sub, color: g.banner.color, born: g.banner.born } : null,
-    statusLine: !running ? "" : g.slowLeft > 0 ? `debugger attached · ${(g.slowLeft / 1000).toFixed(1)}s` : `${openBugs} open bug${openBugs === 1 ? "" : "s"}`,
+    statusLine: !running ? "" : g.slowLeft > 0 ? `debugger attached · ${(Math.ceil(g.slowLeft / 100) / 10).toFixed(1)}s` : `${openBugs} open bug${openBugs === 1 ? "" : "s"}`,
   };
 }
 
-const viewKey = (view) => JSON.stringify(view);
+// Changes whenever buildView would return something different: g.rev covers game
+// events, the rest covers what moves on with time (clock, speed bar, banner, debugger).
+function viewKey(g) {
+  const now = g.elapsed;
+  const banner = g.banner && now - g.banner.born < 1400 ? 1 : 0;
+  return `${g.rev}|${g.status}|${Math.floor(now / 1000)}|${Math.round(rampFor(now) * 100)}|${banner}|${Math.ceil(g.slowLeft / 100)}`;
+}
 
-function paint(board, canvas, g, reduced) {
-  if (!board) return;
+// DOM nodes paint() writes to, plus the last values written, so unchanged styles are skipped.
+function createScene() {
+  return { chips: new Map(), boss: null, flash: null, flashOpacity: -1, flashColor: "", banner: null, combo: null, comboScale: -1, canvas: null, ctx: null, fxDrawn: false, unmeasured: false };
+}
+
+// Layout sizes for hit testing, read once per new chip or boss right after React adds it.
+function measure(scene) {
+  scene.unmeasured = false;
+  for (const chip of scene.chips.values()) {
+    if (chip.w) continue;
+    chip.w = chip.el.offsetWidth;
+    chip.h = chip.el.offsetHeight;
+  }
+  const boss = scene.boss;
+  if (boss && !boss.box) {
+    // the boss is centred on its top/left with translate(-50%, -50%)
+    const { offsetLeft, offsetTop, offsetWidth, offsetHeight } = boss.el;
+    boss.box = { x: offsetLeft - offsetWidth / 2, y: offsetTop - offsetHeight / 2, w: offsetWidth, h: offsetHeight };
+  }
+}
+
+function paint(scene, g, reduced) {
+  if (scene.unmeasured) measure(scene);
   const now = g.elapsed;
   const fxNow = now + g.afterglow;
 
   for (const it of g.items) {
-    const el = board.querySelector(`[data-chip="${it.id}"]`);
-    if (!el) continue;
+    const chip = scene.chips.get(it.id);
+    if (!chip) continue;
     const age = now - it.born;
     let scale = reduced || CHIP_FALL ? 1 : Math.min(1, 0.5 + age / 240);
     let opacity = 1;
@@ -570,76 +634,159 @@ function paint(board, canvas, g, reduced) {
       }
       if (POWERS[it.kind] && !reduced) scale *= 1 + 0.05 * Math.sin(now / 120);
     }
-    el.style.transform = `translate3d(${(it.x - it.x0 + shift).toFixed(1)}px, ${(it.y - it.y0).toFixed(1)}px, 0) scale(${scale.toFixed(3)}) rotate(${rotate.toFixed(1)}deg)`;
-    el.style.opacity = opacity.toFixed(3);
-    const bar = el.querySelector(".bug-chip-ttl i");
-    if (bar) bar.style.transform = `scaleX(${it.hit ? 0 : Math.max(0, 1 - age / it.ttl).toFixed(4)})`;
+    const transform = `translate3d(${(it.x - it.x0 + shift).toFixed(1)}px, ${(it.y - it.y0).toFixed(1)}px, 0) scale(${scale.toFixed(3)}) rotate(${rotate.toFixed(1)}deg)`;
+    if (transform !== chip.transform) {
+      chip.transform = transform;
+      chip.el.style.transform = transform;
+    }
+    const alpha = Math.round(opacity * 100);
+    if (alpha !== chip.alpha) {
+      chip.alpha = alpha;
+      chip.el.style.opacity = alpha / 100;
+    }
+    // half-percent steps are invisible on a 2px bar and skip most writes
+    const bar = it.hit ? 0 : Math.round(Math.max(0, 1 - age / it.ttl) * 200);
+    if (bar !== chip.bar) {
+      chip.bar = bar;
+      chip.barEl.style.transform = `scaleX(${bar / 200})`;
+    }
   }
 
-  const boss = board.querySelector(".bug-boss");
+  const boss = scene.boss;
   if (boss && g.boss) {
     const since = now - g.boss.hitAt;
     const shake = since < 120 && !reduced ? Math.sin(since / 8) * 7 : 0;
     const grow = reduced ? 1 : Math.min(1, 0.3 + (now - g.boss.born) / 400);
-    boss.style.transform = `translate(calc(-50% + ${shake.toFixed(1)}px), -50%) scale(${grow.toFixed(3)})`;
-    const [progress, time] = boss.querySelectorAll(".bug-boss-bar i");
-    progress.style.transform = `scaleX(${(1 - g.boss.hp / g.boss.max).toFixed(4)})`;
-    time.style.transform = `scaleX(${Math.max(0, 1 - (now - g.boss.born) / BOSS_TTL_MS).toFixed(4)})`;
+    boss.el.style.transform = `translate(calc(-50% + ${shake.toFixed(1)}px), -50%) scale(${grow.toFixed(3)})`;
+    boss.progress.style.transform = `scaleX(${(1 - g.boss.hp / g.boss.max).toFixed(4)})`;
+    boss.time.style.transform = `scaleX(${Math.max(0, 1 - (now - g.boss.born) / BOSS_TTL_MS).toFixed(4)})`;
   }
 
-  const flashEl = board.querySelector(".bug-flash");
-  if (flashEl) {
+  if (scene.flash) {
     const age = g.flash ? (fxNow - g.flash.at) / 280 : 9;
-    flashEl.style.opacity = age < 1 ? (0.22 * (1 - age)).toFixed(3) : "0";
-    if (g.flash) flashEl.style.background = g.flash.color;
+    const opacity = age < 1 ? Math.round(22 * (1 - age)) / 100 : 0;
+    if (opacity !== scene.flashOpacity) {
+      scene.flashOpacity = opacity;
+      scene.flash.style.opacity = opacity;
+    }
+    if (g.flash && g.flash.color !== scene.flashColor) {
+      scene.flashColor = g.flash.color;
+      scene.flash.style.background = g.flash.color;
+    }
   }
 
-  const banner = board.querySelector(".bug-banner");
-  if (banner && g.banner) {
+  if (scene.banner && g.banner) {
     const age = (now - g.banner.born) / 1400;
-    banner.style.opacity = (age < 0.75 ? 1 : Math.max(0, 1 - (age - 0.75) / 0.25)).toFixed(3);
-    banner.style.transform = `scale(${(reduced || age >= 0.1 ? 1 : 0.7 + age * 3).toFixed(3)})`;
+    scene.banner.style.opacity = (age < 0.75 ? 1 : Math.max(0, 1 - (age - 0.75) / 0.25)).toFixed(3);
+    scene.banner.style.transform = `scale(${(reduced || age >= 0.1 ? 1 : 0.7 + age * 3).toFixed(3)})`;
   }
 
-  const combo = board.querySelector(".bug-combo strong");
-  if (combo) {
+  if (scene.combo) {
     const age = (now - g.comboAt) / 220;
-    combo.style.transform = `scale(${(age < 1 && !reduced ? 1 + 0.45 * (1 - age) : 1).toFixed(3)})`;
+    const scale = age < 1 && !reduced ? Math.round((1 + 0.45 * (1 - age)) * 1000) / 1000 : 1;
+    if (scale !== scene.comboScale) {
+      scene.comboScale = scale;
+      scene.combo.style.transform = `scale(${scale})`;
+    }
   }
 
   // particles and floating points
-  const ctx = canvas?.getContext("2d");
+  const { canvas, ctx } = scene;
   if (!ctx) return;
+  if (!g.fx.length) {
+    // nothing to draw: clear once, then leave the canvas alone
+    if (scene.fxDrawn) {
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      scene.fxDrawn = false;
+    }
+    return;
+  }
+  scene.fxDrawn = true;
   const dpr = canvas.width / Math.max(1, g.width);
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  ctx.textBaseline = "top";
-  for (const f of g.fx) {
-    const a = (fxNow - f.born) / 1000;
-    if (f.type === "particle") {
-      if (reduced) continue;
+  if (!reduced) {
+    for (const f of g.fx) {
+      if (f.type !== "particle") continue;
+      const a = (fxNow - f.born) / 1000;
       ctx.globalAlpha = Math.max(0, 1 - a / 0.7);
       ctx.fillStyle = f.color;
       ctx.fillRect(f.x + f.vx * a, f.y + f.vy * a + 500 * a * a, f.size, f.size);
-    } else {
-      const life = a / 0.9;
-      const pop = reduced ? 1 : life < 0.12 ? 0.6 + (life / 0.12) * 0.6 : 1.2 - Math.min(0.2, (life - 0.12) * 0.6);
-      const y = f.y - (reduced ? 0 : a * 50);
-      ctx.globalAlpha = Math.max(0, life < 0.6 ? 1 : 1 - (life - 0.6) / 0.4);
-      ctx.font = `800 ${f.size}px ${g.font}`;
-      const w = ctx.measureText(f.text).width;
-      ctx.save();
-      ctx.translate(f.x + w / 2, y + f.size / 2);
-      ctx.scale(pop, pop);
-      ctx.fillStyle = "#000";
-      ctx.fillText(f.text, -w / 2, -f.size / 2 + 2);
-      ctx.fillStyle = f.color;
-      ctx.fillText(f.text, -w / 2, -f.size / 2);
-      ctx.restore();
     }
   }
+  // floating points go on top, each scaled about its own centre
+  ctx.textBaseline = "top";
+  let font = "";
+  for (const f of g.fx) {
+    if (f.type !== "text") continue;
+    const a = (fxNow - f.born) / 1000;
+    const life = a / 0.9;
+    const pop = reduced ? 1 : life < 0.12 ? 0.6 + (life / 0.12) * 0.6 : 1.2 - Math.min(0.2, (life - 0.12) * 0.6);
+    const y = f.y - (reduced ? 0 : a * 50);
+    if (f.font !== font) {
+      font = f.font;
+      ctx.font = font;
+    }
+    f.w ||= ctx.measureText(f.text).width;
+    const s = pop * dpr;
+    ctx.globalAlpha = Math.max(0, life < 0.6 ? 1 : 1 - (life - 0.6) / 0.4);
+    ctx.setTransform(s, 0, 0, s, (f.x + f.w / 2) * dpr, (y + f.size / 2) * dpr);
+    if (!g.lite) {
+      ctx.fillStyle = "#000";
+      ctx.fillText(f.text, -f.w / 2, -f.size / 2 + 2);
+    }
+    ctx.fillStyle = f.color;
+    ctx.fillText(f.text, -f.w / 2, -f.size / 2);
+  }
   ctx.globalAlpha = 1;
+}
+
+/* ---------- hit testing ----------
+   Taps and slashes are matched against the game state instead of the DOM. That needs
+   no layout, ignores a chip the moment it is hit (before React marks it), and checks
+   where a chip was last frame too, which on a slow phone is often what was on screen. */
+
+// Distance from a point to a box, 0 inside it.
+function boxGap(x, y, bx, by, w, h) {
+  const dx = Math.max(bx - x, 0, x - bx - w);
+  const dy = Math.max(by - y, 0, y - by - h);
+  return Math.hypot(dx, dy);
+}
+
+// Chips worth hitting get some slack; hitting the rest by accident costs health or the run.
+const forgiving = (it) => isBug(it) || Boolean(POWERS[it.kind]);
+
+function targetAt(g, scene, x, y, slack) {
+  const items = g.items;
+  // a direct hit on the top-most chip wins
+  for (let i = items.length - 1; i >= 0; i -= 1) {
+    const it = items[i];
+    if (it.hit) continue;
+    const chip = scene.chips.get(it.id);
+    if (boxGap(x, y, it.x, it.y, chip?.w || chipWidth(it), chip?.h || chipHeight(it)) === 0) return it.id;
+  }
+  // then the nearest forgiving chip within reach, here or where it was last frame
+  let best = null;
+  let bestGap = slack;
+  for (let i = items.length - 1; i >= 0; i -= 1) {
+    const it = items[i];
+    if (it.hit || !forgiving(it)) continue;
+    const chip = scene.chips.get(it.id);
+    const w = chip?.w || chipWidth(it);
+    const h = chip?.h || chipHeight(it);
+    let gap = boxGap(x, y, it.x, it.y, w, h);
+    if (it.px !== undefined) gap = Math.min(gap, boxGap(x, y, it.px, it.py, w, h));
+    if (gap <= bestGap) {
+      best = it.id;
+      bestGap = gap;
+    }
+  }
+  if (best !== null) return best;
+  const box = g.boss && scene.boss?.box;
+  if (box && boxGap(x, y, box.x, box.y, box.w, box.h) === 0) return "boss";
+  return null;
 }
 
 /* ---------- sound ---------- */
@@ -835,11 +982,32 @@ const Scorecard = memo(function Scorecard({ status, fever, score, lives, best, t
   );
 });
 
+// One chip on the board. Memoised, so a spawn or a hit re-renders only the chips it changes.
+const Chip = memo(function Chip({ id, tone, kind, label, icon, hit, good, hp, maxHp, top, left, tabbable, register, onKeyStrike }) {
+  return (
+    <button
+      ref={register}
+      type="button"
+      data-chip={id}
+      className={`bug-chip bug-tone-${tone} is-${kind}${hit ? " is-hit" : ""}${hit && !good ? " is-miss" : ""}`}
+      style={{ top, left }}
+      onClick={onKeyStrike}
+      tabIndex={tabbable ? 0 : -1}
+    >
+      <span className="bug-chip-body">
+        {icon && <b aria-hidden="true">{icon}</b>}
+        <span>{label}</span>
+        {kind === "big" && Array.from({ length: maxHp }, (_, i) => <i key={i} className={`bug-pip${i < hp ? " on" : ""}`} aria-hidden="true" />)}
+      </span>
+      <span className="bug-chip-ttl" aria-hidden="true"><i /></span>
+    </button>
+  );
+});
+
 /* ---------- component ---------- */
 
 export default function BugBash() {
   const boardRef = useRef(null);
-  const fxRef = useRef(null);
   const lastViewKey = useRef("");
   const gameRef = useRef(createGame());
   const soundRef = useRef(null);
@@ -847,12 +1015,16 @@ export default function BugBash() {
   const mutedRef = useRef(false);
   const reducedMotion = useRef(false);
   const pointer = useRef(null);
+  const liteRef = useRef(false);
+  const sceneRef = useRef(createScene());
+  const autoLite = useRef(true); // watch frame times until lite mode is on, or ?quality=full turns it off
 
   const [view, setView] = useState(() => buildView(createGame()));
   const [best, setBest] = useState(0);
   const [muted, setMuted] = useState(false);
   const [newBest, setNewBest] = useState(false);
   const [announcement, setAnnouncement] = useState("");
+  const [lite, setLite] = useState(false);
 
   const save = useCallback(() => {
     try {
@@ -862,11 +1034,16 @@ export default function BugBash() {
     }
   }, []);
 
-  // Flush queued sounds and announcements, record a finished run, then re-render from the game state.
-  const sync = useCallback(() => {
+  const playSounds = useCallback(() => {
     const g = gameRef.current;
     for (const [kind, n] of g.sounds) soundRef.current?.play(kind, n);
-    g.sounds = [];
+    g.sounds.length = 0;
+  }, []);
+
+  // Flush queued sounds and announcements, record a finished run, then re-render if anything shown changed.
+  const sync = useCallback(() => {
+    const g = gameRef.current;
+    if (g.sounds.length) playSounds();
     if (g.announce) {
       setAnnouncement(g.announce);
       g.announce = "";
@@ -881,59 +1058,142 @@ export default function BugBash() {
       }
       setNewBest(isNew);
     }
-    const next = buildView(g);
-    const key = viewKey(next);
+    const key = viewKey(g);
     if (key !== lastViewKey.current) {
       lastViewKey.current = key;
-      setView(next);
+      setView(buildView(g));
     }
-  }, [save]);
+  }, [playSounds, save]);
 
   const paintNow = useCallback(() => {
-    paint(boardRef.current, fxRef.current, gameRef.current, reducedMotion.current);
+    paint(sceneRef.current, gameRef.current, reducedMotion.current);
   }, []);
 
   // New chips, banners and the boss get their first frame before the browser paints them.
   useLayoutEffect(paintNow, [view, paintNow]);
 
+  // The effects canvas matches the board, at up to 2x pixel density (1x in lite mode).
+  const fitCanvas = useCallback(() => {
+    const scene = sceneRef.current;
+    const { canvas } = scene;
+    if (!canvas) return;
+    const g = gameRef.current;
+    const dpr = liteRef.current ? 1 : Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(g.width * dpr);
+    canvas.height = Math.round(g.height * dpr);
+    scene.fxDrawn = false; // resizing cleared it
+  }, []);
+
+  // Lite mode: no glows, fewer particles, a 1x effects canvas. Once on, it stays on until the page reloads.
+  const goLite = useCallback(() => {
+    if (liteRef.current) return;
+    liteRef.current = true;
+    autoLite.current = false;
+    gameRef.current.lite = true;
+    setLite(true);
+    fitCanvas();
+  }, [fitCanvas]);
+
+  /* ---------- DOM references for paint() ---------- */
+  const registerChip = useCallback((el) => {
+    const scene = sceneRef.current;
+    const id = Number(el.dataset.chip);
+    scene.chips.set(id, { el, barEl: el.lastChild.firstChild, transform: "", alpha: 100, bar: -1, w: 0, h: 0 });
+    scene.unmeasured = true;
+    return () => {
+      scene.chips.delete(id);
+    };
+  }, []);
+
+  const refBoss = useCallback((el) => {
+    const scene = sceneRef.current;
+    if (!el) {
+      scene.boss = null;
+      return;
+    }
+    const [progress, time] = el.querySelectorAll(".bug-boss-bar i");
+    scene.boss = { el, progress, time, box: null };
+    scene.unmeasured = true;
+  }, []);
+
+  const refFlash = useCallback((el) => {
+    const scene = sceneRef.current;
+    scene.flash = el;
+    scene.flashOpacity = -1;
+    scene.flashColor = "";
+  }, []);
+
+  const refBanner = useCallback((el) => {
+    sceneRef.current.banner = el;
+  }, []);
+
+  const refCombo = useCallback((el) => {
+    const scene = sceneRef.current;
+    scene.combo = el;
+    scene.comboScale = -1;
+  }, []);
+
+  const refCanvas = useCallback((el) => {
+    const scene = sceneRef.current;
+    scene.canvas = el;
+    scene.ctx = el ? el.getContext("2d") : null;
+  }, []);
+
   /* ---------- game loop ---------- */
   useEffect(() => {
     let raf;
     let last = performance.now();
+    // Low-end check: share of slow frames over a window of live play. A few additions per frame.
+    let slowTime = 0;
+    let slowFrames = 0;
+    let frames = 0;
     const frame = (now) => {
       const g = gameRef.current;
       const dt = Math.min(now - last, 100);
       last = now;
+      let animating = false;
       if (g.status === "running") {
         tick(g, dt);
-        sync();
-        paintNow();
+        animating = true;
+        if (autoLite.current) {
+          slowTime += dt;
+          frames += 1;
+          if (dt > SLOW_FRAME_MS) slowFrames += 1;
+          if (slowTime >= SLOW_WINDOW_MS) {
+            if (slowFrames > frames * SLOW_SHARE) goLite();
+            slowTime = 0;
+            slowFrames = 0;
+            frames = 0;
+          }
+        }
       } else if (g.status === "lost" && g.afterglow < 900) {
         g.afterglow += dt;
-        paintNow();
+        animating = true;
       }
+      sync();
+      if (animating) paintNow();
       raf = requestAnimationFrame(frame);
     };
     raf = requestAnimationFrame(frame);
     return () => cancelAnimationFrame(raf);
-  }, [paintNow, sync]);
+  }, [goLite, paintNow, sync]);
 
-  /* ---------- board size, sound, saved state, motion pref, tab visibility ---------- */
+  /* ---------- board size, sound, saved state, quality, motion pref, tab visibility ---------- */
   useEffect(() => {
     const board = boardRef.current;
     if (!board) return undefined;
     const resize = () => {
       const g = gameRef.current;
+      const scene = sceneRef.current;
       g.width = board.clientWidth;
       g.height = board.clientHeight;
       g.font = getComputedStyle(board).fontFamily;
       for (const it of g.items) it.x = Math.max(gutter(g), Math.min(it.x, g.width - chipWidth(it) - 14));
-      const canvas = fxRef.current;
-      if (canvas) {
-        const dpr = Math.min(window.devicePixelRatio || 1, 2);
-        canvas.width = Math.round(g.width * dpr);
-        canvas.height = Math.round(g.height * dpr);
+      if (scene.boss) {
+        scene.boss.box = null;
+        scene.unmeasured = true;
       }
+      fitCanvas();
       paintNow();
     };
     resize();
@@ -971,6 +1231,10 @@ export default function BugBash() {
       } catch {
         /* ignore */
       }
+      // ?quality=lite or full pins the mode for testing. Phones reporting 2 GB or less start in lite.
+      const quality = new URLSearchParams(window.location.search).get("quality");
+      if (quality === "full") autoLite.current = false;
+      else if (quality === "lite" || (navigator.deviceMemory && navigator.deviceMemory <= 2)) goLite();
     }, 0);
 
     return () => {
@@ -980,26 +1244,40 @@ export default function BugBash() {
       document.removeEventListener("visibilitychange", onHidden);
       window.clearTimeout(timer);
     };
-  }, [paintNow, sync]);
+  }, [fitCanvas, goLite, paintNow, sync]);
+
+  // The site's animated galaxy background pauses while a run is live (see GalaxyBackground).
+  const live = view.status === "running";
+  useEffect(() => {
+    if (!live) return undefined;
+    window.dispatchEvent(new CustomEvent("gcc:pause-background", { detail: true }));
+    return () => window.dispatchEvent(new CustomEvent("gcc:pause-background", { detail: false }));
+  }, [live]);
 
   /* ---------- actions ---------- */
+  // A fresh game keeps counting chip ids, so a new chip never reuses an old chip's DOM node.
+  const freshGame = useCallback(() => {
+    const { width, height, font, uid } = gameRef.current;
+    const g = createGame(width, height, font, liteRef.current);
+    g.uid = uid;
+    gameRef.current = g;
+    return g;
+  }, []);
+
   const begin = useCallback(() => {
-    const { width, height, font } = gameRef.current;
-    gameRef.current = createGame(width, height, font);
-    gameRef.current.status = "running";
+    freshGame().status = "running";
     soundRef.current?.unlock();
     setNewBest(false);
     setAnnouncement("");
     sync();
-  }, [sync]);
+  }, [freshGame, sync]);
 
   const reset = useCallback(() => {
-    const { width, height, font } = gameRef.current;
-    gameRef.current = createGame(width, height, font);
+    freshGame();
     setNewBest(false);
     setAnnouncement("");
     sync();
-  }, [sync]);
+  }, [freshGame, sync]);
 
   const toggle = useCallback(() => {
     const g = gameRef.current;
@@ -1020,13 +1298,19 @@ export default function BugBash() {
     save();
   }, [save]);
 
-  const strike = useCallback((el) => {
+  // Hits only change the game state and play their sound right away; the frame loop renders and paints the result.
+  const strike = useCallback((target) => {
     const g = gameRef.current;
-    if (el.dataset.boss !== undefined) hitBoss(g);
-    else hit(g, Number(el.dataset.chip));
-    sync();
-    paintNow();
-  }, [paintNow, sync]);
+    if (target === "boss") hitBoss(g);
+    else hit(g, target);
+    playSounds();
+  }, [playSounds]);
+
+  // Keyboard users can Tab to a chip and press Enter. Pointer clicks are already handled on pointerdown.
+  const onKeyStrike = useCallback((e) => {
+    const el = e.currentTarget;
+    if (e.detail === 0) strike(el.dataset.boss !== undefined ? "boss" : Number(el.dataset.chip));
+  }, [strike]);
 
   /* ---------- keyboard ---------- */
   useEffect(() => {
@@ -1051,30 +1335,37 @@ export default function BugBash() {
   }, [reset, toggle, toggleMute]);
 
   /* ---------- pointer: click, tap, or hold and drag to slash ---------- */
-  const targetAt = (x, y) => document.elementFromPoint(x, y)?.closest?.("[data-chip], [data-boss]") ?? null;
-
   const onPointerDown = (e) => {
-    if (gameRef.current.status !== "running" || e.button > 0) return;
+    const g = gameRef.current;
+    if (g.status !== "running" || e.button > 0) return;
     e.preventDefault();
-    e.currentTarget.setPointerCapture?.(e.pointerId);
+    const board = e.currentTarget;
+    board.setPointerCapture?.(e.pointerId);
     soundRef.current?.unlock();
-    const target = targetAt(e.clientX, e.clientY);
-    pointer.current = { id: e.pointerId, x: e.clientX, y: e.clientY, target };
-    if (target) strike(target);
+    // board origin, read once per press and reused for the whole slash
+    const rect = board.getBoundingClientRect();
+    const ox = rect.left + board.clientLeft;
+    const oy = rect.top + board.clientTop;
+    const slack = e.pointerType === "mouse" ? MOUSE_SLACK : TOUCH_SLACK;
+    const target = targetAt(g, sceneRef.current, e.clientX - ox, e.clientY - oy, slack);
+    pointer.current = { id: e.pointerId, x: e.clientX, y: e.clientY, ox, oy, slack, target };
+    if (target !== null) strike(target);
   };
 
   const onPointerMove = (e) => {
     const p = pointer.current;
     if (!p || p.id !== e.pointerId) return;
+    const g = gameRef.current;
+    const scene = sceneRef.current;
     // sample the path so a fast slash cannot skip over a chip
     const dx = e.clientX - p.x;
     const dy = e.clientY - p.y;
     const steps = Math.max(1, Math.ceil(Math.hypot(dx, dy) / 12));
     for (let i = 1; i <= steps; i += 1) {
-      const target = targetAt(p.x + (dx * i) / steps, p.y + (dy * i) / steps);
+      const target = targetAt(g, scene, p.x + (dx * i) / steps - p.ox, p.y + (dy * i) / steps - p.oy, p.slack);
       if (target !== p.target) {
         p.target = target;
-        if (target) strike(target);
+        if (target !== null) strike(target);
       }
     }
     p.x = e.clientX;
@@ -1083,11 +1374,6 @@ export default function BugBash() {
 
   const onPointerEnd = () => {
     pointer.current = null;
-  };
-
-  // Keyboard users can Tab to a chip and press Enter. Pointer clicks are already handled on pointerdown.
-  const onKeyStrike = (e) => {
-    if (e.detail === 0) strike(e.currentTarget);
   };
 
   /* ---------- render ---------- */
@@ -1145,7 +1431,7 @@ export default function BugBash() {
 
           <div
             ref={boardRef}
-            className={`bug-board is-${status}${running && view.fever ? " is-fever" : ""}${running && view.slow ? " is-slow" : ""}`}
+            className={`bug-board is-${status}${running && view.fever ? " is-fever" : ""}${running && view.slow ? " is-slow" : ""}${lite ? " is-lite" : ""}`}
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
             onPointerUp={onPointerEnd}
@@ -1154,10 +1440,11 @@ export default function BugBash() {
           >
             {CODE_BACKDROP}
             <div className="bug-tint" aria-hidden="true" />
-            <div className="bug-flash" aria-hidden="true" />
+            <div ref={refFlash} className="bug-flash" aria-hidden="true" />
 
             {boss && (
               <button
+                ref={refBoss}
                 type="button"
                 className="bug-boss"
                 data-boss=""
@@ -1175,28 +1462,13 @@ export default function BugBash() {
             )}
 
             {view.items.map((chip) => (
-              <button
-                key={chip.id}
-                type="button"
-                data-chip={chip.id}
-                className={`bug-chip bug-tone-${chip.tone} is-${chip.kind}${chip.hit ? " is-hit" : ""}${chip.hit && !chip.good ? " is-miss" : ""}`}
-                style={{ top: chip.top, left: chip.left }}
-                onClick={onKeyStrike}
-                tabIndex={running && !chip.hit ? 0 : -1}
-              >
-                <span className="bug-chip-body">
-                  {chip.icon && <b aria-hidden="true">{chip.icon}</b>}
-                  <span>{chip.label}</span>
-                  {chip.pips?.map((on, i) => <i key={i} className={`bug-pip${on ? " on" : ""}`} aria-hidden="true" />)}
-                </span>
-                <span className="bug-chip-ttl" aria-hidden="true"><i /></span>
-              </button>
+              <Chip key={chip.id} {...chip} tabbable={running && !chip.hit} register={registerChip} onKeyStrike={onKeyStrike} />
             ))}
 
-            <canvas ref={fxRef} className="bug-fx" aria-hidden="true" />
+            <canvas ref={refCanvas} className="bug-fx" aria-hidden="true" />
 
             {banner && (
-              <div key={banner.born} className="bug-banner" aria-hidden="true" style={{ "--banner": banner.color }}>
+              <div ref={refBanner} key={banner.born} className="bug-banner" aria-hidden="true" style={{ "--banner": banner.color }}>
                 <strong>{banner.text}</strong>
                 <span>{banner.sub}</span>
               </div>
@@ -1205,7 +1477,7 @@ export default function BugBash() {
             {running && view.combo > 1 && (
               <div className={`bug-combo${view.fever ? " is-fever" : ""}`} aria-hidden="true">
                 <small>{view.fever ? "FEVER" : "COMBO"}</small>
-                <strong>×{view.mult}</strong>
+                <strong ref={refCombo}>×{view.mult}</strong>
                 <span>{view.combo} in a row</span>
               </div>
             )}
