@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 // Default avatar shown until a real photo is added.
 function DefaultAvatar() {
@@ -21,11 +21,21 @@ function splitDept(fullName) {
 
 // span (not div): it sits inside a <button>, where only phrasing content is valid HTML
 function Photo({ member }) {
+  const [failed, setFailed] = useState(false);
+
   return (
     <span className="member-photo">
-      {member.photo ? (
+      {member.photo && !failed ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={member.photo} alt="" loading="lazy" />
+        <img
+          src={member.photo}
+          alt={member.name}
+          width="128"
+          height="128"
+          loading="eager"
+          decoding="async"
+          onError={() => setFailed(true)}
+        />
       ) : (
         <DefaultAvatar />
       )}

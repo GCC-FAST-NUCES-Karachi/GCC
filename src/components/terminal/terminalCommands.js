@@ -378,8 +378,6 @@ function cmdCat(args, state) {
 // git unlock <w1> <w2> <w3>   (invisible until all clues are found)
 // ---------------------------------------------------------------------------
 function cmdUnlock(args, state) {
-  if (!allCluesFound(state)) return unknownGit("unlock");
-
   if (state.secretUnlocked) {
     return {
       output: [
@@ -394,16 +392,6 @@ function cmdUnlock(args, state) {
     .toLowerCase()
     .split(/[^a-z]+/)
     .filter(Boolean);
-  if (words.length === 0) {
-    return {
-      output: [
-        error("Usage: git unlock <word1> <word2> <word3>"),
-        info(
-          "Use the three key words from the commit history, in the order you found them.",
-        ),
-      ],
-    };
-  }
 
   if (words.join(" ") === KEY_WORDS.join(" ")) {
     return {
@@ -414,6 +402,19 @@ function cmdUnlock(args, state) {
         suggestion("Enter: git checkout secret", "git checkout secret"),
       ],
       stateUpdates: { secretUnlocked: true },
+    };
+  }
+
+  if (!allCluesFound(state)) return unknownGit("unlock");
+
+  if (words.length === 0) {
+    return {
+      output: [
+        error("Usage: git unlock <word1> <word2> <word3>"),
+        info(
+          "Use the three key words from the commit history, in the order you found them.",
+        ),
+      ],
     };
   }
 

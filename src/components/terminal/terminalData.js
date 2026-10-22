@@ -21,26 +21,6 @@
 import { buildBranchFiles } from "./branchFiles.js";
 
 // ---------------------------------------------------------------------------
-// ASCII helpers
-// ---------------------------------------------------------------------------
-const BOX_INNER = 34; // total box width = 36 chars, fits a 320px phone when scaled
-
-function boxed(lines, inner = BOX_INNER) {
-  const pad = (s) => {
-    const str = s.length > inner ? s.slice(0, inner) : s;
-    const total = inner - str.length;
-    const left = Math.floor(total / 2);
-    return " ".repeat(left) + str + " ".repeat(total - left);
-  };
-  return [
-    "╔" + "═".repeat(inner) + "╗",
-    ...lines.map((l) => "║" + pad(l) + "║"),
-    "╚" + "═".repeat(inner) + "╝",
-  ].join("\n");
-}
-
-
-// ---------------------------------------------------------------------------
 // Commit history (stable — no random hashes)
 // ---------------------------------------------------------------------------
 export const COMMIT_LOG = [
@@ -152,16 +132,13 @@ export const BRANCH_FILES = buildBranchFiles(KEY_SENTINEL);
 // ---------------------------------------------------------------------------
 // Unlock banner + final challenge
 // ---------------------------------------------------------------------------
-export const UNLOCK_BANNER = boxed([
-  "",
-  "SECRET BRANCH UNLOCKED",
-  "",
-  "A new branch has appeared.",
-  "",
-]);
+export const UNLOCK_BANNER = `★  SECRET BRANCH UNLOCKED  ★
+
+A new branch has appeared in your repository.
+Run \`git checkout secret\` to explore.`;
 
 export const CHALLENGE = {
-    question: `## The Final Commit
+  question: `## The Final Commit
 
 Every project begins with one command that creates a repository from nothing.
 What is it?
@@ -170,23 +147,17 @@ Answer with: \`git challenge <your answer>\``,
 
   answers: ["git init", "init"],
 
-  rewardArt: boxed([
-    "",
-    "★  EXPLORER BADGE UNLOCKED  ★",
-    "",
-    "[ G C C · F A S T ]",
-    "──────────────────────────",
-    "",
-    "SECRET BRANCH EXPLORER",
-    "GitHub Campus Club",
-    "FAST-NUCES",
-    "",
-    "Status: VERIFIED",
-    "Commit: easter-bug → main",
-    "",
-    "a virtual badge, just for fun",
-    "",
-  ]),
+  rewardArt: `★  EXPLORER BADGE UNLOCKED  ★
+
+[ GCC · FAST-NUCES ]
+
+SECRET BRANCH EXPLORER
+GitHub Campus Club
+
+Status: VERIFIED
+Commit: easter-bug → main
+
+a virtual badge, just for fun`,
 };
 
 // ---------------------------------------------------------------------------
