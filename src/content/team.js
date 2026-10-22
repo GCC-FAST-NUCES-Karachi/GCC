@@ -12,20 +12,20 @@ export const tiers = [
 
 export const teamMembers = [
   // Faculty
-  { slug: "faculty-head", tier: 0, name: "Sir Jahanzaib", role: "Faculty Head", photo: "/images/Team/faculty_head(1).png" },
-  { slug: "faculty-co-head", tier: 0, name: "Sir Atif Luqman", role: "Faculty Co-Head", photo: "/images/Team/faculty_cohead(1).png" },
+  { slug: "faculty-head", tier: 0, name: "Sir Jahanzaib", role: "Faculty Head", photo: "/images/Team/faculty_head(1).webp" },
+  { slug: "faculty-co-head", tier: 0, name: "Sir Atif Luqman", role: "Faculty Co-Head", photo: "/images/Team/faculty_cohead(1).webp" },
 
   // ExCom: leadership. President and VP lead on mobile and sit centrally on desktop.
-  { slug: "president", tier: 1, name: "Fizza Batool (CS)", id: "24K-0587", role: "President", photo: "/images/Team/fizza_batool(1).png" },
-  { slug: "vice-president", tier: 1, name: "Aazan Noor Khuwaja (CS)", id: "24P-0706", role: "Vice President", photo: "/images/Team/aazan-noor-khuwaja.png" },
+  { slug: "president", tier: 1, name: "Fizza Batool (CS)", id: "24K-0587", role: "President", photo: "/images/Team/fizza_batool(1).webp" },
+  { slug: "vice-president", tier: 1, name: "Aazan Noor Khuwaja (CS)", id: "24P-0706", role: "Vice President", photo: "/images/Team/aazan-noor-khuwaja.webp" },
   // ExCom: management.
-  { slug: "general-secretary", tier: 2, name: "Syeda Samana Zehra Rizvi (CS)", id: "24K-0710", role: "General Secretary", photo: "/images/Team/Samana(1).png" },
-  { slug: "treasurer", tier: 2, name: "Talha Yousuf (DS)", id: "25K-2533", role: "Treasurer", photo: "/images/Team/Talha_Yousuf(2).png" },
-  { slug: "sop-compliance-head", tier: 2, name: "Syeda Maha Fatima (CS)", id: "24K-0624", role: "SOP Compliance Head", photo: "/images/Team/syeda_maha_fatima.png" },
+  { slug: "general-secretary", tier: 2, name: "Syeda Samana Zehra Rizvi (CS)", id: "24K-0710", role: "General Secretary", photo: "/images/Team/Samana(1).webp" },
+  { slug: "treasurer", tier: 2, name: "Talha Yousuf (DS)", id: "25K-2533", role: "Treasurer", photo: "/images/Team/Talha_Yousuf(2).webp" },
+  { slug: "sop-compliance-head", tier: 2, name: "Syeda Maha Fatima (CS)", id: "24K-0624", role: "SOP Compliance Head", photo: "/images/Team/syeda_maha_fatima.webp" },
 
   // ExCom: department heads
-  { slug: "technical-head", tier: 3, name: "Hunza Shahzadi (DS)", id: "25K-2536", role: "Technical Head", photo: "/images/Team/hunza.png" },
-  { slug: "event-manager", tier: 3, name: "Aryaan Taimur Saeed (DS)", id: "25K-2540", role: "Event Manager", photo: "/images/Team/Aryaan_Taimur(1).png" },
-  { slug: "media-promotions-head", tier: 3, name: "Isbah Rani Abbasi (CS)", id: "24K-0698", role: "Media & Promotions Head", photo: "/images/Team/isbah_rani_abbasi(1).png" },
-  { slug: "guest-relations-head", tier: 3, name: "Mahrukh Siddiqui (AI)", id: "25K-0147", role: "Guest Relations Head", photo: "/images/Team/Mahrukh.png" },
+  { slug: "technical-head", tier: 3, name: "Hunza Shahzadi (DS)", id: "25K-2536", role: "Technical Head", photo: "/images/Team/hunza.webp" },
+  { slug: "event-manager", tier: 3, name: "Aryaan Taimur Saeed (DS)", id: "25K-2540", role: "Event Manager", photo: "/images/Team/Aryaan_Taimur(1).webp" },
+  { slug: "media-promotions-head", tier: 3, name: "Isbah Rani Abbasi (CS)", id: "24K-0698", role: "Media & Promotions Head", photo: "/images/Team/isbah_rani_abbasi(1).webp" },
+  { slug: "guest-relations-head", tier: 3, name: "Mahrukh Siddiqui (AI)", id: "25K-0147", role: "Guest Relations Head", photo: "/images/Team/Mahrukh.webp" },
 ];
