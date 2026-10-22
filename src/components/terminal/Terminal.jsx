@@ -8,12 +8,14 @@
  * - Mobile: follows the visual viewport so the on-screen keyboard never hides the input.
  * - Output is rendered from structured entries; file text is parsed into safe React
  *   nodes (no dangerouslySetInnerHTML anywhere).
+ * - Autocomplete: inline "ghost" text while typing. Tab (or Right Arrow at the end
+ *   of the input) accepts it. On touch devices a suggestion chip above the input
+ *   accepts it with one tap.
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
 import { useTerminal } from "./TerminalProvider.jsx";
 import {
   getCompletions,
@@ -281,8 +283,6 @@ function TutorialBlock({ entry, isLatest, onSuggestionClick, onSkip }) {
 // Terminal
 // ---------------------------------------------------------------------------
 export default function Terminal() {
-  const pathname = usePathname();
-  const router = useRouter();
   const {
     isOpen,
     isClosing,
@@ -295,8 +295,6 @@ export default function Terminal() {
   } = useTerminal();
 
   const [input, setInput] = useState("");
-  const [completions, setCompletions] = useState([]);
-  const [activeCompletion, setActiveCompletion] = useState(-1);
   const [fx, setFx] = useState(null);
   const [mounted, setMounted] = useState(false);
   const [engaged, setEngaged] = useState(false);
@@ -310,14 +308,32 @@ export default function Terminal() {
 
   useEffect(() => setMounted(true), []);
 
-  const handleClose = useCallback(() => {
-    closeTerminal();
-    if (pathname === "/terminal") router.push("/");
-  }, [closeTerminal, pathname, router]);
+  // Closing only closes. On the /terminal route, TerminalPage notices the
+  // terminal closed and navigates home once (single navigation path).
+  const handleClose = useCallback(() => closeTerminal(), [closeTerminal]);
   const handleNavigate = useCallback(
-    () => closeTerminal({ restoreScroll: false }),
+    () => closeTerminal({ restoreScroll: false, navigating: true }),
     [closeTerminal],
   );
+
+  // ---- Inline (ghost) autocomplete ---------------------------------------
+  // The rest of the first matching completion, e.g. input "git che" -> "ckout ".
+  const ghost = useMemo(() => {
+    const typed = input.replace(/^\s+/, "");
+    if (!typed) return "";
+    const lower = typed.toLowerCase();
+    const match = getCompletions(input, state).find(
+      (c) => c.length > typed.length && c.toLowerCase().startsWith(lower),
+    );
+    return match ? match.slice(typed.length) : "";
+  }, [input, state]);
+
+  const acceptGhost = useCallback(() => {
+    if (!ghost) return;
+    setInput((prev) => prev + ghost);
+    setEngaged(true);
+    inputRef.current?.focus();
+  }, [ghost]);
 
   // History navigation -> input value (Down past the end clears the input)
   useEffect(() => {
@@ -407,7 +423,7 @@ export default function Terminal() {
     };
   }, [isOpen, mounted]);
 
-  // Escape closes (unless the autocomplete list consumed it)
+  // Escape closes
   useEffect(() => {
     if (!isOpen) return;
     const onKey = (e) => {
@@ -425,7 +441,7 @@ export default function Terminal() {
     if (e.key !== "Tab" || e.defaultPrevented || !overlayRef.current) return;
     const focusables = Array.from(
       overlayRef.current.querySelectorAll(
-        'button:not([disabled]), input, a[href], [tabindex]:not([tabindex="-1"])',
+        'button:not([disabled]):not([tabindex="-1"]), input, a[href], [tabindex]:not([tabindex="-1"])',
       ),
     ).filter((n) => n.offsetParent !== null || n === document.activeElement);
     if (focusables.length === 0) return;
@@ -445,8 +461,6 @@ export default function Terminal() {
   // ---- Input handling -----------------------------------------------------
   const handleSuggestionClick = useCallback((command) => {
     setEngaged(true);
-    setCompletions([]);
-    setActiveCompletion(-1);
     // Complete suggestions are actions: run them with one tap. Keep templates
     // in the input so the visitor can fill in the missing value.
     if (!command.endsWith(" ") && !command.includes("<")) {
@@ -463,88 +477,53 @@ export default function Terminal() {
     if (!trimmed) return;
     runCommand(trimmed);
     setInput("");
-    setCompletions([]);
-    setActiveCompletion(-1);
   }, [input, runCommand]);
 
   const handleInputKeyDown = useCallback(
     (e) => {
       if (e.key.length === 1 || e.key === "Backspace") setEngaged(true);
+
       if (e.key === "Enter") {
         e.preventDefault();
-        if (completions.length > 0 && activeCompletion >= 0) {
-          setInput(completions[activeCompletion]);
-          setCompletions([]);
-          setActiveCompletion(-1);
-        } else {
-          handleSubmit();
-        }
+        handleSubmit(); // runs exactly what was typed, never the ghost
         return;
       }
 
       if (e.key === "ArrowUp") {
         e.preventDefault();
-        if (completions.length > 0) {
-          setActiveCompletion((p) => (p <= 0 ? completions.length - 1 : p - 1));
-        } else {
-          navigateHistory("up");
-        }
+        navigateHistory("up");
         return;
       }
 
       if (e.key === "ArrowDown") {
         e.preventDefault();
-        if (completions.length > 0) {
-          setActiveCompletion((p) =>
-            p >= completions.length - 1 ? -1 : p + 1,
-          );
-        } else {
-          navigateHistory("down");
-        }
+        navigateHistory("down");
         return;
       }
 
-      if (e.key === "Tab" && !e.shiftKey) {
-        const results = getCompletions(input, state);
-        if (results.length === 0) return; // nothing to complete: let focus move (trap handles wrap)
+      // Tab accepts the ghost text; with nothing to complete it behaves normally.
+      if (e.key === "Tab" && !e.shiftKey && ghost) {
         e.preventDefault();
-        if (results.length === 1) {
-          setInput(results[0]);
-          setCompletions([]);
-        } else {
-          setCompletions(results);
-          setActiveCompletion(0);
-        }
+        acceptGhost();
         return;
       }
 
-      if (e.key === "Escape" && completions.length > 0) {
-        e.preventDefault(); // tells the document handler not to close
-        setCompletions([]);
-        setActiveCompletion(-1);
+      // Right Arrow at the very end of the input accepts it too (like fish/zsh).
+      if (
+        e.key === "ArrowRight" &&
+        ghost &&
+        e.currentTarget.selectionStart === input.length &&
+        e.currentTarget.selectionEnd === input.length
+      ) {
+        e.preventDefault();
+        acceptGhost();
       }
     },
-    [
-      completions,
-      activeCompletion,
-      handleSubmit,
-      navigateHistory,
-      input,
-      state,
-    ],
+    [handleSubmit, navigateHistory, ghost, acceptGhost, input],
   );
 
   const handleInputChange = useCallback((e) => {
     setInput(e.target.value);
-    setCompletions([]);
-    setActiveCompletion(-1);
-  }, []);
-
-  const handleCompletionClick = useCallback((item) => {
-    setInput(item);
-    setCompletions([]);
-    setActiveCompletion(-1);
-    inputRef.current?.focus();
   }, []);
 
   const handleBackdropClick = useCallback(
@@ -570,6 +549,8 @@ export default function Terminal() {
     if (e.type === "tutorial") lastTutorial = i;
   });
 
+  const fullCompletion = (input.replace(/^\s+/, "") + ghost).trimEnd();
+
   return createPortal(
     <div
       ref={overlayRef}
@@ -591,21 +572,11 @@ export default function Terminal() {
 
         {/* Title bar */}
         <div className="terminal-titlebar">
-          <div className="terminal-dots">
-            <button
-              type="button"
-              className="terminal-dot terminal-dot--red"
-              onClick={handleClose}
-              aria-label="Close terminal"
-            />
-            <span
-              className="terminal-dot terminal-dot--yellow"
-              aria-hidden="true"
-            />
-            <span
-              className="terminal-dot terminal-dot--green"
-              aria-hidden="true"
-            />
+          {/* Decorative only. "go back" (and Escape) are the real close controls. */}
+          <div className="terminal-dots" aria-hidden="true">
+            <span className="terminal-dot terminal-dot--red" />
+            <span className="terminal-dot terminal-dot--yellow" />
+            <span className="terminal-dot terminal-dot--green" />
           </div>
 
           <div className="terminal-title">
@@ -671,6 +642,29 @@ export default function Terminal() {
 
         {/* Input */}
         <div className="terminal-input-area">
+          {/* Touch devices: one-tap autocomplete chip (hidden on desktop via CSS) */}
+          {ghost && (
+            <button
+              type="button"
+              className="terminal-suggest"
+              tabIndex={-1}
+              aria-label={`Autocomplete: ${fullCompletion}`}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={acceptGhost}
+            >
+              <svg
+                viewBox="0 0 20 20"
+                width="16"
+                height="16"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <path d="M3 10h11m-4-4 4 4-4 4M17 5v10" />
+              </svg>
+              <span>{fullCompletion}</span>
+            </button>
+          )}
+
           <div
             className={`terminal-input-row${engaged ? " is-engaged" : ""}`}
             onPointerDown={() => setEngaged(true)}
@@ -683,20 +677,11 @@ export default function Terminal() {
             </span>
 
             <div className="terminal-input-wrapper">
-              {completions.length > 0 && (
-                <div className="terminal-autocomplete" role="listbox">
-                  {completions.map((item, i) => (
-                    <button
-                      key={item}
-                      className={`terminal-autocomplete-item${i === activeCompletion ? " is-active" : ""}`}
-                      type="button"
-                      role="option"
-                      aria-selected={i === activeCompletion}
-                      onClick={() => handleCompletionClick(item)}
-                    >
-                      {item}
-                    </button>
-                  ))}
+              {ghost && (
+                <div className="terminal-ghost" aria-hidden="true">
+                  <span className="terminal-ghost-typed">{input}</span>
+                  <span className="terminal-ghost-hint">{ghost}</span>
+                  <kbd className="terminal-ghost-key">Tab</kbd>
                 </div>
               )}
               <input

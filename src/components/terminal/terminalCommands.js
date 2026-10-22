@@ -15,9 +15,11 @@ import {
   CLUES,
   CLUE_KEYS,
   COMMIT_LOG,
+  KEY_SENTINEL,
   KEY_WORDS,
   PUBLIC_BRANCHES,
   UNLOCK_BANNER,
+  renderKey,
 } from "./terminalData.js";
 
 // ---------------------------------------------------------------------------
@@ -31,10 +33,16 @@ const heading = (content) => ({ type: "heading", content });
 const file = (content, name) => ({ type: "file", content, name });
 const suggestion = (label, command) => ({ type: "suggestion", label, command });
 const link = (label, href) => ({ type: "link", label, href });
-const cmdRow = (command, desc, fill) => ({ type: "cmd", command, desc, fill: fill ?? command });
+const cmdRow = (command, desc, fill) => ({
+  type: "cmd",
+  command,
+  desc,
+  fill: fill ?? command,
+});
 const blank = () => text("");
 
-const allCluesFound = (state) => state.discoveredClues.length >= CLUE_KEYS.length;
+const allCluesFound = (state) =>
+  state.discoveredClues.length >= CLUE_KEYS.length;
 
 function accessibleBranches(state) {
   const list = [...PUBLIC_BRANCHES];
@@ -55,7 +63,7 @@ function unknownGit(sub) {
 /** Whether a piece of inline code in a file may be rendered as a tappable command. */
 export function isRunnableSuggestion(cmd) {
   return /^(git (help|log --oneline|branch|status|checkout (main|learn|events|team|join))|ls|hint|clear|cat [\w.-]+)$/.test(
-    cmd.trim()
+    cmd.trim(),
   );
 }
 
@@ -75,14 +83,30 @@ function cmdHelp(state) {
     blank(),
     text("Need help?", "dim"),
     cmdRow("git log --oneline", "Read the commit history"),
-    cmdRow("hint", "Get a nudge"),
+    cmdRow("cat KEY.md", "All hints live here"),
   ];
 
   if (allCluesFound(state) && !state.secretUnlocked) {
-    out.push(cmdRow("git unlock <w1> <w2> <w3>", "Use your three key words", "git unlock "));
+    out.push(
+      cmdRow(
+        "git unlock <w1> <w2> <w3>",
+        "Use your three key words",
+        "git unlock ",
+      ),
+    );
   }
-  if (state.secretUnlocked && state.currentBranch === "secret" && !state.challengeCompleted) {
-    out.push(cmdRow("git challenge <answer>", "Answer the final question", "git challenge "));
+  if (
+    state.secretUnlocked &&
+    state.currentBranch === "secret" &&
+    !state.challengeCompleted
+  ) {
+    out.push(
+      cmdRow(
+        "git challenge <answer>",
+        "Answer the final question",
+        "git challenge ",
+      ),
+    );
   }
 
   out.push(
@@ -91,7 +115,7 @@ function cmdHelp(state) {
     cmdRow("clear", "Clear the screen"),
     cmdRow("exit", "Close the terminal"),
     blank(),
-    suggestion("Start exploring: ls", "ls")
+    suggestion("Start exploring: ls", "ls"),
   );
   return { output: out };
 }
@@ -122,8 +146,8 @@ function cmdBranch(state) {
       ...accessibleBranches(state).map((b) =>
         text(
           b === state.currentBranch ? `* ${b}` : `  ${b}`,
-          b === state.currentBranch ? "branch-active" : "branch"
-        )
+          b === state.currentBranch ? "branch-active" : "branch",
+        ),
       ),
       blank(),
       suggestion("Switch branch: git checkout learn", "git checkout learn"),
@@ -146,16 +170,25 @@ function cmdStatus(state) {
   ];
 
   if (state.challengeCompleted) {
-    out.push(success("  Explorer badge: unlocked"), text("  All challenges completed."));
+    out.push(
+      success("  Explorer badge: unlocked"),
+      text("  All challenges completed."),
+    );
   } else if (state.secretUnlocked) {
-    out.push(info("  Hidden branch: unlocked"), text("  Final challenge: in progress"));
+    out.push(
+      info("  Hidden branch: unlocked"),
+      text("  Final challenge: in progress"),
+    );
     if (state.currentBranch !== "secret") {
-      out.push(suggestion("Continue: git checkout secret", "git checkout secret"));
+      out.push(
+        suggestion("Continue: git checkout secret", "git checkout secret"),
+      );
     }
   } else {
     out.push(text(`  Key words found: ${n}/${total}`));
-    if (n === 0) out.push(info("  Read files with cat to find the first key word."));
-    else if (n < total) out.push(info(`  ${total - n} more to find. Try hint if you're stuck.`));
+    if (n === 0) out.push(info("  Run cat KEY.md to get started."));
+    else if (n < total)
+      out.push(info(`  ${total - n} more to find. Check cat KEY.md.`));
     else out.push(success("  All three found. Use them with git unlock."));
   }
   out.push(blank(), suggestion("Try: ls", "ls"));
@@ -207,7 +240,10 @@ function cmdCheckout(args, state) {
   }
   out.push(blank());
   if (name === "secret") {
-    out.push(info("Welcome to the inner circle."), suggestion("Read: cat README.md", "cat README.md"));
+    out.push(
+      info("Welcome to the inner circle."),
+      suggestion("Read: cat README.md", "cat README.md"),
+    );
   } else {
     out.push(suggestion("See files: ls", "ls"));
   }
@@ -225,7 +261,12 @@ function cmdLs(state) {
     output: [
       heading(`Files on ${state.currentBranch}/`),
       info("Tap a file to read it."),
-      ...names.map((n) => ({ type: "cmd", command: n, desc: "", fill: `cat ${n}` })),
+      ...names.map((n) => ({
+        type: "cmd",
+        command: n,
+        desc: "",
+        fill: `cat ${n}`,
+      })),
     ],
   };
 }
@@ -237,7 +278,11 @@ function cmdCat(args, state) {
   const filename = args[0];
   if (!filename) {
     return {
-      output: [error("Usage: cat <filename>"), blank(), suggestion("List files: ls", "ls")],
+      output: [
+        error("Usage: cat <filename>"),
+        blank(),
+        suggestion("List files: ls", "ls"),
+      ],
     };
   }
 
@@ -247,7 +292,9 @@ function cmdCat(args, state) {
     const available = Object.keys(files);
     return {
       output: [
-        error(`cat: ${filename}: no such file on branch '${state.currentBranch}'`),
+        error(
+          `cat: ${filename}: no such file on branch '${state.currentBranch}'`,
+        ),
         blank(),
         info(`Available files: ${available.join(", ")}`),
         suggestion(`Try: cat ${available[0]}`, `cat ${available[0]}`),
@@ -256,6 +303,53 @@ function cmdCat(args, state) {
   }
 
   const content = files[filename];
+
+  // KEY.md: dynamic hints; reading it on the right branch marks the clue.
+  if (content === KEY_SENTINEL) {
+    const found = state.discoveredClues.length;
+    const out = [
+      file(
+        renderKey({
+          found,
+          branch: state.currentBranch,
+          secretUnlocked: state.secretUnlocked,
+          challengeCompleted: state.challengeCompleted,
+        }),
+        filename,
+      ),
+    ];
+
+    const step = CLUES[found];
+    if (!state.secretUnlocked && step && step.branch === state.currentBranch) {
+      const next = [...state.discoveredClues, step.key];
+      out.push(
+        blank(),
+        success(`Clue ${next.length} of ${CLUE_KEYS.length} found.`),
+      );
+      if (next.length < CLUE_KEYS.length) {
+        const nb = CLUES[next.length].branch;
+        out.push(
+          info(`Next: git checkout ${nb}, then cat KEY.md`),
+          suggestion(`Go: git checkout ${nb}`, `git checkout ${nb}`),
+          suggestion(
+            "Read commit history: git log --oneline",
+            "git log --oneline",
+          ),
+        );
+      } else {
+        out.push(
+          info("All three found. Now unlock the hidden branch."),
+          suggestion(
+            "Read commit history: git log --oneline",
+            "git log --oneline",
+          ),
+          suggestion("Unlock: git unlock ", "git unlock "),
+        );
+      }
+      return { output: out, stateUpdates: { discoveredClues: next } };
+    }
+    return { output: out };
+  }
 
   if (content === "__CHALLENGE__") {
     if (state.challengeCompleted) {
@@ -276,48 +370,8 @@ function cmdCat(args, state) {
     };
   }
 
-  // Clue discovery: only when the visitor reads the file that holds the marker.
-  const clue = CLUES.find(
-    (c) =>
-      c.branch === state.currentBranch &&
-      c.file === filename &&
-      content.includes(c.pattern) &&
-      !state.discoveredClues.includes(c.key)
-  );
-
-  const out = [file(content, filename)];
-  let stateUpdates;
-
-  if (clue) {
-    const found = [...state.discoveredClues, clue.key];
-    stateUpdates = { discoveredClues: found };
-    out.push(blank(), success(`Clue ${found.length} of ${CLUE_KEYS.length} found.`));
-    if (found.length === 1) {
-      out.push(
-        info("Run git log --oneline. Find f4a9c1e, take the verb from its message, and remember it as word 1."),
-        suggestion("Read commit history: git log --oneline", "git log --oneline"),
-        blank(),
-        info("Keep exploring the other branches and their files to find the next clue."),
-        suggestion("See available branches: git branch", "git branch")
-      );
-    } else if (found.length === 2) {
-      out.push(
-        info("Run git log --oneline. Find e2c8f91, take the last word of its message, and remember it as word 2."),
-        suggestion("Read commit history: git log --oneline", "git log --oneline"),
-        blank(),
-        info("One clue remains. Explore the other branches and read their files to find it."),
-        suggestion("See available branches: git branch", "git branch")
-      );
-    } else {
-      out.push(
-        success("All three clues found."),
-        info("Run git log --oneline. The event in d9b2c76 is word 3. Enter all three words in clue order."),
-        suggestion("Read commit history: git log --oneline", "git log --oneline"),
-        suggestion("Unlock with your words: git unlock ", "git unlock ")
-      );
-    }
-  }
-  return { output: out, stateUpdates };
+  // Normal files: no clues here, just show the content.
+  return { output: [file(content, filename)] };
 }
 
 // ---------------------------------------------------------------------------
@@ -335,12 +389,18 @@ function cmdUnlock(args, state) {
     };
   }
 
-  const words = args.join(" ").toLowerCase().split(/[^a-z]+/).filter(Boolean);
+  const words = args
+    .join(" ")
+    .toLowerCase()
+    .split(/[^a-z]+/)
+    .filter(Boolean);
   if (words.length === 0) {
     return {
       output: [
         error("Usage: git unlock <word1> <word2> <word3>"),
-        info("Use the three key words from the commit history, in the order you found them."),
+        info(
+          "Use the three key words from the commit history, in the order you found them.",
+        ),
       ],
     };
   }
@@ -359,10 +419,14 @@ function cmdUnlock(args, state) {
 
   return {
     output: [
-      error("Those key words don't open anything. Progress is safe, try again."),
+      error(
+        "Those key words don't open anything. Progress is safe, try again.",
+      ),
       blank(),
-      info("Check the spelling and the order. Each word comes from a different commit."),
-      suggestion("Need a nudge? hint", "hint"),
+      info(
+        "Check the spelling and the order. Each word comes from a different commit.",
+      ),
+      suggestion("Need a nudge? cat KEY.md", "cat KEY.md"),
     ],
   };
 }
@@ -371,7 +435,8 @@ function cmdUnlock(args, state) {
 // git challenge <answer>   (invisible outside the secret branch)
 // ---------------------------------------------------------------------------
 function cmdChallenge(args, state) {
-  if (!state.secretUnlocked || state.currentBranch !== "secret") return unknownGit("challenge");
+  if (!state.secretUnlocked || state.currentBranch !== "secret")
+    return unknownGit("challenge");
 
   if (state.challengeCompleted) {
     return {
@@ -398,7 +463,9 @@ function cmdChallenge(args, state) {
         { type: "reward", content: CHALLENGE.rewardArt },
         blank(),
         success("Challenge complete. You explored deeper than most."),
-        info("This badge is a virtual achievement only. No membership or credentials are issued."),
+        info(
+          "This badge is a virtual achievement only. No membership or credentials are issued.",
+        ),
         blank(),
         link("Upcoming events", "/events"),
         link("Learning resources", "/learn"),
@@ -411,66 +478,23 @@ function cmdChallenge(args, state) {
   return {
     output: [
       error("Not quite. No penalty, try again."),
-      info("Think about the very first thing a developer runs in a new project."),
+      info(
+        "Think about the very first thing a developer runs in a new project.",
+      ),
       suggestion("Re-read: cat BADGE.md", "cat BADGE.md"),
     ],
   };
 }
 
 // ---------------------------------------------------------------------------
-// hint — 3 progressive levels per stage; level rises each time it is asked
+// hint — all hints live in KEY.md; this command only points there
 // ---------------------------------------------------------------------------
-const HINTS = {
-  0: [
-    "Start by opening a file. The README has your first clue.",
-    "Read README.md to the bottom, then look up its commit in the history.",
-    "Open README.md, then find the commit it mentions with git log --oneline.",
-  ],
-  1: [
-    "The next clue is in the learning branch. First list the branches.",
-    "Switch to learn, then open git-basics.md.",
-    "Run git checkout learn, then cat git-basics.md.",
-  ],
-  2: [
-    "The last file pointed to a branch about things that happen. Think dates and meetups.",
-    "That branch is about events, and it has a file named after a history of the club.",
-    "Run git checkout events, then cat TIMELINE.md.",
-  ],
-  3: [
-    "Three key words, three commits. git log --oneline shows all of them.",
-    "Word 1: the verb in f4a9c1e. Word 2: the last word of e2c8f91. Word 3: the event named in d9b2c76.",
-    "Type the three words after git unlock, in that order, separated by spaces. Capitals don't matter.",
-  ],
-  unlocked: [
-    "A new branch appeared. See which one with git branch.",
-    "Switch to it, then read BADGE.md.",
-    "The question asks for the first command of any new project. Answer with git challenge, then your answer.",
-  ],
-};
-
-function cmdHint(state) {
-  if (state.challengeCompleted) {
-    return {
-      output: [
-        success("You've completed everything. No hints needed."),
-        info("Explore freely, or type exit to close."),
-      ],
-    };
-  }
-
-  const stage = state.secretUnlocked ? "unlocked" : Math.min(state.discoveredClues.length, 3);
-  const lines = HINTS[stage];
-  const current = (state.hintLevels && state.hintLevels[stage]) || 0;
-  const level = Math.min(current + 1, lines.length);
-
-  const out = [heading(`Hint ${level}/${lines.length}`), blank(), text(lines[level - 1])];
-  if (level < lines.length) {
-    out.push(blank(), info("Run hint again for a clearer nudge."));
-  }
-
+function cmdHint() {
   return {
-    output: out,
-    stateUpdates: { hintLevels: { ...(state.hintLevels || {}), [stage]: level } },
+    output: [
+      info("All hints live in KEY.md. It updates as you progress."),
+      suggestion("Read: cat KEY.md", "cat KEY.md"),
+    ],
   };
 }
 
@@ -492,7 +516,18 @@ function cmdUnknown(raw) {
 }
 
 const READ_ONLY_GIT = new Set([
-  "commit", "add", "push", "pull", "merge", "rebase", "stash", "diff", "fetch", "clone", "remote", "reset",
+  "commit",
+  "add",
+  "push",
+  "pull",
+  "merge",
+  "rebase",
+  "stash",
+  "diff",
+  "fetch",
+  "clone",
+  "remote",
+  "reset",
 ]);
 
 // ---------------------------------------------------------------------------
@@ -545,7 +580,9 @@ export function executeCommand(rawInput, state) {
         if (READ_ONLY_GIT.has(sub)) {
           return {
             output: [
-              info(`git ${sub} is a real Git command, but this is a read-only simulation.`),
+              info(
+                `git ${sub} is a real Git command, but this is a read-only simulation.`,
+              ),
               suggestion("See supported commands: git help", "git help"),
             ],
           };
@@ -571,7 +608,7 @@ export function executeCommand(rawInput, state) {
     case "help":
       return cmdHelp(state);
     case "hint":
-      return cmdHint(state);
+      return cmdHint();
     case "pwd":
       return { output: [text(`~/club (branch: ${state.currentBranch})`)] };
     case "whoami":
@@ -585,7 +622,10 @@ export function executeCommand(rawInput, state) {
       };
     case "sudo":
       return {
-        output: [error("Nice try. No sudo in this simulation."), suggestion("Try: git help", "git help")],
+        output: [
+          error("Nice try. No sudo in this simulation."),
+          suggestion("Try: git help", "git help"),
+        ],
       };
     case "rm":
     case "mv":
@@ -622,18 +662,24 @@ export function getQuickCommands(state) {
     list.push({ label: "git unlock", command: "git unlock " });
   }
 
-  list.push({ label: "git help", command: "git help" }, { label: "ls", command: "ls" });
-  if (files[0]) list.push({ label: `cat ${files[0]}`, command: `cat ${files[0]}` });
+  list.push(
+    { label: "git help", command: "git help" },
+    { label: "ls", command: "ls" },
+  );
+  if (files[0])
+    list.push({ label: `cat ${files[0]}`, command: `cat ${files[0]}` });
   list.push(
     { label: "git branch", command: "git branch" },
     { label: "git log --oneline", command: "git log --oneline" },
     { label: "git status", command: "git status" },
-    { label: "hint", command: "hint" },
-    { label: "clear", command: "clear" }
+    { label: "cat KEY.md", command: "cat KEY.md" },
+    { label: "clear", command: "clear" },
   );
 
   const seen = new Set();
-  return list.filter((c) => (seen.has(c.command) ? false : seen.add(c.command)));
+  return list.filter((c) =>
+    seen.has(c.command) ? false : seen.add(c.command),
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -646,12 +692,25 @@ export function getCompletions(partial, state) {
   const parts = raw.split(/\s+/); // keeps a trailing "" when input ends with a space
   const first = parts[0].toLowerCase();
   const canUnlock = allCluesFound(state) && !state.secretUnlocked;
-  const canChallenge = state.secretUnlocked && state.currentBranch === "secret" && !state.challengeCompleted;
+  const canChallenge =
+    state.secretUnlocked &&
+    state.currentBranch === "secret" &&
+    !state.challengeCompleted;
 
   if (parts.length === 1) {
     const commands = [
-      "git help", "git log --oneline", "git branch", "git status", "git checkout ",
-      "cat ", "ls", "clear", "exit", "hint", "pwd", "whoami",
+      "git help",
+      "git log --oneline",
+      "git branch",
+      "git status",
+      "git checkout ",
+      "cat ",
+      "ls",
+      "clear",
+      "exit",
+      "hint",
+      "pwd",
+      "whoami",
     ];
     if (canUnlock) commands.push("git unlock ");
     if (canChallenge) commands.push("git challenge ");
@@ -666,7 +725,11 @@ export function getCompletions(partial, state) {
     return subs.filter((s) => s.startsWith(p)).map((s) => `git ${s}`);
   }
 
-  if (first === "git" && ["checkout", "switch"].includes((parts[1] || "").toLowerCase()) && parts.length === 3) {
+  if (
+    first === "git" &&
+    ["checkout", "switch"].includes((parts[1] || "").toLowerCase()) &&
+    parts.length === 3
+  ) {
     const p = parts[2].toLowerCase();
     return accessibleBranches(state)
       .filter((b) => b.startsWith(p))
@@ -702,8 +765,8 @@ export const TUTORIAL_STEPS = [
   },
   {
     id: "cat",
-    message: "Next: open the README to find your first clue.",
-    suggestedCommand: "cat README.md",
+    message: "Next: open KEY.md. It guides you step by step.",
+    suggestedCommand: "cat KEY.md",
     check: (cmd) => cmd.startsWith("cat "),
   },
   {
@@ -716,12 +779,13 @@ export const TUTORIAL_STEPS = [
     id: "checkout",
     message: "Next: explore another branch to find more files.",
     suggestedCommand: "git checkout learn",
-    check: (cmd) => cmd.startsWith("git checkout ") || cmd.startsWith("git switch "),
+    check: (cmd) =>
+      cmd.startsWith("git checkout ") || cmd.startsWith("git switch "),
   },
   {
     id: "done",
     message:
-      "Tutorial complete. Try another branch: use git branch to see your options, git checkout to explore one, and ls to find its files. Read them closely for clues.",
+      "Tutorial complete. Whenever you're stuck, run cat KEY.md. It always tells you the next step.",
     suggestedCommand: null,
     check: () => false,
   },
