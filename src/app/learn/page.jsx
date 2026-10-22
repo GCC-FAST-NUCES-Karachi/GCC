@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowDown, ArrowRight } from "lucide-react";
+import { tracks } from "@/content/learn";
 import "./learn.css";
 
 export const metadata = {
@@ -7,42 +8,6 @@ export const metadata = {
   description:
     "Learning resources and practical starting points for GitHub Campus Club students.",
 };
-
-const tracks = [
-  {
-    number: "01",
-    title: "Git & GitHub",
-    command: "git-basics.md",
-    prompt: 'git commit -m "no more fear"',
-    description:
-      "Undo buttons exist. Branches are free. Learn repos, commits, branches, and pull requests by breaking and fixing real projects.",
-    outcome: "your first pull request",
-    cta: "Open the course",
-    href: "https://skills.github.com",
-  },
-  {
-    number: "02",
-    title: "Build for the web",
-    command: "build-in-public.md",
-    prompt: "git push origin idea",
-    description:
-      "Start with a messy idea. Build it in tiny pieces, publish it with GitHub Pages, and drop the link in the group chat.",
-    outcome: "a live site with your name on it",
-    cta: "Launch your first site",
-    href: "https://skills.github.com",
-  },
-  {
-    number: "03",
-    title: "Open source",
-    command: "first-contribution.md",
-    prompt: "your name in someone else's repo",
-    description:
-      "Every giant project started as a tiny commit. Find a beginner-friendly one, read its contributing guide, and leave your mark.",
-    outcome: "your first open source contribution",
-    cta: "Send your first PR",
-    href: "https://github.com/firstcontributions/first-contributions",
-  },
-];
 
 const workshops = [
   { file: "workshop.md", description: "Build along live. Leave with something that runs." },

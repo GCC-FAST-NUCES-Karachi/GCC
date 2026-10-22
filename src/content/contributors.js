@@ -1,7 +1,7 @@
 export const technicalLead = {
   name: "Hunza Shahzadi",
   role: "Tech Lead",
-  github: "https://github.com/huna-mathophile",
+  github: "https://github.com/HunaBuilds",
 };
 
 export const technicalGroups = [
@@ -24,8 +24,8 @@ export const technicalGroups = [
   },
 ];
 
-// GitHub links are included where the profile is already known from repo credits/history.
+// Collaborators who are not already listed in a technical group.
 export const contributors = [
-  { name: "Batool", github: "https://github.com/" },
+  { name: "Batool Kazmi", github: "https://github.com/del-b2l" },
   { name: "Ibrahim", github: "https://github.com/maybethemuhammadibrahim" },
 ];
