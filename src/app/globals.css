@@ -9,6 +9,19 @@ html {
     scroll-behavior: smooth;
 }
 
+/* The endless loop makes the page scrollbar jump around, so hide it there. Scrolling still works. */
+html:has(body.is-looping) {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+html:has(body.is-looping)::-webkit-scrollbar,
+body.is-looping::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
 body {
     min-width: 320px;
     margin: 0;

@@ -42,6 +42,18 @@ export default function InfiniteLoop({ children }) {
     let looped = false; // false until the first jump, so the page opens at its normal top
     let frame = 0;
     let touchY = 0;
+    // Downward travel, counted in loops. Only scrolling DOWN adds to it, scrolling up never
+    // subtracts, and it always starts at 0 (a reload or hash link does not count as progress).
+    let travelled = 0;
+    let lastY = 0; // previous continuous scroll position, to measure each downward step
+
+    const track = () => {
+      const y = window.scrollY + offset;
+      const step = y - lastY;
+      // Ignore teleports (browser scroll restoration, End key): real scrolling never moves half a loop in one frame.
+      if (step > 0 && step < period / 2) travelled += step / period;
+      lastY = y;
+    };
 
     const measure = () => {
       period = mid.getBoundingClientRect().top - top.getBoundingClientRect().top;
@@ -56,6 +68,7 @@ export default function InfiniteLoop({ children }) {
     const normalize = () => {
       frame = 0;
       if (period < 1) return;
+      track(); // measure before any jump; jumps keep the continuous position unchanged
       const y = window.scrollY;
       // Browsers snap scroll positions to whole pixels, so allow 1px of slack.
       if (y >= 2 * period - 1) {
@@ -90,13 +103,18 @@ export default function InfiniteLoop({ children }) {
       // middle copy so the controls visible on first load are interactive.
       jump(-1);
     }
+    lastY = window.scrollY + offset; // count from here: the visitor starts at 0 loops
     normalize();
 
     // Lets the galaxy background follow a continuous scroll value instead of the wrapped one.
     window.__gccLoop = {
       unwrappedY: () => window.scrollY + offset,
-      // How many loops the visitor has scrolled through (1.5 = halfway through the second one).
-      progress: () => (window.scrollY + offset) / period,
+      // How many loops the visitor has scrolled DOWN through (1.5 = halfway through the second one).
+      // Scrolling up never reduces it.
+      progress: () => {
+        track();
+        return travelled;
+      },
       distanceFromHero: () => {
         const p = (((window.scrollY - period) % period) + period) % period;
         return Math.min(p, period - p);
@@ -110,6 +128,7 @@ export default function InfiniteLoop({ children }) {
       measure();
       if (looped && previous > 0 && Math.abs(period - previous) > 0.5) {
         window.scrollTo({ top: window.scrollY + (period - previous), behavior: "instant" });
+        lastY = window.scrollY + offset; // a resize correction is not scrolling
       }
       onScroll();
     });
