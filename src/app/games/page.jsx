@@ -58,7 +58,7 @@ const games = [
       { Icon: Clock, label: "Run time", value: "about 3 min" },
       { Icon: Keyboard, label: "Controls", value: "Tap tiles or 1–4" },
     ],
-    contributors: [{ username: "b4t001k", href: "https://github.com/b4t001k" }],
+    contributors: [{ username: "del-b2l", href: "https://github.com/ismailsilat7/ghcc/commits?author=del-b2l" }],
   },
 ];
 
