@@ -357,13 +357,27 @@ export default function GalaxyBackground() {
     window.addEventListener("resize", resize);
     window.addEventListener("pointermove", handlePointerMove, { passive: true });
     window.addEventListener("pointerout", handlePointerOut);
+    // Games pause the background while a run is live, so it does not compete with
+    // them for frames on slow phones. The last frame stays on screen meanwhile.
+    let paused = false;
+    function handlePause(event) {
+      paused = Boolean(event.detail);
+      if (paused) {
+        cancelAnimationFrame(rafId);
+        rafId = 0;
+      } else if (!isStatic && !rafId) {
+        lastT = performance.now();
+        rafId = requestAnimationFrame(frame);
+      }
+    }
+    window.addEventListener("gcc:pause-background", handlePause);
     const handlePreferenceChange = () => {
       resize();
       if (isStatic) {
         cancelAnimationFrame(rafId);
         rafId = 0;
         draw(0, galaxyOpacity());
-      } else if (!rafId) {
+      } else if (!rafId && !paused) {
         lastT = performance.now();
         rafId = requestAnimationFrame(frame);
       }
@@ -382,6 +396,7 @@ export default function GalaxyBackground() {
       window.removeEventListener("resize", resize);
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("pointerout", handlePointerOut);
+      window.removeEventListener("gcc:pause-background", handlePause);
       narrowQuery.removeEventListener("change", resize);
       motionQuery.removeEventListener("change", handlePreferenceChange);
       window.removeEventListener("scroll", redrawStatic);
