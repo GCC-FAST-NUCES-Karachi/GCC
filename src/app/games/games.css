@@ -1,6 +1,6 @@
 /* =========================================================
-   Games section: hub (/games), Commit Snake (/games/commit-snake)
-   and Bug Bash (/games/bug-bash)
+   Games section: hub (/games), Commit Snake (/games/commit-snake),
+   Bug Bash (/games/bug-bash), and Octo Dive (/games/octo-dive)
    ========================================================= */
 
 .games-page {
@@ -81,7 +81,10 @@
   color: #061208;
 }
 
-.games-btn-primary:hover { background: #56d364; box-shadow: 0 6px 18px rgb(63 185 80 / 20%); }
+.games-btn-primary:hover {
+  background: #56d364;
+  box-shadow: 0 6px 18px rgb(63 185 80 / 20%);
+}
 
 .games-btn-outline {
   border: 1px solid var(--accent-blue);
@@ -93,7 +96,10 @@
   box-shadow: 0 0 20px rgb(88 166 255 / 20%);
 }
 
-.games-btn:active { transform: translateY(1px) scale(.98); box-shadow: none; }
+.games-btn:active {
+  transform: translateY(1px) scale(.98);
+  box-shadow: none;
+}
 
 .games-list {
   scroll-margin-top: 6rem;
@@ -228,10 +234,22 @@
   box-shadow: 0 12px 32px rgb(0 0 0 / 24%), 0 0 22px rgb(63 185 80 / 7%);
 }
 
-.game-card:focus-within { border-color: var(--accent-green); }
+.game-card:focus-within {
+  border-color: var(--accent-green);
+}
 
-.game-card-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem; }
-.game-card-top code { color: var(--accent-blue); font: 700 .72rem var(--font-mono); }
+.game-card-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+}
+
+.game-card-top code {
+  color: var(--accent-blue);
+  font: 700 .72rem var(--font-mono);
+}
 
 .game-card h3 {
   margin: .2rem 0 0;
@@ -240,9 +258,15 @@
   letter-spacing: -.035em;
 }
 
-.game-card .game-description { min-height: 3.3em; flex: 1 0 auto; }
+.game-card .game-description {
+  min-height: 3.3em;
+  flex: 1 0 auto;
+}
 
-.game-card .arcade-meta { margin-top: 0; padding-top: .15rem; }
+.game-card .arcade-meta {
+  margin-top: 0;
+  padding-top: .15rem;
+}
 
 .game-card-action {
   display: flex;
@@ -250,7 +274,9 @@
   padding: .9rem 0;
 }
 
-.game-card-action .arcade-cta { margin-left: auto; }
+.game-card-action .arcade-cta {
+  margin-left: auto;
+}
 
 .game-card-footer {
   display: flex;
@@ -266,16 +292,78 @@
   padding: 0;
 }
 
-.game-contributor-group { display: grid; width: 100%; min-width: 0; gap: .35rem; }
-.game-contributors { display: flex; min-width: 0; flex-wrap: wrap; align-items: center; gap: .35rem; }
-.game-contributors-label { color: var(--text-dim); font: .65rem var(--font-mono); }
-.game-contributors a { display: inline-flex; min-height: 28px; min-width: 0; align-items: center; gap: .35rem; padding: 0 .5rem; border: 1px solid rgb(139 148 158 / 16%); border-radius: 5px; background: rgb(139 148 158 / 5%); color: var(--text-body); font-size: .72rem; font-weight: 600; text-decoration: none; overflow-wrap: anywhere; }
-.game-contributors a span { min-width: 0; overflow-wrap: anywhere; }
-.game-contributors a svg { width: 13px; height: 13px; flex: 0 0 auto; fill: currentColor; color: var(--accent-green); }
-.game-contributors a:hover { border-color: rgb(63 185 80 / 44%); background: rgb(63 185 80 / 8%); color: var(--text-heading); }
-.arcade-cta:hover { transform: translateY(-1px); background: #56d364; box-shadow: 0 5px 16px rgb(63 185 80 / 20%); }
-.arcade-cta:active { transform: translateY(1px) scale(.98); box-shadow: none; }
-.arcade-cta:focus-visible, .game-contributors a:focus-visible { outline: 2px solid var(--accent-blue); outline-offset: 3px; }
+.game-contributor-group {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  gap: .35rem;
+}
+
+.game-contributors {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .35rem;
+}
+
+.game-contributors-label {
+  color: var(--text-dim);
+  font: .65rem var(--font-mono);
+}
+
+.game-contributors a {
+  display: inline-flex;
+  min-height: 28px;
+  min-width: 0;
+  align-items: center;
+  gap: .35rem;
+  padding: 0 .5rem;
+  border: 1px solid rgb(139 148 158 / 16%);
+  border-radius: 5px;
+  background: rgb(139 148 158 / 5%);
+  color: var(--text-body);
+  font-size: .72rem;
+  font-weight: 600;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.game-contributors a span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.game-contributors a svg {
+  width: 13px;
+  height: 13px;
+  flex: 0 0 auto;
+  fill: currentColor;
+  color: var(--accent-green);
+}
+
+.game-contributors a:hover {
+  border-color: rgb(63 185 80 / 44%);
+  background: rgb(63 185 80 / 8%);
+  color: var(--text-heading);
+}
+
+.arcade-cta:hover {
+  transform: translateY(-1px);
+  background: #56d364;
+  box-shadow: 0 5px 16px rgb(63 185 80 / 20%);
+}
+
+.arcade-cta:active {
+  transform: translateY(1px) scale(.98);
+  box-shadow: none;
+}
+
+.arcade-cta:focus-visible,
+.game-contributors a:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 3px;
+}
 
 /* ---------- hub: contribute ---------- */
 
@@ -653,7 +741,9 @@
   background: rgb(88 166 255 / 10%);
 }
 
-.snake-pause:active:not(:disabled) { transform: scale(.97); }
+.snake-pause:active:not(:disabled) {
+  transform: scale(.97);
+}
 
 .snake-pause:disabled {
   opacity: 0.4;
@@ -752,8 +842,16 @@
   transition: transform var(--control-transition), background-color var(--control-transition), box-shadow var(--control-transition);
 }
 
-.snake-start:hover { transform: translateY(-2px); background: #56d364; box-shadow: 0 6px 18px rgb(63 185 80 / 20%); }
-.snake-start:active { transform: translateY(1px) scale(.98); box-shadow: none; }
+.snake-start:hover {
+  transform: translateY(-2px);
+  background: #56d364;
+  box-shadow: 0 6px 18px rgb(63 185 80 / 20%);
+}
+
+.snake-start:active {
+  transform: translateY(1px) scale(.98);
+  box-shadow: none;
+}
 
 /* ---------- touch d-pad (phones/tablets only) ---------- */
 
@@ -1155,7 +1253,7 @@
   cursor: pointer;
 }
 
-.bug-boss > span {
+.bug-boss>span {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1363,7 +1461,7 @@
   content: none;
 }
 
-.bug-guide li > span:last-child {
+.bug-guide li>span:last-child {
   flex: none;
   white-space: nowrap;
 }
@@ -1450,9 +1548,13 @@
     grid-template-columns: 1fr;
   }
 
-  .game-card .game-description { min-height: 0; }
+  .game-card .game-description {
+    min-height: 0;
+  }
 
-  .game-card-action .arcade-cta { margin-left: 0; }
+  .game-card-action .arcade-cta {
+    margin-left: 0;
+  }
 
   .arcade-steps {
     grid-template-columns: 1fr;
@@ -1509,6 +1611,7 @@
     display: none;
   }
 }
+
 /* =========================================================
    Octo Dive  (/games/octo-dive)
    All selectors use the octo- prefix to avoid conflicts.
@@ -2166,6 +2269,7 @@
   user-select: auto;
   /* Force GPU compositing so border-radius clips scroll content on mobile */
   -webkit-mask-image: -webkit-radial-gradient(white, black);
+  mask-image: radial-gradient(white, black);
 }
 
 /* Content container inside arena-screen */
@@ -2248,6 +2352,3 @@
 .octo-page .snake-heading h1 span {
   color: var(--accent-blue);
 }
-
-/* layout override: snake-layout uses 1fr 300px on desktop;
-   no extra overrides needed — the scorecard and rules fit as-is */
