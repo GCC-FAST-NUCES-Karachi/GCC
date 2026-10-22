@@ -122,12 +122,12 @@ export default function BugFinale({ onDone, startStage = 3 }) {
     <div className={`fin-root is-${phase}`} role="dialog" aria-modal="true" aria-label="Easter egg">
       {/* The GitHub-style terminal, revealed when the glass falls away */}
       <div className={`fin-stage${opening ? " is-opening" : ""}`}>
-        <div className="terminal-window fin-term">
+        <div className="terminal-window fin-term" inert>
           <div className="terminal-titlebar">
             <div className="terminal-dots" aria-hidden="true"><i className="terminal-dot terminal-dot--red" /><i className="terminal-dot terminal-dot--yellow" /><i className="terminal-dot terminal-dot--green" /></div>
             <div className="terminal-title"><span className="terminal-title-name">gcc-terminal</span><span className="terminal-branch-pill">⎇ easter-bug</span></div>
             <div className="terminal-pips is-unlocked" aria-hidden="true">{CLUE_DOTS.map((dot) => <span key={dot} className="terminal-pip is-on" />)}</div>
-            <button type="button" className="terminal-close-btn" onClick={finish} aria-label="Skip to terminal">go back</button>
+            <span className="terminal-close-btn">go back</span>
           </div>
           <div className="terminal-output fin-term-body" aria-hidden="true">
             {SCRIPT.slice(0, shown).map((line, i) => {
@@ -170,7 +170,7 @@ export default function BugFinale({ onDone, startStage = 3 }) {
             <span className="fin-pr-branch"><GitBranch size={13} /> easter-bug → main</span>
           </div>
         </div>
-        <button type="button" className="fin-skip" onClick={finish} aria-label="Skip terminal animation">esc or click to skip ↗</button>
+        <span className="fin-skip" aria-hidden="true">esc to skip</span>
       </div>
 
       {/* The cracking glass */}

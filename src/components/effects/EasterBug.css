@@ -533,23 +533,8 @@
   position: absolute;
   right: 1rem;
   bottom: calc(.8rem + env(safe-area-inset-bottom, 0px));
-  color: var(--text-dim, #8b949e);
-  font-family: var(--font-mono, monospace);
-  font-size: .75rem;
-  background: rgba(13, 17, 23, 0.85);
-  border: 1px solid var(--border-default, #30363d);
-  border-radius: 6px;
-  padding: .35rem .75rem;
-  cursor: pointer;
-  pointer-events: auto;
-  transition: all .16s ease;
-  z-index: 20;
-}
-
-.fin-skip:hover {
-  color: #fff;
-  border-color: var(--accent-blue, #58a6ff);
-  background: rgba(88, 166, 255, 0.15);
+  color: #484f58;
+  font-size: .7rem;
 }
 
 @media (max-width: 768px) {
