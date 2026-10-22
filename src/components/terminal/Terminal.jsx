@@ -13,7 +13,7 @@
  *   accepts it with one tap.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useTerminal } from "./TerminalProvider.jsx";
@@ -282,6 +282,8 @@ function TutorialBlock({ entry, isLatest, onSuggestionClick, onSkip }) {
 // ---------------------------------------------------------------------------
 // Terminal
 // ---------------------------------------------------------------------------
+const emptySubscribe = () => () => {};
+
 export default function Terminal() {
   const {
     isOpen,
@@ -296,7 +298,7 @@ export default function Terminal() {
 
   const [input, setInput] = useState("");
   const [fx, setFx] = useState(null);
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
   const [engaged, setEngaged] = useState(false);
 
   const inputRef = useRef(null);
@@ -305,8 +307,6 @@ export default function Terminal() {
   const windowRef = useRef(null);
   const prevSecret = useRef(state.secretUnlocked);
   const prevDone = useRef(state.challengeCompleted);
-
-  useEffect(() => setMounted(true), []);
 
   // Closing only closes. On the /terminal route, TerminalPage notices the
   // terminal closed and navigates home once (single navigation path).
@@ -336,9 +336,11 @@ export default function Terminal() {
   }, [ghost]);
 
   // History navigation -> input value (Down past the end clears the input)
-  useEffect(() => {
+  const [prevHistory, setPrevHistory] = useState(historyValue);
+  if (historyValue !== prevHistory) {
+    setPrevHistory(historyValue);
     setInput(historyValue ?? "");
-  }, [historyValue]);
+  }
 
   // Short celebratory pulse when the branch unlocks / challenge completes
   useEffect(() => {

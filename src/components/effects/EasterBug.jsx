@@ -85,7 +85,7 @@ export default function EasterBug({ active }) {
       )}
       {finale && (
         <BugFinale
-          startStage={stageRef.current}
+          startStage={stage}
           onDone={() => {
             resetGlass();
             setFinale(false);

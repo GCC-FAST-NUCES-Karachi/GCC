@@ -130,7 +130,9 @@ export function TerminalProvider({ children }) {
   const [state, setState] = useState(defaultState);
 
   const stateRef = useRef(state);
-  stateRef.current = state;
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
 
   const hydratedRef = useRef(false);
   const triggerRef = useRef(null);

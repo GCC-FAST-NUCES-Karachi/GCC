@@ -1,11 +1,11 @@
-﻿// Octo Dive — Octocat mascot
+// Octo Dive — Octocat mascot
 // Uses the transparent animated GIF at /octocat/octocat.gif.
 // The `unoptimized` prop is required so Next.js does not strip the animation.
 // `depthPct` (0-1) controls how far down the mascot dives via CSS transform.
 
 import Image from "next/image";
 
-export default function OctocatDiver({ depthPct = 0, animate = true }) {
+export default function OctocatDiver({ animate = true }) {
   // Sink up to 80px as depth grows (instant under prefers-reduced-motion via CSS)
   // const sinkPx = Math.round(depthPct * 80);
   const sinkPx = 0;

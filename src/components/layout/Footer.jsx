@@ -13,7 +13,9 @@ const columns = [
     links: [
       { href: "/", label: "Home" },
       { href: "/learn", label: "Learn" },
+      { href: "/perks", label: "Perks" },
       { href: "/events", label: "Events" },
+      { href: "/games", label: "Games" },
       { href: "/team", label: "Team" },
     ],
   },
@@ -64,7 +66,15 @@ export default function Footer() {
               <ul>
                 {column.links.map((link) => (
                   <li key={typeof link === "string" ? link : link.label}>
-                    {link.href ? <a href={link.href} rel={link.href.startsWith("https:") ? "noreferrer" : undefined} target={link.href.startsWith("https:") ? "_blank" : undefined}>{link.label}</a> : <span>{link.label}</span>}
+                    {link.href ? (
+                      link.href.startsWith("/") ? (
+                        <Link href={link.href}>{link.label}</Link>
+                      ) : (
+                        <a href={link.href} rel={link.href.startsWith("https:") ? "noreferrer" : undefined} target={link.href.startsWith("https:") ? "_blank" : undefined}>{link.label}</a>
+                      )
+                    ) : (
+                      <span>{link.label}</span>
+                    )}
                   </li>
                 ))}
               </ul>
