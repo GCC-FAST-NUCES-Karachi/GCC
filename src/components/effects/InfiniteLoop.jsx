@@ -6,15 +6,15 @@ import { getBug, getServerBug, subscribe } from "@/lib/easterBug";
 import EasterBug from "./EasterBug";
 
 /**
- * Endless scroll. The children are rendered three times back to back. The page
- * opens at its normal top. Once the visitor scrolls past the end (or up from the
- * top) the scroll position is kept inside the middle copy by jumping exactly one
- * copy height. The copies are identical, so the jump is invisible and the page
- * never ends in either direction.
+ * Endless scroll, downward only. The children are rendered twice back to back and the
+ * page opens at its normal top with nothing above the hero. Once the visitor scrolls
+ * past the end of the first copy the scroll position jumps back exactly one copy height.
+ * The copies are identical, so the jump is invisible and the page never ends going down.
+ * Scrolling up simply stops at the top of the page.
  */
 export default function InfiniteLoop({ children }) {
-  const topRef = useRef(null);
-  const midRef = useRef(null);
+  const firstRef = useRef(null);
+  const secondRef = useRef(null);
   const wasBug = useRef(true);
   // While bug is true the loop runs. The easter egg finale sets it to false.
   const bug = useSyncExternalStore(subscribe, getBug, getServerBug);
@@ -27,21 +27,18 @@ export default function InfiniteLoop({ children }) {
       return undefined;
     }
     wasBug.current = true;
-    const top = topRef.current;
-    const mid = midRef.current;
-    if (!top || !mid) return undefined;
+    const first = firstRef.current;
+    const second = secondRef.current;
+    if (!first || !second) return undefined;
 
-    // Only the middle copy keeps its ids so #hash links and aria references hit it.
-    const outer = [top, mid.nextElementSibling].filter(Boolean);
-    outer.forEach((copy) => copy.querySelectorAll("[id]").forEach((el) => el.removeAttribute("id")));
+    // Only the first copy keeps its ids so #hash links and aria references hit it.
+    second.querySelectorAll("[id]").forEach((el) => el.removeAttribute("id"));
 
     document.body.classList.add("is-looping");
 
     let period = 0; // height of one copy
-    let offset = 0; // total distance jumped, so scroll stays continuous for other effects
-    let looped = false; // false until the first jump, so the page opens at its normal top
+    let offset = 0; // total distance jumped back, so scroll stays continuous for other effects
     let frame = 0;
-    let touchY = 0;
     // Downward travel, counted in loops. Only scrolling DOWN adds to it, scrolling up never
     // subtracts, and it always starts at 0 (a reload or hash link does not count as progress).
     let travelled = 0;
@@ -56,13 +53,7 @@ export default function InfiniteLoop({ children }) {
     };
 
     const measure = () => {
-      period = mid.getBoundingClientRect().top - top.getBoundingClientRect().top;
-    };
-
-    const jump = (copies) => {
-      offset += copies * period;
-      looped = true;
-      window.scrollTo({ top: window.scrollY - copies * period, behavior: "instant" });
+      period = second.getBoundingClientRect().top - first.getBoundingClientRect().top;
     };
 
     const normalize = () => {
@@ -71,39 +62,19 @@ export default function InfiniteLoop({ children }) {
       track(); // measure before any jump; jumps keep the continuous position unchanged
       const y = window.scrollY;
       // Browsers snap scroll positions to whole pixels, so allow 1px of slack.
-      if (y >= 2 * period - 1) {
-        jump(Math.floor((y - period + 1) / period)); // past the end: back one copy
-      } else if (looped && y < period - 1) {
-        jump(-1); // scrolled up out of the middle copy: forward one copy
+      if (y >= period - 1) {
+        const copies = Math.floor((y + 1) / period); // past the end of the first copy: back
+        offset += copies * period;
+        window.scrollTo({ top: y - copies * period, behavior: "instant" });
       }
-    };
-
-    // Scrolling up from the very top: reveal the end of the previous copy.
-    const revealAbove = () => {
-      if (looped || period < 1 || window.scrollY > 0) return;
-      jump(-1);
     };
 
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(normalize);
     };
-    const onWheel = (event) => { if (event.deltaY < 0) revealAbove(); };
-    const onKeyDown = (event) => { if (event.key === "ArrowUp" || event.key === "PageUp") revealAbove(); };
-    const onTouchStart = (event) => { touchY = event.touches[0].clientY; };
-    const onTouchMove = (event) => { if (event.touches[0].clientY > touchY) revealAbove(); };
 
     measure();
-    if (window.location.hash) {
-      // Hash navigation lands on the middle copy, which owns the page IDs.
-      // Keep that position and make its loop offset start at zero.
-      offset = -period;
-      looped = true;
-    } else {
-      // The first copy is decorative/inert. Start at the visually identical
-      // middle copy so the controls visible on first load are interactive.
-      jump(-1);
-    }
-    lastY = window.scrollY + offset; // count from here: the visitor starts at 0 loops
+    lastY = window.scrollY; // count from here: the visitor starts at 0 loops
     normalize();
 
     // Lets the galaxy background follow a continuous scroll value instead of the wrapped one.
@@ -116,35 +87,27 @@ export default function InfiniteLoop({ children }) {
         return travelled;
       },
       distanceFromHero: () => {
-        const p = (((window.scrollY - period) % period) + period) % period;
+        const p = ((window.scrollY % period) + period) % period;
         return Math.min(p, period - p);
       },
     };
 
     const resizeObserver = new ResizeObserver(() => {
-      // Content height can change after load (fonts, images, resize). Once looping, keep
-      // the same spot inside the loop instead of letting the old position land elsewhere.
+      // Content height can change after load (fonts, images, resize): keep the jumped
+      // distance a whole number of copies and do not count the change as scrolling.
       const previous = period;
       measure();
-      if (looped && previous > 0 && Math.abs(period - previous) > 0.5) {
-        window.scrollTo({ top: window.scrollY + (period - previous), behavior: "instant" });
-        lastY = window.scrollY + offset; // a resize correction is not scrolling
+      if (previous > 0 && Math.abs(period - previous) > 0.5) {
+        offset = Math.round(offset / previous) * period;
+        lastY = window.scrollY + offset;
       }
       onScroll();
     });
-    resizeObserver.observe(mid);
+    resizeObserver.observe(first);
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("wheel", onWheel, { passive: true });
-    window.addEventListener("keydown", onKeyDown);
-    window.addEventListener("touchstart", onTouchStart, { passive: true });
-    window.addEventListener("touchmove", onTouchMove, { passive: true });
 
     return () => {
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("wheel", onWheel);
-      window.removeEventListener("keydown", onKeyDown);
-      window.removeEventListener("touchstart", onTouchStart);
-      window.removeEventListener("touchmove", onTouchMove);
       resizeObserver.disconnect();
       if (frame) cancelAnimationFrame(frame);
       delete window.__gccLoop;
@@ -156,9 +119,8 @@ export default function InfiniteLoop({ children }) {
     <>
       {bug ? (
         <>
-          <div ref={topRef} className="infinite-loop-copy" aria-hidden="true" inert>{children}</div>
-          <div ref={midRef} className="infinite-loop-copy">{children}</div>
-          <div className="infinite-loop-copy" aria-hidden="true" inert>{children}</div>
+          <div ref={firstRef} className="infinite-loop-copy">{children}</div>
+          <div ref={secondRef} className="infinite-loop-copy" aria-hidden="true" inert>{children}</div>
         </>
       ) : children}
       <EasterBug active={bug} />
