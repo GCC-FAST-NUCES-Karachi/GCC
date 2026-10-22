@@ -18,13 +18,13 @@ export const technicalGroups = [
     title: "Tech Product Design",
     members: [
       { name: "Ali Hussain", role: "Head", github: "https://github.com/Zidarc" },
-      { name: "Wajiha", role: "Co-Head", github: "https://github.com/" },
-      { name: "Ayesha", role: "Co-Head", github: "https://github.com/" },
+      { name: "Wania Muddasir", role: "Co-Head", github: "https://github.com/waniamuddasir" },
+      { name: "Ayesha Nehal", role: "Co-Head", github: "https://github.com/AyeshaNehal" },
     ],
   },
 ];
 
-// Collaborators who are not already listed in a technical group.
+// Other Collaborators 
 export const contributors = [
   { name: "Batool Kazmi", github: "https://github.com/del-b2l" },
   { name: "Ibrahim", github: "https://github.com/maybethemuhammadibrahim" },
