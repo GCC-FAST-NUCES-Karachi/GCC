@@ -261,17 +261,18 @@
     .tier-row-excom > .member:nth-child(4) { order: 4; }
 }
 
-/* Keep the four ExCom officers together on desktop and laptop widths. */
+/* Keep the ExCom officers together on one centred line at laptop widths (works for 2, 3 or 4 people). */
 @media (min-width: 701px) and (max-width: 1199px) {
     .tier-row-excom {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        flex-wrap: nowrap;
+        justify-content: center;
         gap: 0.75rem;
         max-width: none;
     }
 
     .tier-row-excom > .member {
-        width: 100%;
+        flex: 0 0 auto;
+        width: calc((100% - 3 * 0.75rem) / 4);
         min-width: 0;
     }
 }
@@ -524,11 +525,6 @@
     }
 }
 
-/* Touch devices and phones use the popup, so the hover panel is removed */
-@media (hover: none), (max-width: 700px) {
-    .member-reveal { display: none; }
-}
-
 /* ---------- Popup (touch devices and phones) ---------- */
 .member-dialog {
     width: min(92vw, 420px);
@@ -683,4 +679,33 @@
     .tech-section-heading { align-items: flex-start; gap: .65rem; }
     .tech-lead-person { width: 100%; }
     .tech-people { grid-template-columns: 1fr; }
+}
+
+/* =====================================================================
+   GAP + EQUAL FACULTY BOXES  -  paste at the VERY END of team.css
+   ===================================================================== */
+
+/* 1. More room under every row on laptops, so the details panel of one person
+      never covers the heading or label of the next group (// management, // department_heads ...) */
+@media (min-width: 701px) and (hover: hover) {
+    .tier + .tier {
+        margin-top: 9rem;
+    }
+
+    /* rows of the same group: room for the details panel that hangs below a member
+       (needed when the cards wrap onto two rows, e.g. when the page is zoomed in) */
+    .tier-row {
+        row-gap: 7.5rem;
+    }
+}
+
+/* 2. Faculty Head and Faculty Co-Head: details boxes always exactly the same height
+      (room for 5 lines, which is what "Faculty Co-Head" needs when it wraps) */
+.tier-level-0 .member-reveal {
+    font-size: clamp(0.62rem, calc(100cqw / 22), 0.72rem);
+    min-height: calc(4.6rem + 5 * 1.6em + 0.9rem);
+}
+
+.tier-level-0 .member-reveal .member-code {
+    font-size: 1em; /* same text size as before, now taken from the box */
 }
