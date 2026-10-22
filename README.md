@@ -3,7 +3,7 @@
 The GitHub Campus Club website and community arcade, built with Next.js App Router, React, and plain JavaScript.
 
 ## Run locally
-
+ 
 ```bash
 npm install
 npm run dev
