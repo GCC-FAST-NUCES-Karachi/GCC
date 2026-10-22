@@ -17,4 +17,14 @@
   --control-transition: 160ms ease;
   --font-mono: var(--font-jetbrains-mono), monospace;
   --font-sans: var(--font-inter), Arial, Helvetica, sans-serif;
+
+  /* Octo Dive depth zones and answer tiles */
+  --octo-zone-sunlit: #58a6ff;
+  --octo-zone-twilight: #3d7cbf;
+  --octo-zone-midnight: #1e3d6b;
+  --octo-zone-abyss: #7d3cbf;
+  --octo-tile-a: #2563eb;
+  --octo-tile-b: #16a34a;
+  --octo-tile-c: #ea580c;
+  --octo-tile-d: #7c3aed;
 }

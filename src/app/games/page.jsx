@@ -47,6 +47,19 @@ const games = [
     ],
     contributors: [{ username: "maybethemuhammadibrahim", href: "https://github.com/maybethemuhammadibrahim" }],
   },
+  {
+    href: "/games/octo-dive",
+    name: "Octo Dive",
+    command: "./play octo-dive",
+    status: "PLAYABLE",
+    description: "Dive through GitHub and Git questions, build streaks and earn depth with every correct answer.",
+    meta: [
+      { Icon: Target, label: "Goal", value: "Reach the Abyss" },
+      { Icon: Clock, label: "Run time", value: "about 3 min" },
+      { Icon: Keyboard, label: "Controls", value: "Tap tiles or 1–4" },
+    ],
+    contributors: [{ username: "b4t001k", href: "https://github.com/b4t001k" }],
+  },
 ];
 
 const CONTRIBUTE_URL = "https://github.com/ismailsilat7/ghcc/blob/main/games.md";
