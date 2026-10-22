@@ -5,6 +5,33 @@
     box-sizing: border-box;
 }
 
+/* A restrained shared scrollbar theme where the platform exposes scrollbars. */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(139 148 158 / 58%) rgb(13 17 23 / 48%);
+}
+
+*::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+    background: rgb(13 17 23 / 48%);
+}
+
+*::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: rgb(139 148 158 / 58%);
+    background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: rgb(139 148 158 / 82%);
+    background-clip: padding-box;
+}
+
 html {
     scroll-behavior: smooth;
 }
