@@ -80,6 +80,16 @@ export default function InfiniteLoop({ children }) {
     const onTouchMove = (event) => { if (event.touches[0].clientY > touchY) revealAbove(); };
 
     measure();
+    if (window.location.hash) {
+      // Hash navigation lands on the middle copy, which owns the page IDs.
+      // Keep that position and make its loop offset start at zero.
+      offset = -period;
+      looped = true;
+    } else {
+      // The first copy is decorative/inert. Start at the visually identical
+      // middle copy so the controls visible on first load are interactive.
+      jump(-1);
+    }
     normalize();
 
     // Lets the galaxy background follow a continuous scroll value instead of the wrapped one.
