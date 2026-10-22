@@ -644,15 +644,15 @@
 }
 
 .term-art--banner {
+  display: block;
   color: var(--t-green);
-  text-shadow: 0 0 12px rgba(63, 185, 80, 0.5);
-  animation: termReveal 0.8s cubic-bezier(0.2, 0.9, 0.3, 1) backwards;
+  margin: 0.8rem 0;
 }
 
 .term-art--reward {
+  display: block;
   color: var(--t-yellow);
-  text-shadow: 0 0 14px rgba(227, 179, 65, 0.45);
-  animation: termReveal 1s cubic-bezier(0.2, 0.9, 0.3, 1.1) 0.1s backwards;
+  margin: 0.8rem 0;
 }
 
 @keyframes termReveal {
