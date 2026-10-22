@@ -1,0 +1,9 @@
+/* Each copy contains its own margins so every copy has exactly the same height. */
+.infinite-loop-copy {
+  display: flow-root;
+}
+
+/* The loop never ends, so the footer is never reached on the looping page. */
+body.is-looping .site-footer {
+  display: none;
+}

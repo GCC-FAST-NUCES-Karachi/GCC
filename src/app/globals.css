@@ -1,0 +1,134 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    min-width: 320px;
+    margin: 0;
+    background: var(--bg-space);
+    color: var(--text-body);
+    font-family: var(--font-sans);
+}
+
+.site-content {
+    position: relative;
+    z-index: 1;
+}
+
+.skip-link {
+    position: fixed;
+    z-index: 200;
+    top: -4rem;
+    left: 1rem;
+    padding: .75rem 1rem;
+    border-radius: 8px;
+    background: var(--bg-card);
+    color: var(--text-heading);
+    transition: top .15s ease;
+}
+
+.skip-link:focus {
+    top: 1rem;
+}
+
+a {
+    color: inherit;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+    outline: var(--control-focus);
+    outline-offset: var(--control-focus-offset);
+}
+
+button:disabled {
+    cursor: not-allowed;
+}
+
+.eyebrow {
+    margin: 0 0 1rem;
+    color: var(--accent-blue);
+    font-family: var(--font-mono);
+    font-size: .875rem;
+}
+
+h1,
+h2 {
+    color: var(--text-heading);
+    font-weight: 800;
+    line-height: 1.05;
+}
+
+h1 {
+    max-width: 11ch;
+    margin: 0;
+    font-size: clamp(3rem, 8vw, 6rem);
+}
+
+h2 {
+    margin: 0 0 1rem;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+}
+
+.intro {
+    max-width: 60ch;
+    margin: 1.5rem 0;
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    line-height: 1.6;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+    margin-top: 2rem;
+}
+
+.join-button {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    gap: .55rem;
+    padding: .7rem 1rem;
+    border: 1px solid transparent;
+    border-radius: var(--control-radius);
+    background: var(--accent-green);
+    color: #061208;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform var(--control-transition), background-color var(--control-transition), box-shadow var(--control-transition);
+}
+
+.join-button:hover {
+    transform: translateY(-2px);
+    background: #56d364;
+    box-shadow: 0 6px 18px rgb(63 185 80 / 20%);
+}
+
+.join-button:active {
+    transform: translateY(1px) scale(.98);
+    box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+    }
+}

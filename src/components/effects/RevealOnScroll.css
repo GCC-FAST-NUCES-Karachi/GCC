@@ -1,0 +1,24 @@
+.reveal-on-scroll.is-ready {
+  transition: opacity .4s ease, transform .4s ease;
+}
+
+.reveal-on-scroll.is-ready:not(.is-visible) {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-on-scroll.is-ready {
+    transition: none;
+  }
+
+  .reveal-on-scroll.is-ready:not(.is-visible) {
+    opacity: 1;
+    transform: none;
+  }
+}

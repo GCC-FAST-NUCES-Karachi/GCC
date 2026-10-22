@@ -1,0 +1,711 @@
+/* Team route styles */
+.team-page {
+    width: min(1200px, calc(100% - 3rem));
+    margin-inline: auto;
+    padding: clamp(3.5rem, 7vw, 6rem) 0;
+}
+
+.team-hero {
+    position: relative;
+    display: flex;
+    min-height: 0;
+    align-items: center;
+    padding: 1rem 0 clamp(3rem, 8vw, 6rem);
+}
+
+.team-hero-copy {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+}
+
+.team-hero .eyebrow {
+    margin-bottom: 1.4rem;
+}
+
+.team-hero h1 {
+    max-width: 15ch;
+    margin: 0;
+    font-size: clamp(3.25rem, 6.8vw, 6.25rem);
+    letter-spacing: -0.06em;
+    line-height: 0.98;
+    text-wrap: balance;
+}
+
+.team-hero h1 span {
+    color: var(--text-heading, #ffffff);
+}
+
+.team-intro {
+    max-width: 48ch;
+    margin: 1.5rem 0 0;
+    color: var(--text-dim, #8b949e);
+    font-size: clamp(1rem, 1.5vw, 1.125rem);
+    line-height: 1.7;
+}
+
+.team-hero-link {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    gap: 0.65rem;
+    margin-top: 1.75rem;
+    padding: 0.7rem 1.1rem;
+    color: #061208;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-decoration: none;
+    background: var(--accent-green, #3fb950);
+    border-radius: var(--control-radius);
+    transition: transform var(--control-transition), box-shadow var(--control-transition), background-color var(--control-transition);
+}
+
+.team-hero-link svg {
+    transition: transform 0.2s ease;
+}
+
+.team-hero-link:hover svg {
+    transform: translateY(2px);
+}
+
+.team-hero-link:hover {
+    transform: translateY(-2px);
+    background: #56d364;
+    box-shadow: 0 6px 18px rgb(63 185 80 / 20%);
+}
+
+.team-hero-link:active { transform: translateY(1px) scale(.98); box-shadow: none; }
+
+.team-tree {
+    scroll-margin-top: 2rem;
+}
+
+/* Hierarchy: each tier is a centred row; a connector joins one tier to the next */
+.team-tree {
+    --card-w: 260px; /* every card in every tier has this width */
+    margin-top: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tier {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tier + .tier {
+    margin-top: 3rem;
+}
+
+/* decorative connector line between tiers */
+.tier-heading {
+    margin: 0 0 0.5rem;
+    color: var(--text-heading, #ffffff);
+    font-weight: 800;
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    line-height: 1.2;
+    text-align: center;
+}
+
+.tier-label {
+    margin: 0 0 1rem;
+    color: var(--text-dim, #8b949e);
+    font-family: var(--font-mono, "JetBrains Mono", monospace);
+    font-size: 0.8rem;
+}
+
+.contributors-section {
+    margin: clamp(4rem, 8vw, 7rem) auto 0;
+    padding-top: clamp(2rem, 5vw, 3.5rem);
+    border-top: 1px solid var(--border-default);
+}
+
+.tech-section-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    max-width: 1040px;
+    margin: 0 auto 1.75rem;
+}
+.tech-section-heading .tier-label { margin-bottom: .6rem; }
+.tech-section-heading h2 { margin: 0; color: var(--text-heading, #fff); font-size: clamp(2rem, 4vw, 2.65rem); letter-spacing: -.045em; line-height: 1.05; }
+.tech-heading-dot { color: var(--text-dim, #8b949e); }
+.contributors-intro {
+    max-width: 52ch;
+    margin: .75rem 0 0;
+    color: var(--text-dim, #8b949e);
+    line-height: 1.7;
+}
+
+.tech-hierarchy { max-width: 1040px; margin: 0 auto; }
+.tech-lead-node { display: flex; align-items: flex-start; padding: .25rem 0 1rem; margin-bottom: .5rem; }
+.tech-lead-person { width: min(50%, 460px); margin-inline: auto; padding: 1rem; background: linear-gradient(135deg, rgb(63 185 80 / 5%), #0d1117 58%); border: 1px solid rgb(63 185 80 / 24%); border-radius: 12px; }
+.tech-node-kicker { display: flex; align-items: center; gap: .55rem; margin: 0 0 .55rem .1rem; color: var(--text-heading, #fff); font: 700 1rem var(--font-sans, Inter, sans-serif); letter-spacing: -.02em; }
+.tech-node-kicker::before { width: 6px; height: 6px; content: ""; background: var(--accent-green, #3fb950); border-radius: 50%; }
+.tech-person {
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    min-width: 0;
+    padding: .8rem .9rem;
+    background: #10151c;
+    border: 1px solid #252b33;
+    border-radius: 10px;
+    transition: transform .2s ease, border-color .2s ease, background .2s ease;
+}
+.tech-person:hover { transform: translateY(-2px); border-color: rgb(88 166 255 / 45%); background: #151d27; }
+.tech-person-lead {
+    width: 100%;
+    padding: .25rem 0;
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+}
+.tech-person-lead:hover { transform: none; background: transparent; border-color: transparent; }
+.tech-person-avatar {
+    display: grid;
+    width: 54px;
+    height: 54px;
+    flex: 0 0 auto;
+    place-items: center;
+    color: #c9d1d9;
+    font: 700 1rem var(--font-mono, monospace);
+    background: #1b222c;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+}
+.tech-person-info { min-width: 0; }
+.tech-person-info h4 { margin: 0; color: var(--text-heading, #fff); font-size: .98rem; line-height: 1.4; overflow-wrap: anywhere; }
+.tech-person-info p { margin: .15rem 0 0; color: var(--text-dim, #8b949e); font-size: .8rem; }
+.tech-person-github { display: inline-flex; align-items: center; gap: .25rem; margin-top: .45rem; color: var(--accent-blue, #58a6ff); font: .72rem var(--font-mono, monospace); text-decoration: none; }
+.tech-person-github:hover { color: var(--text-heading, #fff); }
+.tech-person-github-placeholder { display: inline-block; margin-top: .45rem; color: var(--text-dim, #8b949e); font: .68rem var(--font-mono, monospace); }
+.tech-person-github:focus-visible,
+.repo-contributors a:focus-visible { outline: var(--control-focus); outline-offset: var(--control-focus-offset); border-radius: 3px; }
+
+.tech-groups {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .85rem;
+}
+.tech-group { min-width: 0; padding: 1.1rem; background: #0d1117; border: 1px solid var(--border-default); border-radius: 14px; }
+.tech-group-heading { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: 1rem; }
+.tech-group h3 { margin: 0; color: var(--text-heading, #fff); font-size: 1.1rem; letter-spacing: -.02em; }
+.tech-group-count { color: #8b949e; font: .72rem var(--font-mono, monospace); white-space: nowrap; }
+.tech-people { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: .65rem; }
+
+.community-contributors { max-width: 1040px; margin: 2rem auto 0; padding-top: 1.4rem; border-top: 1px solid var(--border-default); }
+.community-contributors-heading { display: flex; justify-content: space-between; align-items: end; gap: 1rem; margin-bottom: 1rem; }
+.community-contributors-heading .tier-label { margin-bottom: .4rem; }
+.community-contributors-heading h3 { margin: 0; color: var(--text-heading, #fff); font-size: 1.25rem; letter-spacing: -.02em; }
+.community-contributors-heading > p { margin: 0; color: var(--text-dim, #8b949e); font-size: .85rem; }
+
+.repo-contributors {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+    gap: .75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.repo-contributors li {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: .75rem;
+    padding: .7rem .85rem;
+    background: #0d1117;
+    border: 1px solid var(--border-default);
+    border-radius: 12px;
+    transition: border-color .2s ease, transform .2s ease;
+}
+.repo-contributors li:hover { border-color: rgb(88 166 255 / 40%); transform: translateY(-2px); }
+
+.repo-contributors .contributor-name,
+.repo-contributors a {
+    color: var(--text-heading, #fff);
+    font-weight: 650;
+    overflow-wrap: anywhere;
+}
+.repo-contributors .contributor-name { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.repo-contributors a { flex: 0 0 auto; margin-left: auto; color: var(--accent-blue, #58a6ff); font: .7rem var(--font-mono, monospace); text-decoration: none; }
+.repo-contributor-placeholder { flex: 0 0 auto; color: var(--text-dim, #8b949e); font: .65rem var(--font-mono, monospace); }
+.repo-contributors a:hover { color: var(--text-heading, #fff); }
+
+/* Tablet: up to 3 cards per row, centred */
+.tier-row {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: start;
+    gap: 1.25rem;
+    width: 100%;
+    max-width: calc(3 * var(--card-w) + 2 * 1.25rem);
+}
+
+/* On wide screens, keep the two top ExCom roles in the middle of the row. */
+@media (min-width: 701px) {
+    .tier-row-excom > .member:nth-child(1) { order: 2; }
+    .tier-row-excom > .member:nth-child(2) { order: 3; }
+    .tier-row-excom > .member:nth-child(3) { order: 1; }
+    .tier-row-excom > .member:nth-child(4) { order: 4; }
+}
+
+/* Keep the ExCom officers together on one centred line at laptop widths (works for 2, 3 or 4 people). */
+@media (min-width: 701px) and (max-width: 1199px) {
+    .tier-row-excom {
+        flex-wrap: nowrap;
+        justify-content: center;
+        gap: 0.75rem;
+        max-width: none;
+    }
+
+    .tier-row-excom > .member {
+        flex: 0 0 auto;
+        width: calc((100% - 3 * 0.75rem) / 4);
+        min-width: 0;
+    }
+}
+
+/* Desktop: every member of a tier sits on ONE line; cards shrink a little on small laptops */
+@media (min-width: 1200px) {
+    .team-tree {
+        --card-w: min(260px, calc((100vw - 6rem) / 5));
+    }
+
+    .tier-row {
+        flex-wrap: nowrap;
+        gap: 0.75rem;
+        max-width: none;
+    }
+}
+
+/* ---------- Member: floating circular photo with an orbiting ring (no box) ---------- */
+.member {
+    position: relative;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    width: var(--card-w);
+    container-type: inline-size; /* lets the code font scale with the card width */
+}
+
+/* The photo + name is one real button, so it works with mouse, keyboard and touch */
+.member-trigger {
+    position: relative;
+    z-index: 2; /* stays above the details panel, so the photo overlaps its top edge */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 0.9rem 0.5rem 0.6rem;
+    margin: 0;
+    background: none;
+    border: 0;
+    border-radius: 16px;
+    color: inherit;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.member-trigger:focus-visible {
+    outline: var(--control-focus);
+    outline-offset: var(--control-focus-offset);
+}
+
+/* photo + ring */
+.member-orbit {
+    --orbit-size: 128px; /* change this one value to resize every photo on the page */
+    position: relative;
+    display: block;
+    width: var(--orbit-size);
+    height: var(--orbit-size);
+    transition: transform 0.3s ease;
+}
+
+.member-orbit .member-photo {
+    --photo-size: var(--orbit-size);
+    transition: box-shadow 0.3s ease;
+}
+
+/* thin dashed ring around the photo with a small dot travelling along it */
+.member-ring {
+    position: absolute;
+    inset: -12px;
+    border: 1.5px dashed rgb(88 166 255 / 40%);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: member-spin 30s linear infinite;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.member-ring::after {
+    content: "";
+    position: absolute;
+    top: -4.5px;
+    left: calc(50% - 4px);
+    width: 8px;
+    height: 8px;
+    background: var(--accent-green, #3fb950);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--accent-green, #3fb950);
+}
+
+/* every other ring turns the other way, so the row feels alive but not synchronised */
+.member:nth-child(even) .member-ring {
+    animation-duration: 38s;
+    animation-direction: reverse;
+}
+
+@keyframes member-spin {
+    to { transform: rotate(360deg); }
+}
+
+.member-photo {
+    --photo-size: 128px;
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: var(--photo-size);
+    height: var(--photo-size);
+    aspect-ratio: 1; /* always a perfect circle */
+    max-width: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--bg-base, #0d1117);
+    border: 1px solid var(--accent-blue, #58a6ff);
+}
+
+.member-photo svg {
+    width: 100%;
+    height: 100%;
+}
+
+.member-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 20%; /* keeps faces in view */
+}
+
+/* name + role under the photo, so you always know who it is */
+.member-caption {
+    display: block;
+    margin-top: 1.25rem;
+    text-align: center;
+    transition: opacity 0.25s ease;
+}
+
+.member-caption strong {
+    display: block;
+    color: var(--text-heading, #ffffff);
+    font-size: 1rem;
+    line-height: 1.3;
+    text-wrap: balance;
+}
+
+.member-caption span {
+    display: block;
+    margin-top: 0.2rem;
+    color: var(--accent-green, #3fb950);
+    font-family: var(--font-mono, "JetBrains Mono", monospace);
+    font-size: 0.72rem;
+}
+
+/* Details (laptop): a dark glass panel below the photo; the photo overlaps its top edge */
+.member-reveal {
+    position: absolute;
+    top: 5.5rem;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    padding: 4.6rem 0.9rem 0.9rem;
+    background: rgba(13, 17, 23, 0.86);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgb(88 166 255 / 45%);
+    border-radius: 16px;
+    box-shadow: 0 12px 32px rgba(1, 4, 9, 0.6), 0 0 24px rgba(88, 166, 255, 0.18);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease;
+}
+
+.member-reveal .member-code {
+    font-size: clamp(0.62rem, calc(100cqw / 22), 0.72rem);
+    line-height: 1.6;
+}
+
+.member-code {
+    align-self: flex-end;
+    width: 100%;
+}
+
+.member-code {
+    align-self: stretch;
+    display: block;
+    white-space: normal;       /* long values wrap at spaces ...            */
+    overflow-wrap: break-word; /* ... and only break inside a word if one word alone is too long */
+    font-family: var(--font-mono, "JetBrains Mono", monospace);
+    font-size: clamp(0.62rem, calc(100cqw / 21), 0.75rem);
+    line-height: 1.7;
+    color: var(--text-body, #c9d1d9);
+}
+
+/* each field is its own line; wrapped text is indented under the key (hanging indent) */
+.py-line {
+    display: block;
+    padding-left: 4ch;
+    text-indent: -2ch; /* first line starts at 2ch, wrapped lines at 4ch */
+}
+
+.py-line--edge {
+    padding-left: 0;   /* "member = {" and "}" sit at the left edge */
+    text-indent: 0;
+}
+
+.py-var { color: var(--accent-blue, #58a6ff); }
+.py-op  { color: var(--text-dim, #8b949e); }
+.py-str { color: #bc8cff; }
+.py-val { color: var(--accent-green, #3fb950); }
+
+@media (hover: hover) {
+    .member:hover {
+        transform: translateY(-4px);
+        border-color: var(--accent-blue, #58a6ff);
+        box-shadow: 0 0 24px rgba(88, 166, 255, 0.25);
+    }
+}
+
+/* Touch devices and phones use the popup, so the hover panel is removed */
+@media (hover: none), (max-width: 700px) {
+    .member-reveal { display: none; }
+}
+
+/* Laptop hover / keyboard focus: ring glows, photo lifts, name fades out, details slide in */
+@media (min-width: 701px) and (hover: hover) {
+    .member:hover,
+    .member:has(.member-trigger:focus-visible) {
+        z-index: 10; /* the panel may overlap the row below, so lift the whole member */
+    }
+
+    .member:hover .member-orbit,
+    .member:has(.member-trigger:focus-visible) .member-orbit {
+        transform: translateY(-4px);
+    }
+
+    .member:hover .member-ring,
+    .member:has(.member-trigger:focus-visible) .member-ring {
+        border-color: var(--accent-blue, #58a6ff);
+        box-shadow: 0 0 22px rgba(88, 166, 255, 0.35);
+    }
+
+    .member:hover .member-caption,
+    .member:has(.member-trigger:focus-visible) .member-caption {
+        opacity: 0;
+    }
+
+    .member:hover .member-reveal,
+    .member:has(.member-trigger:focus-visible) .member-reveal {
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        pointer-events: auto; /* moving the mouse onto the panel keeps it open */
+    }
+}
+
+/* ---------- Popup (touch devices and phones) ---------- */
+.member-dialog {
+    width: min(92vw, 420px);
+    max-height: 85dvh;
+    padding: 0;
+    overflow: auto;
+    color: var(--text-body, #c9d1d9);
+    background: var(--bg-card, #161b22);
+    border: 1px solid var(--accent-blue, #58a6ff);
+    border-radius: 14px;
+    box-shadow: 0 0 32px rgba(88, 166, 255, 0.25);
+}
+
+.member-dialog::backdrop {
+    background: rgba(1, 4, 9, 0.75);
+    backdrop-filter: blur(4px);
+}
+
+.member-dialog-body {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 2.5rem 1.25rem 1.5rem;
+}
+
+.member-dialog-close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 44px;
+    height: 44px;
+    font-size: 1.1rem;
+    color: var(--text-dim, #8b949e);
+    background: none;
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.member-dialog-close:focus-visible {
+    outline: var(--control-focus);
+    outline-offset: var(--control-focus-offset);
+}
+
+.member-dialog-close:hover { color: var(--text-heading); background: rgb(88 166 255 / 8%); }
+.member-dialog-close:active { transform: scale(.96); }
+
+.member-dialog .member-photo {
+    --photo-size: 150px; /* popup photo: round, a bit bigger than the card photo */
+}
+
+.member-dialog .member-code {
+    align-self: stretch;
+    font-size: 0.85rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .member-ring {
+        animation: none;
+    }
+    .member-orbit,
+    .member-ring,
+    .member-caption,
+    .member-reveal {
+        transition: none;
+    }
+}
+
+/* ---------- Phones: floating photos with name, two per row ---------- */
+@media (max-width: 700px) {
+    .team-page {
+        width: calc(100% - 2rem);
+        padding: 4rem 0;
+    }
+
+    .team-hero h1 {
+        font-size: clamp(3.15rem, 14vw, 4.5rem);
+    }
+
+    .team-hero .eyebrow {
+        margin-bottom: 1rem;
+    }
+
+    .team-tree {
+        margin-top: 1rem;
+    }
+
+    .tier-row {
+        align-items: stretch; /* cards in the same row always have equal height */
+        gap: 0.75rem;
+    }
+
+    /* President and VP appear first on phones, following their source order. */
+    .tier-row-excom > .member { order: initial; }
+
+    .member {
+        width: calc(50% - 0.375rem);
+        max-width: 180px;
+    }
+
+    .member-orbit {
+        --orbit-size: 100px;
+    }
+
+    .member-caption {
+        margin-top: 1.1rem;
+    }
+
+    .member-caption strong { font-size: 0.85rem; }
+    .member-caption span   { font-size: 0.62rem; }
+
+    .tech-section-heading { align-items: start; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem; }
+    .tech-lead-node { align-items: flex-start; padding: .25rem 0 .75rem; }
+    .tech-lead-person { width: 100%; }
+    .tech-groups { grid-template-columns: 1fr; gap: 1rem; }
+    .tech-people { grid-template-columns: 1fr; }
+    .community-contributors-heading { align-items: start; flex-direction: column; }
+}
+
+/* Keep the technical team calm and consistent with the site's existing cards. */
+.contributors-section { max-width: 1200px; }
+.tech-section-heading { max-width: none; margin-bottom: 1.5rem; }
+.tech-section-heading h2 { font-size: clamp(2rem, 4vw, 2.65rem); }
+.tech-section-title .tier-label,
+.community-contributors-heading .tier-label { color: var(--accent-blue); }
+.contributors-intro { max-width: 42ch; margin: 0 0 .25rem; }
+.tech-hierarchy { max-width: none; }
+.tech-lead-node { margin-bottom: 1rem; padding: 0; }
+.tech-lead-person {
+    width: 100%;
+    margin: 0;
+    padding: 1rem;
+    background: var(--bg-base);
+    border-color: var(--border-default);
+}
+.tech-node-kicker { margin-bottom: .25rem; color: var(--text-heading); font-size: 1.05rem; }
+.tech-node-kicker::before { display: none; }
+.tech-person-lead { padding: .8rem 0; }
+.tech-person,
+.tech-person:hover { box-shadow: none; }
+.tech-person-avatar { width: 48px; height: 48px; color: var(--accent-blue); background: rgb(88 166 255 / 8%); border-color: rgb(88 166 255 / 18%); border-radius: 10px; }
+.tech-groups { gap: 1rem; }
+.tech-group { padding: 1rem; border-radius: 12px; background: var(--bg-base); }
+.tech-group-heading { margin-bottom: .65rem; }
+.tech-group h3 { font-size: 1.05rem; }
+.tech-people { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem .9rem; }
+.community-contributors { max-width: none; margin-top: 2rem; }
+
+@media (max-width: 700px) {
+    .tech-section-heading { align-items: flex-start; gap: .65rem; }
+    .tech-lead-person { width: 100%; }
+    .tech-people { grid-template-columns: 1fr; }
+}
+
+/* =====================================================================
+   GAP + EQUAL FACULTY BOXES  -  paste at the VERY END of team.css
+   ===================================================================== */
+
+/* 1. More room under every row on laptops, so the details panel of one person
+      never covers the heading or label of the next group (// management, // department_heads ...) */
+@media (min-width: 701px) and (hover: hover) {
+    .tier + .tier {
+        margin-top: 9rem;
+    }
+
+    /* rows of the same group: room for the details panel that hangs below a member
+       (needed when the cards wrap onto two rows, e.g. when the page is zoomed in) */
+    .tier-row {
+        row-gap: 7.5rem;
+    }
+}
+
+/* 2. Faculty Head and Faculty Co-Head: details boxes always exactly the same height
+      (room for 5 lines, which is what "Faculty Co-Head" needs when it wraps) */
+.tier-level-0 .member-reveal {
+    font-size: clamp(0.62rem, calc(100cqw / 22), 0.72rem);
+    min-height: calc(4.6rem + 5 * 1.6em + 0.9rem);
+}
+
+.tier-level-0 .member-reveal .member-code {
+    font-size: 1em; /* same text size as before, now taken from the box */
+}

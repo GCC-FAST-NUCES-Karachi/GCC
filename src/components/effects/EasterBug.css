@@ -1,0 +1,575 @@
+/* ───────── Cracks that grow with every loop ───────── */
+.loop-glass {
+  position: fixed;
+  z-index: 150;
+  inset: 0;
+  pointer-events: none;
+}
+
+.loop-cracks {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Soft glow only on desktop; filters on a full-screen layer are costly on phones. */
+@media (min-width: 701px) and (pointer: fine) {
+  .loop-cracks {
+    filter: drop-shadow(0 0 2px rgb(255 255 255 / 35%));
+  }
+}
+
+/* Shared by the loop cracks and the finale cracks */
+.glass-crack {
+  fill: none;
+  stroke: #fff;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+/* Already seen: drawn instantly, no animation cost */
+.glass-crack.is-drawn {
+  stroke-dashoffset: 0;
+}
+
+.glass-crack.is-new {
+  animation: glass-draw var(--dur) cubic-bezier(.22, .7, .3, 1) var(--delay) both;
+}
+
+@keyframes glass-draw {
+  0% {
+    opacity: 0;
+    stroke-dashoffset: 1;
+  }
+
+  1% {
+    opacity: 1;
+    stroke-dashoffset: 1;
+  }
+
+  100% {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Tremor on every new stage. Two identical keyframes so the animation restarts by swapping class. */
+.loop-glass.shake-a {
+  animation: loop-shake-a .45s ease-out;
+}
+
+.loop-glass.shake-b {
+  animation: loop-shake-b .45s ease-out;
+}
+
+@keyframes loop-shake-a {
+  0% { transform: translate(0, 0); }
+  18% { transform: translate(calc(var(--amp) * -1), calc(var(--amp) * .6)); }
+  36% { transform: translate(calc(var(--amp) * .9), calc(var(--amp) * -.7)); }
+  54% { transform: translate(calc(var(--amp) * -.6), calc(var(--amp) * -.4)); }
+  75% { transform: translate(calc(var(--amp) * .3), calc(var(--amp) * .3)); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes loop-shake-b {
+  0% { transform: translate(0, 0); }
+  18% { transform: translate(calc(var(--amp) * -1), calc(var(--amp) * .6)); }
+  36% { transform: translate(calc(var(--amp) * .9), calc(var(--amp) * -.7)); }
+  54% { transform: translate(calc(var(--amp) * -.6), calc(var(--amp) * -.4)); }
+  75% { transform: translate(calc(var(--amp) * .3), calc(var(--amp) * .3)); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Short white impact flash (opacity only, so it stays on the GPU) */
+.loop-flash {
+  position: fixed;
+  z-index: 151;
+  inset: 0;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+  animation: loop-flash .4s ease-out;
+}
+
+@keyframes loop-flash {
+  0% { opacity: 0; }
+  15% { opacity: var(--peak); }
+  100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glass-crack,
+  .glass-crack.is-new {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+
+  .loop-glass.shake-a,
+  .loop-glass.shake-b {
+    animation: none;
+  }
+
+  .loop-flash,
+  .fin-flash {
+    display: none;
+  }
+}
+
+/* ───────── Finale ───────── */
+.fin-root {
+  position: fixed;
+  z-index: 300;
+  inset: 0;
+  overflow: hidden;
+  color: #c9d1d9;
+  font-family: var(--font-mono), monospace;
+  overscroll-behavior: contain;
+  touch-action: none;
+}
+
+.fin-root.is-out {
+  pointer-events: none;
+  animation: fin-out .9s ease .1s forwards;
+}
+
+@keyframes fin-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fin-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.fin-glass {
+  position: absolute;
+  inset: 0;
+  animation: fin-shake .55s ease-out .7s;
+}
+
+@keyframes fin-shake {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  15% {
+    transform: translate(-14px, 8px);
+  }
+
+  30% {
+    transform: translate(12px, -10px);
+  }
+
+  45% {
+    transform: translate(-9px, -6px);
+  }
+
+  60% {
+    transform: translate(7px, 7px);
+  }
+
+  80% {
+    transform: translate(-3px, 2px);
+  }
+
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+.fin-shards {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  animation: fin-fade-in .45s ease .3s forwards;
+}
+
+@keyframes fin-fade-in {
+  to {
+    opacity: 1;
+  }
+}
+
+.fin-shard {
+  position: absolute;
+}
+
+.fin-root.is-shatter .fin-shard,
+.fin-root.is-terminal .fin-shard,
+.fin-root.is-out .fin-shard {
+  animation: fin-fall 1.1s cubic-bezier(.55, .05, .9, .6) var(--delay) forwards;
+}
+
+/* Only promote shards to their own layers while they actually move */
+.fin-root.is-shatter .fin-shard {
+  will-change: transform, opacity;
+}
+
+@keyframes fin-fall {
+  to {
+    transform: translate(var(--dx), var(--dy)) rotate(var(--rot));
+    opacity: 0;
+  }
+}
+
+.fin-cracks {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Cracks vanish as the glass breaks apart */
+.fin-root.is-shatter .fin-cracks,
+.fin-root.is-terminal .fin-cracks,
+.fin-root.is-out .fin-cracks {
+  opacity: 0;
+  transition: opacity .45s ease;
+}
+
+.fin-flash {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  opacity: 0;
+  animation: fin-flash .7s ease-out .75s;
+}
+
+@keyframes fin-flash {
+  0% {
+    opacity: 0;
+  }
+
+  8% {
+    opacity: .85;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.fin-flash-2 {
+  background: #c9d1d9;
+  animation: none;
+}
+
+.fin-root.is-shatter .fin-flash-2 {
+  animation: fin-flash2 .6s ease-out;
+}
+
+@keyframes fin-flash2 {
+  0% {
+    opacity: .25;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ───────── GitHub terminal stage ───────── */
+.fin-stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  min-width: 0;
+  min-height: 0;
+  padding: 1.5rem;
+  opacity: 0;
+  transition: opacity .5s ease;
+  background: radial-gradient(ellipse 70% 50% at 50% 15%, rgba(88, 166, 255, .12), transparent 70%), rgba(1, 4, 9, .88);
+}
+
+.fin-root.is-shatter .fin-stage,
+.fin-root.is-terminal .fin-stage,
+.fin-root.is-out .fin-stage {
+  opacity: 1;
+}
+
+.fin-root .fin-term {
+  pointer-events: none;
+  display: grid;
+  grid-template-rows: min-content minmax(0, 1fr) min-content;
+  width: min(1040px, 100%);
+  height: min(760px, calc(100dvh - 3rem));
+  max-height: 100%;
+  min-width: 0;
+  min-height: 0;
+  animation: none;
+  transition: opacity .5s ease, transform .5s ease, filter .5s ease;
+}
+
+.fin-stage.is-opening .fin-term {
+  opacity: .12;
+  transform: scale(.96);
+  filter: blur(3px);
+}
+
+.fin-term .terminal-titlebar,
+.fin-term .terminal-output,
+.fin-term .terminal-input-area {
+  min-width: 0;
+}
+
+.fin-term .terminal-output {
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.fin-term .terminal-send {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  line-height: 1;
+}
+
+.fin-term-body {
+  display: block;
+  min-height: 0;
+  padding: 1.1rem 1.2rem;
+  color: #c9d1d9;
+  font-family: var(--font-mono), monospace;
+  font-size: clamp(.7rem, 1.7vw, .92rem);
+  line-height: 1.65;
+}
+
+.fin-placeholder {
+  color: #4a5362;
+  font-size: .92rem;
+  white-space: nowrap;
+}
+
+.fin-line {
+  overflow-wrap: anywhere;
+}
+
+.fin-prompt {
+  color: #3fb950;
+  font-weight: 700;
+}
+
+.fin-out {
+  color: #8b949e;
+}
+
+.fin-ok {
+  color: #7ee787;
+}
+
+.fin-del {
+  background: rgba(248, 81, 73, .15);
+  color: #ff7b72;
+}
+
+.fin-add {
+  background: rgba(63, 185, 80, .18);
+  color: #7ee787;
+}
+
+.fin-type {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  color: #e6edf3;
+  vertical-align: bottom;
+  white-space: nowrap;
+  animation: fin-typing calc(var(--n) * 22ms) steps(var(--n)) both;
+}
+
+@keyframes fin-typing {
+  from {
+    width: 0;
+  }
+
+  to {
+    width: calc(var(--n) * 1ch);
+  }
+}
+
+.fin-line.is-last::after {
+  display: inline-block;
+  width: .6em;
+  height: 1.05em;
+  margin-left: 3px;
+  background: #3fb950;
+  vertical-align: text-bottom;
+  content: "";
+  animation: fin-blink 1s steps(1) infinite;
+}
+
+.fin-bar {
+  display: inline-block;
+  width: 8ch;
+  height: .7em;
+  border: 1px solid #3fb950;
+  vertical-align: baseline;
+}
+
+.fin-bar b {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: #3fb950;
+  animation: fin-bar .9s ease-out forwards;
+}
+
+@keyframes fin-bar {
+  to {
+    width: 100%;
+  }
+}
+
+/* "terminal is now opening" */
+.fin-open {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.6rem;
+  padding: 1.5rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .5s ease;
+}
+
+.fin-stage.is-opening .fin-open {
+  opacity: 1;
+}
+
+.fin-open p {
+  max-width: 100%;
+  margin: 0;
+  color: #fff;
+  font-size: clamp(1.25rem, 5.2vw, 3.4rem);
+  overflow-wrap: anywhere;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  text-align: center;
+  text-shadow: 0 0 24px rgba(63, 185, 80, .75);
+}
+
+.fin-dots::after {
+  content: "";
+  animation: fin-dots 1.2s steps(1) infinite;
+}
+
+@keyframes fin-dots {
+  0% {
+    content: "";
+  }
+
+  25% {
+    content: ".";
+  }
+
+  50% {
+    content: "..";
+  }
+
+  75% {
+    content: "...";
+  }
+}
+
+.fin-pr {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: .6rem .9rem;
+  padding: .7rem 1rem;
+  border: 1px solid #30363d;
+  border-radius: 10px;
+  background: #0d1117;
+  font-size: clamp(.7rem, 1.7vw, .9rem);
+}
+
+.fin-pr-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .25rem .7rem;
+  border-radius: 999px;
+  background: #8957e5;
+  color: #fff;
+  font-weight: 700;
+}
+
+.fin-pr-title {
+  color: #e6edf3;
+  font-weight: 700;
+}
+
+.fin-pr-title em {
+  color: #8b949e;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.fin-pr-branch {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .15rem .55rem;
+  border-radius: 6px;
+  background: rgba(88, 166, 255, .15);
+  color: #58a6ff;
+}
+
+.fin-skip {
+  position: absolute;
+  right: 1rem;
+  bottom: calc(.8rem + env(safe-area-inset-bottom, 0px));
+  color: #484f58;
+  font-size: .7rem;
+}
+
+@media (max-width: 768px) {
+  .fin-root {
+    inset: var(--fin-vvt, 0px) 0 auto;
+    height: var(--fin-vvh, 100dvh);
+  }
+
+  .fin-stage {
+    padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px);
+  }
+
+  .fin-root .fin-term {
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    border-radius: 0;
+  }
+
+  .fin-term .terminal-titlebar {
+    min-height: calc(50px + env(safe-area-inset-top, 0px));
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  .fin-term .terminal-input-area {
+    padding-bottom: calc(.6rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media (max-height: 480px) and (min-width: 769px) {
+  .fin-stage {
+    padding-block: .5rem;
+  }
+
+  .fin-root .fin-term {
+    height: calc(100dvh - 1rem);
+  }
+}
