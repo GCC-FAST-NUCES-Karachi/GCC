@@ -7,8 +7,8 @@ Thanks for helping build the GitHub Campus Club FAST-NUCES website and arcade. C
 1. Fork the repository on GitHub, then clone your fork. If you already have repository access, clone it directly.
 
    ```bash
-   git clone https://github.com/<your-account>/ghcc.git
-   cd ghcc
+   git clone https://github.com/<your-account>/GCC.git
+   cd GCC
    ```
 
 2. Install the project dependencies and start the development server:

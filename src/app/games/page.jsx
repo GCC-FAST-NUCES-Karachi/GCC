@@ -58,11 +58,11 @@ const games = [
       { Icon: Clock, label: "Run time", value: "about 3 min" },
       { Icon: Keyboard, label: "Controls", value: "Tap tiles or 1–4" },
     ],
-    contributors: [{ username: "del-b2l", href: "https://github.com/ismailsilat7/ghcc/commits?author=del-b2l" }],
+    contributors: [{ username: "del-b2l", href: "https://github.com/GCC-FAST-NUCES-Karachi/GCC/commits?author=del-b2l" }],
   },
 ];
 
-const CONTRIBUTE_URL = "https://github.com/ismailsilat7/ghcc/blob/main/games.md";
+const CONTRIBUTE_URL = "https://github.com/GCC-FAST-NUCES-Karachi/GCC/blob/main/games.md";
 
 const steps = [
   { Icon: BookOpen, title: "Read the game guide", text: "See how a game plugs into the arcade." },

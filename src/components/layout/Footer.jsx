@@ -29,9 +29,9 @@ const columns = [
   {
     heading: "BUILD",
     links: [
-      { href: "https://github.com/GCC-FAST-NUCES-Karachi/ghcc", label: "Open source projects" },
-      { href: "https://github.com/GCC-FAST-NUCES-Karachi/ghcc/blob/main/CONTRIBUTING.md", label: "Contributing" },
-      { href: "mailto:ghcc@nu.edu.pk", label: "Contact us" },
+      { href: "https://github.com/GCC-FAST-NUCES-Karachi/GCC", label: "Open source projects" },
+      { href: "https://github.com/GCC-FAST-NUCES-Karachi/GCC/blob/main/CONTRIBUTING.md", label: "Contributing" },
+      { href: "mailto:github.khi@nu.edu.pk", label: "Contact us" },
     ],
   },
 ];
