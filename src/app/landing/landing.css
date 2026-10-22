@@ -62,8 +62,13 @@
     box-shadow: 0 8px 24px rgb(63 185 80 / 15%);
 }
 
-.hero-cta svg { transition: transform var(--control-transition); }
-.hero-cta:hover svg { transform: translateX(3px); }
+.hero-cta svg {
+    transition: transform var(--control-transition);
+}
+
+.hero-cta:hover svg {
+    transform: translateX(3px);
+}
 
 .hero-description {
     max-width: 520px;
@@ -91,14 +96,19 @@
     text-decoration: none;
 }
 
-.hero-secondary:hover { color: var(--text-heading); }
+.hero-secondary:hover {
+    color: var(--text-heading);
+}
 
 .hero-cta:focus-visible {
     outline: var(--control-focus);
     outline-offset: var(--control-focus-offset);
 }
 
-.hero-secondary:focus-visible { outline: var(--control-focus); outline-offset: var(--control-focus-offset); }
+.hero-secondary:focus-visible {
+    outline: var(--control-focus);
+    outline-offset: var(--control-focus-offset);
+}
 
 .hero .eyebrow {
     margin: 1rem 0 0;
@@ -178,8 +188,15 @@
         width: calc(100% - 2rem);
     }
 
-    .hero-github-mark { width: 64px; height: 64px; margin-bottom: 1.25rem; }
-    .hero-actions { gap: .65rem 1rem; }
+    .hero-github-mark {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 1.25rem;
+    }
+
+    .hero-actions {
+        gap: .65rem 1rem;
+    }
 }
 
 @media (max-height: 620px) {
@@ -376,7 +393,9 @@
     align-items: stretch;
 }
 
-.highlights-carousel-controls { display: none; }
+.highlights-carousel-controls {
+    display: none;
+}
 
 .workshop-highlight-card {
     display: flex;
@@ -412,7 +431,7 @@
 
 .workshop-highlight-type {
     color: var(--accent-blue);
-    font:  .68rem var(--font-mono);
+    font: .68rem var(--font-mono);
     letter-spacing: .09em;
     line-height: 1.4;
     text-transform: uppercase;
@@ -468,15 +487,54 @@ a.community-link-card:hover {
     outline-offset: 3px;
 }
 
-.community-link-copy { display: grid; flex: 1; gap: .3rem; }
-.community-link-copy strong { color: var(--text-heading); font-size: .95rem; }
-.community-link-copy>span { color: var(--text-dim); font-size: .79rem; line-height: 1.45; }
-.community-link-card>svg { flex: 0 0 auto; color: var(--accent-blue); }
-.community-link-card.linkedin .community-card-icon { background: rgb(88 166 255 / 14%); color: var(--accent-blue); }
-.community-link-card.whatsapp .community-card-icon { background: rgb(63 185 80 / 12%); color: var(--accent-green); }
-.community-card-icon svg { width: 21px; height: 21px; fill: currentColor; }
-.community-coming-soon { flex: 0 0 auto; color: var(--text-dim); font: .68rem var(--font-mono); }
-.community-link-card.unavailable { border-style: dashed; opacity: .82; }
+.community-link-copy {
+    display: grid;
+    flex: 1;
+    gap: .3rem;
+}
+
+.community-link-copy strong {
+    color: var(--text-heading);
+    font-size: .95rem;
+}
+
+.community-link-copy>span {
+    color: var(--text-dim);
+    font-size: .79rem;
+    line-height: 1.45;
+}
+
+.community-link-card>svg {
+    flex: 0 0 auto;
+    color: var(--accent-blue);
+}
+
+.community-link-card.linkedin .community-card-icon {
+    background: rgb(88 166 255 / 14%);
+    color: var(--accent-blue);
+}
+
+.community-link-card.whatsapp .community-card-icon {
+    background: rgb(63 185 80 / 12%);
+    color: var(--accent-green);
+}
+
+.community-card-icon svg {
+    width: 21px;
+    height: 21px;
+    fill: currentColor;
+}
+
+.community-coming-soon {
+    flex: 0 0 auto;
+    color: var(--text-dim);
+    font: .68rem var(--font-mono);
+}
+
+.community-link-card.unavailable {
+    border-style: dashed;
+    opacity: .82;
+}
 
 .community-card-icon {
     display: grid;
@@ -497,8 +555,16 @@ a.community-link-card:hover {
     letter-spacing: -.06em;
 }
 
-.highlight-community-card strong { color: var(--text-heading); font-size: 1.03rem; }
-.highlight-community-card>span:nth-last-child(2) { color: var(--text-dim); font-size: .82rem; line-height: 1.5; }
+.highlight-community-card strong {
+    color: var(--text-heading);
+    font-size: 1.03rem;
+}
+
+.highlight-community-card>span:nth-last-child(2) {
+    color: var(--text-dim);
+    font-size: .82rem;
+    line-height: 1.5;
+}
 
 .community-card-link {
     display: flex;
@@ -671,7 +737,10 @@ a.community-link-card:hover {
 }
 
 .read-more:hover,
-.view-all-link:hover { color: var(--text-heading); text-decoration: underline; }
+.view-all-link:hover {
+    color: var(--text-heading);
+    text-decoration: underline;
+}
 
 .read-more {
     margin-top: auto;
@@ -779,9 +848,11 @@ a.community-link-card:hover {
         -webkit-overflow-scrolling: touch;
     }
 
-    .highlights-carousel-track::-webkit-scrollbar { display: none; }
+    .highlights-carousel-track::-webkit-scrollbar {
+        display: none;
+    }
 
-    .highlights-carousel-track > * {
+    .highlights-carousel-track>* {
         flex: 0 0 min(88vw, 390px);
         scroll-snap-align: start;
         scroll-snap-stop: always;
@@ -839,7 +910,9 @@ a.community-link-card:hover {
         outline-offset: 3px;
     }
 
-    .highlights-slide-current { color: var(--accent-blue); }
+    .highlights-slide-current {
+        color: var(--accent-blue);
+    }
 }
 
 /* ---------- Play ---------- */
@@ -929,7 +1002,7 @@ a.community-link-card:hover {
     margin: 0 auto 1.4rem;
 }
 
-.arcade-library-heading > div > span {
+.arcade-library-heading>div>span {
     color: var(--accent-green);
     font: 700 .65rem var(--font-mono);
     letter-spacing: .12em;
@@ -966,11 +1039,15 @@ a.community-link-card:hover {
     transition: border-color var(--control-transition), color var(--control-transition), background-color var(--control-transition);
 }
 
-.arcade-library-link:hover { border-color: var(--accent-blue); background: rgb(88 166 255 / 8%); color: var(--accent-blue); }
+.arcade-library-link:hover {
+    border-color: var(--accent-blue);
+    background: rgb(88 166 255 / 8%);
+    color: var(--accent-blue);
+}
 
 .arcade-game-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1rem;
 }
 
@@ -988,27 +1065,87 @@ a.community-link-card:hover {
     transition: border-color var(--control-transition), transform var(--control-transition), box-shadow var(--control-transition);
 }
 
-.arcade-game-card:hover { transform: translateY(-4px); border-color: rgb(63 185 80 / 65%); box-shadow: inset 0 1px rgb(255 255 255 / 3%), 0 15px 34px rgb(0 0 0 / 28%), 0 0 22px rgb(63 185 80 / 9%); }
+.arcade-game-card:hover {
+    transform: translateY(-4px);
+    border-color: rgb(63 185 80 / 65%);
+    box-shadow: inset 0 1px rgb(255 255 255 / 3%), 0 15px 34px rgb(0 0 0 / 28%), 0 0 22px rgb(63 185 80 / 9%);
+}
 
 .arcade-machine-top {
     display: flex;
     min-height: 30px;
     align-items: center;
     justify-content: space-between;
-    padding: 0 .25rem .45rem;
+    padding: 0 0 .45rem;
     color: #818b96;
     font: 700 .58rem var(--font-mono);
     letter-spacing: .12em;
 }
 
-.arcade-ready { display: inline-flex; align-items: center; gap: .4rem; color: var(--accent-green); }
-.arcade-ready i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px currentColor; animation: arcade-ready-pulse 2s ease-in-out infinite; }
-.arcade-game-copy { position: relative; z-index: 1; display: flex; min-width: 0; flex: 1; flex-direction: column; }
-.arcade-game-genre { color: var(--text-dim); font: 700 .6rem var(--font-mono); letter-spacing: .12em; }
-.arcade-game-copy h4 { margin: .65rem 0 .4rem; color: var(--text-heading); font-size: clamp(1.3rem, 2.3vw, 1.7rem); letter-spacing: -.035em; }
-.arcade-game-copy p { min-height: 2.8em; margin: 0; color: #aab4bf; font-size: .83rem; line-height: 1.55; text-wrap: pretty; }
-.arcade-game-footer { position: relative; z-index: 1; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem; margin-top: auto; padding-top: 1.5rem; }
-.arcade-game-detail { color: var(--text-dim); font: 700 .58rem var(--font-mono); letter-spacing: .07em; }
+.arcade-ready {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    color: var(--accent-green);
+}
+
+.arcade-ready i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 8px currentColor;
+    animation: arcade-ready-pulse 2s ease-in-out infinite;
+}
+
+.arcade-game-copy {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    flex-direction: column;
+}
+
+.arcade-game-genre {
+    color: var(--text-dim);
+    font: 700 .6rem var(--font-mono);
+    letter-spacing: .12em;
+}
+
+.arcade-game-copy h4 {
+    margin: .65rem 0 .4rem;
+    color: var(--text-heading);
+    font-size: clamp(1.3rem, 2.3vw, 1.7rem);
+    letter-spacing: -.035em;
+}
+
+.arcade-game-copy p {
+    min-height: 2.8em;
+    margin: 0;
+    color: #aab4bf;
+    font-size: .83rem;
+    line-height: 1.55;
+    text-wrap: pretty;
+}
+
+.arcade-game-footer {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem;
+    margin-top: auto;
+    padding-top: 1.5rem;
+}
+
+.arcade-game-detail {
+    color: var(--text-dim);
+    font: 700 .58rem var(--font-mono);
+    letter-spacing: .07em;
+}
 
 .arcade-game-card .arcade-play-link {
     min-height: 40px;
@@ -1021,12 +1158,28 @@ a.community-link-card:hover {
     letter-spacing: .08em;
 }
 
-@keyframes arcade-ready-pulse { 50% { opacity: .45; filter: brightness(1.5); } }
+@keyframes arcade-ready-pulse {
+    50% {
+        opacity: .45;
+        filter: brightness(1.5);
+    }
+}
 
-.arcade-game-card:focus-within { outline: 2px solid var(--accent-blue); outline-offset: 3px; }
+.arcade-game-card:focus-within {
+    outline: 2px solid var(--accent-blue);
+    outline-offset: 3px;
+}
 
-.arcade-prompt { max-width: 1000px; margin: .75rem auto 0; color: var(--text-dim); font: .7rem var(--font-mono); }
-.arcade-prompt::first-letter { color: var(--accent-green); }
+.arcade-prompt {
+    max-width: 1000px;
+    margin: .75rem auto 0;
+    color: var(--text-dim);
+    font: .7rem var(--font-mono);
+}
+
+.arcade-prompt::first-letter {
+    color: var(--accent-green);
+}
 
 .arcade-content {
     display: grid;
@@ -1120,7 +1273,10 @@ a.community-link-card:hover {
     box-shadow: 0 6px 18px rgb(63 185 80 / 12%);
 }
 
-.arcade-play-link:active { transform: translateY(1px) scale(.98); box-shadow: none; }
+.arcade-play-link:active {
+    transform: translateY(1px) scale(.98);
+    box-shadow: none;
+}
 
 .secret-hint a:hover {
     text-decoration: underline;
@@ -1316,7 +1472,10 @@ a.community-link-card:hover {
     box-shadow: 0 6px 18px rgb(63 185 80 / 20%);
 }
 
-.play-button:active { transform: translateY(1px) scale(.98); box-shadow: none; }
+.play-button:active {
+    transform: translateY(1px) scale(.98);
+    box-shadow: none;
+}
 
 .play-link {
     display: inline-flex;
@@ -1332,8 +1491,16 @@ a.community-link-card:hover {
     text-underline-offset: .2em;
 }
 
+@media (max-width: 900px) {
+    .arcade-game-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
 @media (max-width: 760px) {
-    .arcade-game-grid { grid-template-columns: minmax(0, 1fr); }
+    .arcade-game-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
 
     .arcade-content {
         grid-template-columns: minmax(0, 1fr);
@@ -1343,8 +1510,13 @@ a.community-link-card:hover {
         min-height: 220px;
     }
 
-    .arcade-library-heading { align-items: flex-start; }
-    .arcade-library-link { white-space: nowrap; }
+    .arcade-library-heading {
+        align-items: flex-start;
+    }
+
+    .arcade-library-link {
+        white-space: nowrap;
+    }
 
     .play-card {
         grid-template-columns: minmax(0, 1fr);
@@ -1352,14 +1524,32 @@ a.community-link-card:hover {
 }
 
 @media (max-width: 440px) {
-    .arcade-library-heading { flex-direction: column; align-items: flex-start; gap: .6rem; }
-    .arcade-game-card { min-height: 220px; }
+    .arcade-library-heading {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: .6rem;
+    }
+
+    .arcade-game-card {
+        min-height: 220px;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .arcade-ready i { animation: none; }
-    .arcade-game-card, .arcade-play-link { transition: none; }
-    .arcade-game-card:hover, .arcade-play-link:hover { transform: none; }
+    .arcade-ready i {
+        animation: none;
+    }
+
+    .arcade-game-card,
+    .arcade-play-link {
+        transition: none;
+    }
+
+    .arcade-game-card:hover,
+    .arcade-play-link:hover {
+        transform: none;
+    }
+
     .snake-preview-food {
         animation: none;
     }

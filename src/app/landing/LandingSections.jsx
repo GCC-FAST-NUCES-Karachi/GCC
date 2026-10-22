@@ -154,6 +154,13 @@ export function PlaySection() {
       href: "/games/bug-bash",
       detail: "CLICK · TAP · SLASH",
     },
+    {
+      name: "Octo Dive",
+      genre: "TRIVIA · DEEP DIVE",
+      description: "Dive through GitHub and Git questions, build streaks and earn depth with every correct answer.",
+      href: "/games/octo-dive",
+      detail: "TAP · KEYS 1–4",
+    },
   ];
 
   return (
@@ -163,7 +170,7 @@ export function PlaySection() {
         <div className="arcade-titlebar">
           <span className="arcade-dots" aria-hidden="true"><i /><i /><i /></span>
           <span className="arcade-title"><Gamepad2 size={15} aria-hidden="true" /> GCC ARCADE</span>
-          <span className="arcade-status">2 CABINETS READY</span>
+          <span className="arcade-status">{games.length} CABINETS READY</span>
         </div>
         <div className="arcade-library">
           <div className="arcade-library-heading">
