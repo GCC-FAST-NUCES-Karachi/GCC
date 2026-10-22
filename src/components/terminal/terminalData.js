@@ -39,9 +39,6 @@ function boxed(lines, inner = BOX_INNER) {
   ].join("\n");
 }
 
-const G = [" ██████╗ ", "██╔════╝ ", "██║  ███╗", "██║   ██║", "╚██████╔╝", " ╚═════╝ "];
-const C = [" ██████╗", "██╔════╝", "██║     ", "██║     ", "╚██████╗", " ╚═════╝"];
-const GCC_ART = G.map((row, i) => row + C[i] + C[i]);
 
 // ---------------------------------------------------------------------------
 // Commit history (stable — no random hashes)
@@ -175,13 +172,17 @@ Answer with: \`git challenge <your answer>\``,
 
   rewardArt: boxed([
     "",
-    "*  EXPLORER BADGE UNLOCKED  *",
+    "★  EXPLORER BADGE UNLOCKED  ★",
     "",
-    ...GCC_ART,
+    "[ G C C · F A S T ]",
+    "──────────────────────────",
     "",
     "SECRET BRANCH EXPLORER",
     "GitHub Campus Club",
     "FAST-NUCES",
+    "",
+    "Status: VERIFIED",
+    "Commit: easter-bug → main",
     "",
     "a virtual badge, just for fun",
     "",

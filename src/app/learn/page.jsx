@@ -34,7 +34,7 @@ export default function LearnPage() {
           <div className="learn-terminal-body">
             <p><span>$</span> git init</p>
             <p><span>$</span> git add .</p>
-            <p><span>$</span> git commit -m <b>"first step"</b></p>
+            <p><span>$</span> git commit -m <b>&quot;first step&quot;</b></p>
             <p className="learn-terminal-success">✓ You’re already building.</p>
           </div>
         </div>

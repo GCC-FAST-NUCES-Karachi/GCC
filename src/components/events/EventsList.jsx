@@ -26,16 +26,21 @@ const plannedSlots = [
   },
 ];
 
+function getEventBuckets(items) {
+  const now = Date.now();
+  const upcomingEvents = items
+    .filter((event) => new Date(event.endAt ?? event.startAt).getTime() >= now)
+    .sort((a, b) => new Date(a.startAt) - new Date(b.startAt))
+    .slice(0, 3);
+  const pastEvents = items
+    .filter((event) => new Date(event.endAt ?? event.startAt).getTime() < now)
+    .sort((a, b) => new Date(b.startAt) - new Date(a.startAt));
+  return { upcomingEvents, pastEvents };
+}
+
 export default function EventsList({ items = events, emptyHeadingLevel = 3, showArchive = false }) {
   if (showArchive) {
-    const now = Date.now();
-    const upcomingEvents = items
-      .filter((event) => new Date(event.endAt ?? event.startAt).getTime() >= now)
-      .sort((a, b) => new Date(a.startAt) - new Date(b.startAt))
-      .slice(0, 3);
-    const pastEvents = items
-      .filter((event) => new Date(event.endAt ?? event.startAt).getTime() < now)
-      .sort((a, b) => new Date(b.startAt) - new Date(a.startAt));
+    const { upcomingEvents, pastEvents } = getEventBuckets(items);
     const planned = plannedSlots.slice(0, Math.max(0, 3 - upcomingEvents.length));
 
     return (

@@ -387,7 +387,7 @@ export default function OctoDive() {
               <div className="arena-overlay is-idle">
                 <div className="overlay-card">
                   <p className="games-kicker">{"// knowledge runs deep"}</p>
-                  <h2>Let's branch out.</h2>
+                  <h2>Let&apos;s branch out.</h2>
                   <p className="overlay-text">
                     Answer fast. Stack your streak.<br />
                     Dive deeper with every point.<br />

@@ -25,7 +25,9 @@ export default function Navbar() {
   const bug = useSyncExternalStore(subscribe, getBug, getServerBug);
 
   useEffect(() => {
-    if (!bug && consumeTerminalGlow()) setShowTerminalGlow(true);
+    if (!bug && consumeTerminalGlow()) {
+      queueMicrotask(() => setShowTerminalGlow(true));
+    }
   }, [bug]);
 
   useEffect(() => {

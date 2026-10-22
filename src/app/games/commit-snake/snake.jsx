@@ -136,7 +136,7 @@ export default function CommitSnake() {
   const reducedMotion = useRef(false);
   const swipeStart = useRef(null);
 
-  const [hud, setHud] = useState(() => snapshot(gameRef.current));
+  const [hud, setHud] = useState(() => snapshot(createGame()));
   const [best, setBest] = useState({ score: 0, time: null });
   const [newBest, setNewBest] = useState(false);
 

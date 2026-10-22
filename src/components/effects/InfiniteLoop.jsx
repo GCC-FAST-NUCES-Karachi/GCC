@@ -111,9 +111,9 @@ export default function InfiniteLoop({ children }) {
       {bug ? (
         <>
           <div ref={topRef} className="infinite-loop-copy">{children}</div>
-          <div ref={midRef} className="infinite-loop-copy" aria-hidden="true" inert>{children}</div>
-          <div className="infinite-loop-copy" aria-hidden="true" inert>{children}</div>
-          <div className="infinite-loop-copy" aria-hidden="true" inert>{children}</div>
+          <div ref={midRef} className="infinite-loop-copy" aria-hidden="true">{children}</div>
+          <div className="infinite-loop-copy" aria-hidden="true">{children}</div>
+          <div className="infinite-loop-copy" aria-hidden="true">{children}</div>
         </>
       ) : children}
       <EasterBug active={bug} />
