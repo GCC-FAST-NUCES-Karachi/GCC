@@ -105,7 +105,7 @@ export default function Navbar() {
         <a
           aria-label="GitHub organization"
           className="github-button"
-          href="https://github.com/ismailsilat7/ghcc"
+          href="https://github.com/GCC-FAST-NUCES-Karachi/ghcc"
           rel="noreferrer"
           target="_blank"
         >

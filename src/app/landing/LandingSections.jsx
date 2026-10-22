@@ -131,7 +131,7 @@ export function HighlightsSection() {
         </HighlightsCarousel>
         <div className="community-highlight-links" aria-label="Connect with the community">
         <CommunityLinkCard label="LinkedIn" href="https://www.linkedin.com/company/github-campus-club-fast-nuces/" title="Follow us on LinkedIn" description="Club news, opportunities, and updates." />
-        <CommunityLinkCard label="WhatsApp" href="https://chat.whatsapp.com/" title="Join the WhatsApp community" description="Get in touch with the club community." icon={() => <svg viewBox="0 0 24 24"><path d={siWhatsapp.path} /></svg>} />
+        <CommunityLinkCard label="WhatsApp" href="https://chat.whatsapp.com/EweThN5W27a4cVgFC5VyPC?s=sw&p=a&mlu=4&ilr=4" title="Join the WhatsApp community" description="Get in touch with the club community." icon={() => <svg viewBox="0 0 24 24"><path d={siWhatsapp.path} /></svg>} />
         </div>
       </div>
     </section>
@@ -204,7 +204,7 @@ export function LandingJoinSection() {
   return (
     <section id="join" className="landing-join-section" aria-labelledby="join-heading">
       <div><p className="section-command">{"// git checkout join"}</p><h2 id="join-heading">Build something with us.</h2><p>A community for FAST-NUCES students who learn, build, and ship together.</p></div>
-      <a href="https://chat.whatsapp.com/" className="join-button" target="_blank" rel="noreferrer">Join the community <ArrowRight size={16} aria-hidden="true" /></a>
+      <a href="https://chat.whatsapp.com/EweThN5W27a4cVgFC5VyPC?s=sw&p=a&mlu=4&ilr=4" className="join-button" target="_blank" rel="noreferrer">Join the community <ArrowRight size={16} aria-hidden="true" /></a>
     </section>
   );
 }

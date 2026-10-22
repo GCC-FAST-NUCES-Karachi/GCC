@@ -8,6 +8,10 @@
   color: var(--text-dim);
 }
 
+.site-footer a {
+  cursor: pointer;
+}
+
 .site-footer::before {
   position: absolute;
   top: -1px;

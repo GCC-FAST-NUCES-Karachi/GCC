@@ -35,6 +35,15 @@
   background: rgb(139 148 158 / 30%);
 }
 
+.event-item:not(.event-item-planned):has(+ .event-item-planned)::before {
+  background: linear-gradient(
+    to right,
+    rgb(63 185 80 / 55%) 0%,
+    rgb(63 185 80 / 55%) 55%,
+    rgb(139 148 158 / 30%) 100%
+  );
+}
+
 .event-mascot {
   display: grid;
   align-items: end;
@@ -398,9 +407,22 @@
     background: rgb(63 185 80 / 55%);
   }
 
+  .event-item:not(.event-item-planned):has(+ .event-item-planned) .event-connector {
+    background: linear-gradient(
+      to bottom,
+      rgb(63 185 80 / 55%) 0%,
+      rgb(63 185 80 / 55%) 55%,
+      rgb(139 148 158 / 38%) 100%
+    );
+  }
+
   .event-item:last-child .event-connector {
     margin-bottom: 0;
     background: linear-gradient(rgb(63 185 80 / 55%), transparent 70%);
+  }
+
+  .event-item-planned:last-child .event-connector {
+    background: linear-gradient(rgb(139 148 158 / 38%), transparent 70%);
   }
 
   .event-marker {
