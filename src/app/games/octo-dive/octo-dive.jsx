@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Copy, RefreshCw, Volume2, VolumeX } from "lucide-react";
+import { ArrowLeft, Copy, Pause, Play, RefreshCw, Volume2, VolumeX } from "lucide-react";
 import OctocatDiver from "./octocat-diver";
 import {
   ALL_QUESTIONS,
@@ -76,7 +76,7 @@ function saveMute(v) {
 // ---------------------------------------------------------------------------
 // Game state machine
 // ---------------------------------------------------------------------------
-const PHASE = { START: "start", QUESTION: "question", RESULT: "result", END: "end" };
+const PHASE = { START: "start", QUESTION: "question", RESULT: "result", PAUSED: "paused", END: "end" };
 
 function initRun() {
   return {
@@ -101,6 +101,14 @@ function reducer(state, action) {
 
     case "START":
       return { ...state, phase: PHASE.QUESTION, timeLeft: QUESTION_SECONDS, chosen: null, correct: null, pointsEarned: null };
+
+    case "PAUSE":
+      if (state.phase !== PHASE.QUESTION && state.phase !== PHASE.RESULT) return state;
+      return { ...state, phase: PHASE.PAUSED, pausedFrom: state.phase };
+
+    case "RESUME":
+      if (state.phase !== PHASE.PAUSED) return state;
+      return { ...state, phase: state.pausedFrom ?? PHASE.QUESTION, pausedFrom: null };
 
     case "TICK": {
       if (state.phase !== PHASE.QUESTION) return state;
@@ -271,6 +279,12 @@ export default function OctoDive() {
     setMuted((m) => { saveMute(!m); return !m; });
   }
 
+  function togglePause() {
+    if (state.phase === PHASE.PAUSED) dispatch({ type: "RESUME" });
+    else if (state.phase === PHASE.QUESTION || state.phase === PHASE.RESULT) dispatch({ type: "PAUSE" });
+    else if (state.phase === PHASE.START) dispatch({ type: "START" });
+  }
+
   const q = state.questions[state.qIndex];
   const zone = getZone(state.score);
   const rank = getRank(state.score);
@@ -278,7 +292,7 @@ export default function OctoDive() {
   const isNewBest = state.phase === PHASE.END && state.score > 0 && state.score >= state.personalBest;
   const timerPct = (state.timeLeft / QUESTION_SECONDS) * 100;
   const timerWarn = state.timeLeft <= 5;
-  const isPlaying = state.phase === PHASE.QUESTION || state.phase === PHASE.RESULT;
+  const isPlaying = state.phase === PHASE.QUESTION || state.phase === PHASE.RESULT || state.phase === PHASE.PAUSED;
 
   const liveMsg =
     state.phase === PHASE.RESULT
@@ -319,18 +333,6 @@ export default function OctoDive() {
         <section className="snake-score" aria-label="Scorecard">
           <div className="score-head">
             <span className="games-kicker">{"// scorecard"}</span>
-            <button
-              id="octo-mute-btn"
-              type="button"
-              className="octo-mute-btn"
-              aria-pressed={muted}
-              onClick={toggleMute}
-              aria-label={muted ? "Unmute sounds" : "Mute sounds"}
-            >
-              {muted
-                ? <VolumeX size={15} aria-hidden="true" />
-                : <Volume2 size={15} aria-hidden="true" />}
-            </button>
           </div>
 
           {/* mascot lives here — fixed size, never overlaps game content */}
@@ -350,10 +352,11 @@ export default function OctoDive() {
           </dl>
 
           {/* streak — always in scorecard, doesn't shift game column */}
-          <div className="octo-streak-row" aria-label={`Streak: ${state.streak}`}>
+          <div className="octo-streak-row" aria-label={`Current streak: ${state.streak} consecutive correct answers; streak bonus ${Math.min(state.streak * STREAK_PER_CORRECT, MAX_STREAK_BONUS)} points`} aria-live="polite" aria-atomic="true" data-streak={state.streak}>
             <span className="octo-streak-label">streak</span>
             <span className={`octo-streak-value${state.streak > 0 ? " octo-streak-active" : ""}`}>
-              {state.streak > 0 ? `×${state.streak}` : "—"}
+              <strong>{state.streak > 0 ? `×${state.streak}` : "—"}</strong>
+              {state.streak > 0 && <small>+{Math.min(state.streak * STREAK_PER_CORRECT, MAX_STREAK_BONUS)} pts</small>}
             </span>
           </div>
 
@@ -379,9 +382,19 @@ export default function OctoDive() {
           <div className="arena-bar">
             <span className="arena-dots" aria-hidden="true"><i /><i /><i /></span>
             <span className="arena-title">gcc-arcade ~ octo-dive</span>
+            <div className="bug-actions">
+              <button id="octo-mute-btn" type="button" className="snake-pause" onClick={toggleMute} aria-pressed={!muted} aria-label={muted ? "Unmute sounds" : "Mute sounds"}>
+                {muted ? <VolumeX size={14} aria-hidden="true" /> : <Volume2 size={14} aria-hidden="true" />}
+                <span>Sound</span>
+              </button>
+              <button type="button" className="snake-pause" onClick={togglePause} disabled={state.phase === PHASE.END} aria-label={state.phase === PHASE.PAUSED ? "Resume game" : state.phase === PHASE.START ? "Start game" : "Pause game"}>
+                {state.phase === PHASE.QUESTION || state.phase === PHASE.RESULT ? <Pause size={14} aria-hidden="true" /> : <Play size={14} aria-hidden="true" />}
+                <span>{state.phase === PHASE.PAUSED ? "Resume" : state.phase === PHASE.START ? "Start" : state.phase === PHASE.END ? "Finished" : "Pause"}</span>
+              </button>
+            </div>
           </div>
 
-          <div className="arena-screen">
+          <div className={`arena-screen octo-arena-screen${state.phase === PHASE.PAUSED ? " is-paused" : ""}`}>
             {/* ── START overlay ── */}
             {state.phase === PHASE.START && (
               <div className="arena-overlay is-idle">
@@ -463,25 +476,6 @@ export default function OctoDive() {
                   <p className="octo-question-text">{q?.q}</p>
                 </div>
 
-                {/* result pop (correct/wrong) */}
-                {state.phase === PHASE.RESULT && (
-                  <div
-                    className={`octo-result-pop ${state.correct ? "octo-result-correct" : "octo-result-wrong"}`}
-                    role="status"
-                    aria-live="assertive"
-                    aria-atomic="true"
-                  >
-                    {state.correct
-                      ? <>✓ Correct! <span className="octo-pts-earned">+{state.pointsEarned} pts</span></>
-                      : <>✗ {state.chosen === null ? "Time's up!" : "Not quite"}</>}
-                  </div>
-                )}
-
-                {/* why explanation */}
-                {state.phase === PHASE.RESULT && q?.why && (
-                  <p className="octo-why-text" role="note">{q.why}</p>
-                )}
-
                 {/* answer tiles */}
                 <div className="octo-tiles-grid" role="group" aria-label="Answer choices">
                   {q?.options.map((opt, i) => {
@@ -512,6 +506,26 @@ export default function OctoDive() {
                       </button>
                     );
                   })}
+                </div>
+
+                {state.phase === PHASE.RESULT && (
+                  <div className={`octo-result-feedback${state.correct ? "" : " is-wrong"}`}>
+                    <div className={`octo-result-pop ${state.correct ? "octo-result-correct" : "octo-result-wrong"}`} role="status" aria-live="assertive" aria-atomic="true">
+                      {state.correct ? <>✓ Correct! <span className="octo-pts-earned">+{state.pointsEarned} pts</span></> : <>✗ {state.chosen === null ? "Time's up!" : "Not quite"} <span className="octo-answer-reveal">Answer: {q?.options[q?.answer]}</span></>}
+                    </div>
+                    {q?.why && <p className="octo-why-text" role="note">{q.why}</p>}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {state.phase === PHASE.PAUSED && (
+              <div className="arena-overlay octo-pause-overlay">
+                <div className="overlay-card">
+                  <p className="games-kicker">{"// dive on hold"}</p>
+                  <h2>Paused</h2>
+                  <p className="overlay-text">Take a breath. Your dive is waiting.</p>
+                  <button type="button" className="snake-start" onClick={() => dispatch({ type: "RESUME" })}><Play size={15} aria-hidden="true" /> Resume dive</button>
                 </div>
               </div>
             )}
