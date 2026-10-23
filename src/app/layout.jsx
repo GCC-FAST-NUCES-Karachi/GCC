@@ -2,6 +2,8 @@ import GalaxyBackground from "@/components/effects/GalaxyBackground";
 import SiteChrome from "@/components/layout/SiteChrome";
 import Terminal from "@/components/terminal/Terminal.jsx";
 import { TerminalProvider } from "@/components/terminal/TerminalProvider.jsx";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import localFont from "next/font/local";
 import "./globals.css";
 
@@ -34,6 +36,8 @@ export default function RootLayout({ children }) {
         <TerminalProvider>
           <div className="site-content"><SiteChrome>{children}</SiteChrome></div>
           <Terminal />
+          <Analytics />
+          <SpeedInsights />
         </TerminalProvider>
       </body>
     </html>
