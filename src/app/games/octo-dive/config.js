@@ -35,10 +35,10 @@ export const EASY_QUESTIONS = [
   {
     q: "What is GitHub?",
     options: [
-      "A programming language",
-      "A platform to host and collaborate on code",
-      "An operating system",
-      "A hardware company",
+      "A language used for writing software",
+      "A place to share and work on code",
+      "A system for running a computer",
+      "A company that builds computers",
     ],
     answer: 1,
     level: "easy",
@@ -47,10 +47,10 @@ export const EASY_QUESTIONS = [
   {
     q: "What is a repository on GitHub?",
     options: [
-      "A branch name",
-      "A type of commit",
-      "A project folder that stores code and history",
-      "A list of contributors",
+      "A named line of development",
+      "A saved snapshot of changes",
+      "A project with files and history",
+      "A roster of people on the project",
     ],
     answer: 2,
     level: "easy",
@@ -59,10 +59,10 @@ export const EASY_QUESTIONS = [
   {
     q: "What does making a 'commit' do?",
     options: [
-      "Deletes a file permanently",
+      "Removes a file from the project",
       "Saves a snapshot of your changes",
-      "Merges two branches",
-      "Sends code to production",
+      "Combines two lines of development",
+      "Deploys the current code to users",
     ],
     answer: 1,
     level: "easy",
@@ -71,10 +71,10 @@ export const EASY_QUESTIONS = [
   {
     q: "What is a branch in Git?",
     options: [
-      "A copy of the entire internet",
-      "A way to work on changes separately without affecting the main code",
-      "A deleted version of a file",
-      "A GitHub username",
+      "A copy of every site on the internet",
+      "A separate line for making changes",
+      "An earlier version removed from the project",
+      "An account name used on GitHub",
     ],
     answer: 1,
     level: "easy",
@@ -83,10 +83,10 @@ export const EASY_QUESTIONS = [
   {
     q: "What is a Pull Request (PR)?",
     options: [
-      "A request to download code",
-      "A way to propose and review changes before merging",
-      "An error message",
-      "A type of database query",
+      "A request to copy a project to your computer",
+      "A proposal to review code before merging",
+      "A warning that a program has stopped running",
+      "A question sent to a database for matching records",
     ],
     answer: 1,
     level: "easy",
@@ -95,10 +95,10 @@ export const EASY_QUESTIONS = [
   {
     q: "What does 'forking' a repository mean?",
     options: [
-      "Deleting a repo",
-      "Copying someone's repo to your own account",
-      "Creating a new branch",
-      "Sending a pull request",
+      "Removing a project from its owner's account",
+      "Making your own GitHub copy of a project",
+      "Starting a separate line of work in Git",
+      "Asking to merge your branch into a project",
     ],
     answer: 1,
     level: "easy",
@@ -107,10 +107,10 @@ export const EASY_QUESTIONS = [
   {
     q: "What does starring a repository on GitHub do?",
     options: [
-      "Deletes it",
-      "Forks it to your account",
-      "Bookmarks it so you can find it easily",
-      "Makes it private",
+      "Removes the project from your account",
+      "Creates a separate copy under your account",
+      "Saves the project so you can find it again",
+      "Limits who can view the project's files",
     ],
     answer: 2,
     level: "easy",
@@ -119,10 +119,10 @@ export const EASY_QUESTIONS = [
   {
     q: "What is a GitHub Issue?",
     options: [
-      "A way to track bugs, tasks, or feature requests",
-      "A type of merge conflict",
-      "An expired license",
-      "A broken Git command",
+      "A tracker for bugs, tasks, and project ideas",
+      "A clash between edits on separate branches",
+      "A notice that permission to use code has ended",
+      "A command that Git does not recognize",
     ],
     answer: 0,
     level: "easy",
@@ -131,10 +131,10 @@ export const EASY_QUESTIONS = [
   {
     q: "What is a README file?",
     options: [
-      "A secret config file",
-      "An auto-generated test report",
-      "A document that explains what a project is and how to use it",
-      "A list of all commits",
+      "A private file containing app credentials",
+      "A report showing whether the tests passed",
+      "A guide to a project and getting started",
+      "A record of changes saved in the repository",
     ],
     answer: 2,
     level: "easy",
@@ -143,10 +143,10 @@ export const EASY_QUESTIONS = [
   {
     q: "What does 'open source' mean?",
     options: [
-      "Code that only runs on Linux",
-      "Software whose source code is publicly available to view, use, and modify",
-      "Code written in Python",
-      "Software that costs money",
+      "Software that runs only on Linux and cannot be changed",
+      "Code with source anyone can inspect and change",
+      "Software written in Python and shared as a paid product",
+      "Software sold by subscription with its source kept private",
     ],
     answer: 1,
     level: "easy",
@@ -155,10 +155,10 @@ export const EASY_QUESTIONS = [
   {
     q: "What is Octocat?",
     options: [
-      "A Git command",
-      "GitHub's mascot — a half-cat, half-octopus character",
-      "A popular Python library",
-      "A type of merge strategy",
+      "A command used to inspect Git history",
+      "GitHub's cat-and-octopus mascot",
+      "A library for building Python web apps",
+      "A method for combining branch changes",
     ],
     answer: 1,
     level: "easy",
@@ -167,10 +167,10 @@ export const EASY_QUESTIONS = [
   {
     q: "What is GitHub Pages?",
     options: [
-      "GitHub's documentation portal",
-      "A service to host static websites directly from a repository",
-      "A page that lists all your commits",
-      "A premium GitHub plan",
+      "A searchable site for GitHub product guides",
+      "A service to publish static sites from repos",
+      "A timeline showing a repository's saved changes",
+      "A paid tier with extra account features",
     ],
     answer: 1,
     level: "easy",
@@ -179,10 +179,10 @@ export const EASY_QUESTIONS = [
   {
     q: "What is GitHub Copilot?",
     options: [
-      "A flight simulator game",
-      "A tool to manage pull requests",
-      "An AI coding assistant that suggests code as you type",
-      "A branch protection rule",
+      "A game that recreates flying an aircraft",
+      "A dashboard for reviewing proposed code changes",
+      "An AI tool that suggests code as you type",
+      "A setting that blocks unsafe branch changes",
     ],
     answer: 2,
     level: "easy",
@@ -190,7 +190,7 @@ export const EASY_QUESTIONS = [
   },
   {
     q: "What is the default branch usually called in a new GitHub repository?",
-    options: ["master or main", "develop", "release", "trunk"],
+    options: ["master or main", "integration branch", "release branch", "trunk branch"],
     answer: 0,
     level: "easy",
     why: "GitHub renamed the default branch from 'master' to 'main' in 2020; both are still common.",
@@ -198,10 +198,10 @@ export const EASY_QUESTIONS = [
   {
     q: "What does 'clone' do in Git?",
     options: [
-      "Duplicates a file locally",
-      "Downloads a full copy of a repository to your machine",
-      "Deletes remote branches",
-      "Renames a branch",
+      "Makes another copy of one file on your computer",
+      "Copies a repo and its history locally",
+      "Removes branch references from the remote project",
+      "Changes the name used for a branch in Git",
     ],
     answer: 1,
     level: "easy",
@@ -224,10 +224,10 @@ export const EASY_QUESTIONS = [
   {
     q: "What does 'merge' do in Git?",
     options: [
-      "Splits a branch into two",
-      "Combines changes from one branch into another",
-      "Reverts the last commit",
-      "Publishes code to a server",
+      "Creates two separate lines from one branch",
+      "Combines work across two branches",
+      "Reverses a saved change from one commit",
+      "Publishes a branch as a live application",
     ],
     answer: 1,
     level: "easy",
@@ -267,10 +267,10 @@ export const TECH_QUESTIONS = [
   {
     q: "What is a merge conflict?",
     options: [
-      "When the internet goes down",
-      "When two branches changed the same lines and Git can't auto-merge",
-      "When you commit with the wrong message",
-      "When a branch is deleted",
+      "When a network outage blocks access to the remote",
+      "When overlapping edits in two branches conflict",
+      "When a commit has a typo in its description",
+      "When a branch reference is removed from the repo",
     ],
     answer: 1,
     level: "tech",
@@ -279,10 +279,10 @@ export const TECH_QUESTIONS = [
   {
     q: "What does a .gitignore file do?",
     options: [
-      "Deletes files from the repo",
-      "Lists files that Git should not track",
-      "Speeds up git status",
-      "Sets the default branch name",
+      "Removes matching files from the repository history",
+      "Lists files Git should leave untracked",
+      "Makes status checks finish faster on large projects",
+      "Chooses the name for a repository's first branch",
     ],
     answer: 1,
     level: "tech",
@@ -291,10 +291,10 @@ export const TECH_QUESTIONS = [
   {
     q: "What does HEAD point to in Git?",
     options: [
-      "The first commit ever made",
-      "The remote repository",
-      "The currently checked-out commit or branch tip",
-      "The project README",
+      "The first commit at the root of the repository history",
+      "The remote-tracking pointer for the shared repository",
+      "Your current commit or checked-out branch tip",
+      "The main guide file in the project folder",
     ],
     answer: 2,
     level: "tech",
@@ -303,10 +303,10 @@ export const TECH_QUESTIONS = [
   {
     q: "What is GitHub Actions used for?",
     options: [
-      "Editing code in the browser",
-      "Automating workflows like testing and deployment",
-      "Creating repositories faster",
-      "Reviewing pull requests",
+      "Changing source files in GitHub's web editor",
+      "Automating tasks such as tests and deployments",
+      "Creating a repo from a prebuilt project template",
+      "Reviewing proposed changes before they are merged",
     ],
     answer: 1,
     level: "tech",
@@ -315,7 +315,7 @@ export const TECH_QUESTIONS = [
   {
     q: "You ran `git commit` but misspelled the message. How do you fix the last commit message?",
     options: [
-      "git fix --message",
+      "git commit --fixup",
       "git commit --amend",
       "git revert HEAD",
       "git reset --hard",
@@ -326,28 +326,28 @@ export const TECH_QUESTIONS = [
   },
   {
     q: "Which open-source license lets anyone use, modify, and distribute code with almost no restrictions?",
-    options: ["MIT License", "GPL v3", "AGPL", "CC BY-NC"],
+    options: ["MIT License: permissive reuse", "GPL v3: reuse with same-license terms", "AGPL: network use shares source", "CC BY-NC: attribution, noncommercial use"],
     answer: 0,
     level: "tech",
     why: "The MIT License is permissive — anyone can do almost anything with the code.",
   },
   {
     q: "You want to copy a public repo you do NOT own so you can freely change it on GitHub. What do you do?",
-    options: ["Star it", "Fork it", "Clone it", "Watch it"],
+    options: ["Star it on GitHub", "Fork it on GitHub", "Clone the repo locally", "Watch for project updates"],
     answer: 1,
     level: "tech",
     why: "Forking creates your own copy of the repo on GitHub where you can push changes freely.",
   },
   {
     q: "Which command shows the current status of your working directory and staging area?",
-    options: ["git info", "git log", "git status", "git diff --staged"],
+    options: ["git branch -vv", "git status", "git diff", "git log --oneline"],
     answer: 2,
     level: "tech",
     why: "git status shows which files are modified, staged, or untracked in your working directory.",
   },
   {
     q: "Which command displays the commit history of a repository?",
-    options: ["git history", "git log", "git commits", "git show --all"],
+    options: ["git reflog", "git log", "git branch", "git show"],
     answer: 1,
     level: "tech",
     why: "git log lists past commits in reverse chronological order — great for reviewing project history.",
@@ -355,10 +355,10 @@ export const TECH_QUESTIONS = [
   {
     q: "What does it mean to 'stage' a file in Git?",
     options: [
-      "Delete it from the repo",
-      "Mark it to be included in the next commit",
-      "Push it to the remote",
-      "Revert it to the last saved version",
+      "Remove the file from the repository's history",
+      "Select its changes for your next commit",
+      "Send its current changes to the remote repo",
+      "Restore the file to its last committed version",
     ],
     answer: 1,
     level: "tech",
@@ -379,10 +379,10 @@ export const TECH_QUESTIONS = [
   {
     q: "You delete a branch after merging it into main. What happens to the merged changes?",
     options: [
-      "They are lost forever",
-      "They stay in main — only the branch pointer is removed",
-      "They revert automatically",
-      "They move to a special archive branch",
+      "They disappear when the branch reference is removed",
+      "They remain in main; only the branch pointer is removed",
+      "They are undone as soon as the branch is deleted",
+      "They move to another branch while main resets to before the merge",
     ],
     answer: 1,
     level: "tech",

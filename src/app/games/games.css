@@ -2282,6 +2282,34 @@
   justify-content: center;
 }
 
+/* Result feedback follows the choices without shifting them down. */
+.octo-result-feedback {
+  display: grid;
+  gap: 0.55rem;
+  align-content: start;
+  min-height: 3.2rem;
+}
+
+.octo-result-feedback .octo-why-text {
+  margin: 0;
+}
+
+.octo-answer-reveal {
+  margin-left: 0.4rem;
+  color: var(--text-heading);
+  font-weight: 600;
+}
+
+.octo-arena-screen.is-paused > .octo-arena-inner {
+  filter: blur(4px);
+  pointer-events: none;
+}
+
+.octo-pause-overlay {
+  z-index: 2;
+  background: rgb(1 4 9 / 58%);
+}
+
 /* ── responsive ── */
 @media (max-width: 600px) {
   .octo-tiles-grid {
@@ -2385,8 +2413,16 @@
 }
 
 .octo-streak-value {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
   color: var(--text-dim);
   font: 700 0.9rem var(--font-mono);
+}
+
+.octo-streak-value small {
+  color: var(--text-dim);
+  font: 0.62rem var(--font-mono);
 }
 
 .octo-streak-value.octo-streak-active {
