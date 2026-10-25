@@ -13,6 +13,7 @@ const navItems = [
   { href: "/events", label: "~/events" },
   { href: "/games", label: "~/games" },
   { href: "/team", label: "~/team" },
+  { href: "/creators", label: "~/creators" },
 ];
 
 export default function Navbar() {
