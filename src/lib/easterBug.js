@@ -56,10 +56,6 @@ export function setBug(value) {
   listeners.forEach((listener) => listener());
 }
 
-export function wasJustUnlocked() {
-  return justUnlocked;
-}
-
 // Consume the unlock glow once, even if the navbar unmounts on /terminal and
 // mounts again when the visitor returns to the rest of the site.
 export function consumeTerminalGlow() {

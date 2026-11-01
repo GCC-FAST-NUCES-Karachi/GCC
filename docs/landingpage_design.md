@@ -28,7 +28,7 @@ Four cards describe Hackathons, Workshops, Tech Talks, and Community. Each pairs
 
 ### Highlights
 
-Responsive cards represent posts, tutorials, and recaps, with small type/hash metadata. Current preview art and copy are illustrative sample content in `src/content/highlights.js`. The “View all highlights” link currently leads to `/learn`; update it if a dedicated highlights destination is introduced.
+A carousel of past-workshop posters sits beside LinkedIn and WhatsApp community cards. Both are defined in `src/app/landing/LandingSections.jsx`; a dedicated highlights or gallery page is open work (see CONTRIBUTING.md).
 
 ### Play / arcade
 
@@ -40,7 +40,7 @@ The landing page and `/events` share `EventsList`. Event data is maintained in `
 
 ### Join and footer
 
-The landing Join section uses a mailto CTA. The shared footer supplies navigation, community/build links, social icons, and metadata. Verify club-owned external destinations and contact details before release.
+The landing Join section links to the WhatsApp community (`src/content/site.js`). The shared footer supplies navigation, community/build links, social icons, and metadata. Verify club-owned external destinations and contact details before release.
 
 ## Motion and Easter egg reference
 
@@ -55,7 +55,7 @@ The landing is wrapped in `src/components/effects/InfiniteLoop.jsx`. Four progre
 | Landing composition | `src/app/page.jsx` |
 | Core Functions, Highlights, Play, Events, Join | `src/app/landing/LandingSections.jsx` |
 | Landing-specific presentation | `src/app/landing/landing.css` |
-| Highlights source data | `src/content/highlights.js` |
+| Highlights source data | `src/app/landing/LandingSections.jsx` |
 | Event source data and shared renderer | `src/content/events.js`, `src/components/events/EventsList.jsx` |
 | Galaxy, reveal, and loop/Easter egg effects | `src/components/effects/GalaxyBackground.jsx`, `src/components/effects/RevealOnScroll.jsx`, `src/components/effects/InfiniteLoop.jsx`, `EasterBug.jsx`, `BugFinale.jsx` |
 | Shared navbar and footer | `src/components/layout/` |

@@ -1,6 +1,7 @@
 import { Clock3, MapPin } from "lucide-react";
 import events, { pastEvents as highlightedPastEvents } from "@/content/events";
 import GccCat from "@/app/landing/GccCat";
+import { getPastEvents, getUpcomingEvents } from "@/lib/events";
 import EventStatus from "./EventStatus";
 import PastEventCard from "./PastEventCard";
 import "./events-list.css";
@@ -26,21 +27,12 @@ const plannedSlots = [
   },
 ];
 
-function getEventBuckets(items) {
-  const now = Date.now();
-  const upcomingEvents = items
-    .filter((event) => new Date(event.endAt ?? event.startAt).getTime() >= now)
-    .sort((a, b) => new Date(a.startAt) - new Date(b.startAt))
-    .slice(0, 3);
-  const pastEvents = items
-    .filter((event) => new Date(event.endAt ?? event.startAt).getTime() < now)
-    .sort((a, b) => new Date(b.startAt) - new Date(a.startAt));
-  return { upcomingEvents, pastEvents };
-}
-
 export default function EventsList({ items = events, emptyHeadingLevel = 3, showArchive = false }) {
+  // Server component: the page is rebuilt hourly, so events are bucketed at build time.
+  const upcomingEvents = getUpcomingEvents(items).slice(0, 3);
+
   if (showArchive) {
-    const { upcomingEvents, pastEvents } = getEventBuckets(items);
+    const pastEvents = getPastEvents(items);
     const planned = plannedSlots.slice(0, Math.max(0, 3 - upcomingEvents.length));
 
     return (
@@ -78,7 +70,7 @@ export default function EventsList({ items = events, emptyHeadingLevel = 3, show
     );
   }
 
-  if (items.length === 0) {
+  if (upcomingEvents.length === 0) {
     const EmptyHeading = emptyHeadingLevel === 2 ? "h2" : "h3";
 
     return (
@@ -98,44 +90,13 @@ export default function EventsList({ items = events, emptyHeadingLevel = 3, show
     );
   }
 
-  const placeholders = plannedSlots.slice(0, Math.min(plannedSlots.length, Math.max(0, 3 - items.length)));
+  const placeholders = plannedSlots.slice(0, Math.max(0, 3 - upcomingEvents.length));
 
   return (
     <>
       <div className="events-grid">
-        {items.map((event) => (
-          <article className="event-item" key={event.title}>
-            <div className="event-mascot"><GccCat accessory={event.mascot} /></div>
-            <span className="event-marker open" aria-hidden="true" />
-            <span className="event-connector" aria-hidden="true" />
-            <div className="event-card">
-              <div className="event-card-top">
-                <span className="event-date"><small>{event.month}</small><strong>{event.day}</strong><small>{event.year}</small></span>
-                <EventStatus startAt={event.startAt} endAt={event.endAt} />
-              </div>
-              <h3>{event.title}</h3>
-              <p><MapPin size={13} aria-hidden="true" /><span>{event.place}</span></p>
-              <p><Clock3 size={13} aria-hidden="true" /><span>{event.time}</span></p>
-              {event.summary && <p className="event-summary">{event.summary}</p>}
-            </div>
-          </article>
-        ))}
-        {placeholders.map((slot) => (
-          <article className="event-item event-item-planned" key={slot.title}>
-            <div className="event-mascot"><GccCat sleeping /></div>
-            <span className="event-marker" aria-hidden="true" />
-            <span className="event-connector" aria-hidden="true" />
-            <div className="event-card event-card-planned">
-              <div className="event-card-top">
-                <span className="event-planned-icon" aria-hidden="true">{slot.marker}</span>
-                <span className="event-state planned">In the works</span>
-              </div>
-              <h3>{slot.title}</h3>
-              <p className="event-placeholder-copy">{slot.description}</p>
-              <p className="event-placeholder-footnote">{slot.footnote}</p>
-            </div>
-          </article>
-        ))}
+        {upcomingEvents.map((event) => <EventCard key={event.title} event={event} />)}
+        {placeholders.map((slot) => <PlannedEventCard key={slot.title} slot={slot} />)}
       </div>
       <p className="events-planning-note">New events will appear here as dates and venues are confirmed.</p>
     </>

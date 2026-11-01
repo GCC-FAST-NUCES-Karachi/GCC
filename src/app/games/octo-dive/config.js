@@ -341,7 +341,7 @@ export const TECH_QUESTIONS = [
   {
     q: "Which command shows the current status of your working directory and staging area?",
     options: ["git branch -vv", "git status", "git diff", "git log --oneline"],
-    answer: 2,
+    answer: 1,
     level: "tech",
     why: "git status shows which files are modified, staged, or untracked in your working directory.",
   },

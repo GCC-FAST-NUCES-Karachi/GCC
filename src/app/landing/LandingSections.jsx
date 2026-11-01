@@ -11,6 +11,8 @@ import {
 import { siWhatsapp } from "simple-icons";
 import EventsList from "@/components/events/EventsList";
 import RevealOnScroll from "@/components/effects/RevealOnScroll";
+import { gameHref, games } from "@/content/games";
+import { LINKEDIN_URL, WHATSAPP_URL } from "@/content/site";
 import HighlightsCarousel from "./HighlightsCarousel";
 
 const functions = [
@@ -130,8 +132,8 @@ export function HighlightsSection() {
           <WorkshopCard image="/images/events/research-scholarship-talk.jpg" alt="Poster for a talk with Professor Chaoning Zhang about MS and PhD scholarships abroad" title="Research & scholarships abroad" description="Guidance on MS and PhD scholarships from Professor Chaoning Zhang, Full Professor at UESTC, China." />
         </HighlightsCarousel>
         <div className="community-highlight-links" aria-label="Connect with the community">
-        <CommunityLinkCard label="LinkedIn" href="https://www.linkedin.com/company/github-campus-club-fast-nuces/" title="Follow us on LinkedIn" description="Club news, opportunities, and updates." />
-        <CommunityLinkCard label="WhatsApp" href="https://chat.whatsapp.com/EweThN5W27a4cVgFC5VyPC?s=sw&p=a&mlu=4&ilr=4" title="Join the WhatsApp community" description="Get in touch with the club community." icon={() => <svg viewBox="0 0 24 24"><path d={siWhatsapp.path} /></svg>} />
+        <CommunityLinkCard label="LinkedIn" href={LINKEDIN_URL} title="Follow us on LinkedIn" description="Club news, opportunities, and updates." />
+        <CommunityLinkCard label="WhatsApp" href={WHATSAPP_URL} title="Join the WhatsApp community" description="Get in touch with the club community." icon={() => <svg viewBox="0 0 24 24"><path d={siWhatsapp.path} /></svg>} />
         </div>
       </div>
     </section>
@@ -139,30 +141,6 @@ export function HighlightsSection() {
 }
 
 export function PlaySection() {
-  const games = [
-    {
-      name: "Commit Snake",
-      genre: "ARCADE · SURVIVAL",
-      description: "Collect commits. Dodge the blockers. Keep your branch alive.",
-      href: "/games/commit-snake",
-      detail: "KEYBOARD · SWIPE",
-    },
-    {
-      name: "Bug Bash",
-      genre: "ACTION · QUICK REFLEXES",
-      description: "Smash the bugs. Save the good code. Never force push.",
-      href: "/games/bug-bash",
-      detail: "CLICK · TAP · SLASH",
-    },
-    {
-      name: "Octo Dive",
-      genre: "TRIVIA · DEEP DIVE",
-      description: "Dive through GitHub and Git questions, build streaks and earn depth with every correct answer.",
-      href: "/games/octo-dive",
-      detail: "TAP · KEYS 1–4",
-    },
-  ];
-
   return (
     <RevealOnScroll as="section" id="play" className="landing-section play-section" aria-labelledby="play-heading">
       <SectionHeading id="play-heading" title="Play" command="// ./play --arcade" />
@@ -178,14 +156,14 @@ export function PlaySection() {
             <Link href="/games" className="arcade-library-link">ALL GAMES <ArrowRight size={15} aria-hidden="true" /></Link>
           </div>
           <div className="arcade-game-grid">
-            {games.map(({ name, genre, description, href, detail }) => (
-              <article className="arcade-game-card" key={name}>
+            {games.map((game) => (
+              <article className="arcade-game-card" key={game.slug}>
                 <div className="arcade-machine-top"><span>ARCADE GAME</span><span className="arcade-ready"><i /> PLAYABLE</span></div>
                 <div className="arcade-game-copy">
-                  <span className="arcade-game-genre">{genre}</span>
-                  <h4>{name}</h4>
-                  <p>{description}</p>
-                  <div className="arcade-game-footer"><span className="arcade-game-detail">{detail}</span><Link className="arcade-play-link" href={href}>PLAY NOW <ArrowRight size={15} aria-hidden="true" /></Link></div>
+                  <span className="arcade-game-genre">{game.genre}</span>
+                  <h4>{game.name}</h4>
+                  <p>{game.tagline}</p>
+                  <div className="arcade-game-footer"><span className="arcade-game-detail">{game.controls}</span><Link className="arcade-play-link" href={gameHref(game)}>PLAY NOW <ArrowRight size={15} aria-hidden="true" /></Link></div>
                 </div>
               </article>
             ))}
@@ -204,7 +182,7 @@ export function LandingJoinSection() {
   return (
     <section id="join" className="landing-join-section" aria-labelledby="join-heading">
       <div><p className="section-command">{"// git checkout join"}</p><h2 id="join-heading">Build something with us.</h2><p>A community for FAST-NUCES students who learn, build, and ship together.</p></div>
-      <a href="https://chat.whatsapp.com/EweThN5W27a4cVgFC5VyPC?s=sw&p=a&mlu=4&ilr=4" className="join-button" target="_blank" rel="noreferrer">Join the community <ArrowRight size={16} aria-hidden="true" /></a>
+      <a href={WHATSAPP_URL} className="join-button" target="_blank" rel="noreferrer">Join the community <ArrowRight size={16} aria-hidden="true" /></a>
     </section>
   );
 }

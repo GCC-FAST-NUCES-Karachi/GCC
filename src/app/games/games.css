@@ -1319,7 +1319,7 @@
 
 .bug-boss .bug-boss-hint {
   justify-content: center;
-  color: #6e7681;
+  color: var(--text-dim);
   font-size: 0.6875rem;
 }
 
@@ -1402,7 +1402,7 @@
   position: absolute;
   bottom: 12px;
   left: 16px;
-  color: #6e7681;
+  color: var(--text-dim);
   font-size: 0.75rem;
   line-height: 1.2;
   pointer-events: none;

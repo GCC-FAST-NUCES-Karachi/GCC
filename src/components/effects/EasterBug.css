@@ -129,6 +129,11 @@
   touch-action: none;
 }
 
+/* Focus is moved here only so the dialog is announced; it covers the whole screen. */
+.fin-root:focus {
+  outline: none;
+}
+
 .fin-root.is-out {
   pointer-events: none;
   animation: fin-out .9s ease .1s forwards;
