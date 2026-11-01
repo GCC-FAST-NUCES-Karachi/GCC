@@ -22,7 +22,7 @@ export const tracks = [
     prompt: "git push origin idea",
     outcome: "a live site with your name on it",
     cta: "Launch your first site",
-    href: "https://skills.github.com",
+    href: "https://github.com/skills/github-pages",
   },
   {
     number: "03",

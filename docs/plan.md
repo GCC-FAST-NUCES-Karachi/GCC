@@ -6,7 +6,7 @@ This document tracks the repository's current implementation and product work st
 
 - Next.js App Router, React, and JavaScript/JSX form the application foundation. Inter and JetBrains Mono are served locally, with shared tokens in `src/styles/tokens.css`.
 - The shared shell includes responsive navigation, footer, a global canvas galaxy, and a terminal provider.
-- The landing page includes the hero, Core Functions, sample Highlights, an arcade teaser, the shared upcoming-events list, and a Join mail link.
+- The landing page includes the hero, Core Functions, sample Highlights, an arcade teaser, the shared upcoming-events list, and a Join link to the WhatsApp community.
 - `/events` renders the shared events list and its empty state. Current events are maintained in `src/content/events.js`; verify event details and RSVP destinations before public release.
 - `/learn` presents three learning paths, selected GitHub student resources, and a link to Events.
 - `/team` presents the roster from `src/content/team.js` with local team portraits.
@@ -37,7 +37,7 @@ This document tracks the repository's current implementation and product work st
 
 ### 4. Grow the arcade
 
-- Commit Snake and Bug Bash are the listed games. Add games through the route structure and hub entry described in [games.md](../games.md).
+- Commit Snake, Bug Bash, and Octo Dive are the listed games. Add games through the route structure and the `src/content/games.js` entry described in [games.md](../games.md).
 - Keep the landing Play section as an entry point to the playable game and arcade contribution path; it is no longer a game placeholder.
 
 ### 5. Release readiness
@@ -50,5 +50,5 @@ This document tracks the repository's current implementation and product work st
 
 - The site currently uses sample event content and some provisional external destinations; confirm these before launch.
 - The terminal is a safe simulation. Its commands operate only on the in-memory/session-persisted virtual repository.
-- The arcade is live with Commit Snake and Bug Bash; future games are not committed to scope until selected and implemented.
+- The arcade is live with Commit Snake, Bug Bash, and Octo Dive; future games are not committed to scope until selected and implemented.
 - The landing infinite loop, four progress interstitials, and crack/shatter finale are implemented; the finale routes to `/terminal` and disables the loop after discovery.

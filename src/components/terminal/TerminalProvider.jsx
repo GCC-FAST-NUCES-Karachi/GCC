@@ -37,7 +37,6 @@ function defaultState() {
     discoveredClues: [],
     secretUnlocked: false,
     challengeCompleted: false,
-    hintLevels: {},
     hasBooted: false,
     booting: false, // runtime only, never persisted
   };
@@ -74,7 +73,6 @@ function saveSession(s) {
         discoveredClues: s.discoveredClues,
         secretUnlocked: s.secretUnlocked,
         challengeCompleted: s.challengeCompleted,
-        hintLevels: s.hintLevels,
         hasBooted: s.hasBooted,
       })
     );

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { siGithub } from "simple-icons";
+import { REPO_URL } from "@/content/site";
 import { consumeTerminalGlow, getBug, getServerBug, subscribe } from "@/lib/easterBug";
 import "./Navbar.css";
 const navItems = [
@@ -105,9 +106,9 @@ export default function Navbar() {
           <span className="join-label-mobile">Join</span>
         </Link> */}
         <a
-          aria-label="GitHub organization"
+          aria-label="Source code on GitHub"
           className="github-button"
-          href="https://github.com/GCC-FAST-NUCES-Karachi/GCC"
+          href={REPO_URL}
           rel="noreferrer"
           target="_blank"
         >

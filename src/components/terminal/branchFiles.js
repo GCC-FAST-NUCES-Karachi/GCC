@@ -15,23 +15,23 @@
 import events from "@/content/events";
 import { tiers, teamMembers } from "@/content/team";
 import { tracks, resources } from "@/content/learn";
-
-const JOIN_EMAIL = "ghcc@nu.edu.pk";
+import { CONTACT_EMAIL } from "@/content/site";
+import { getUpcomingEvents } from "@/lib/events";
 
 // ---------------------------------------------------------------------------
 // Generators (website data -> terminal file text)
 // ---------------------------------------------------------------------------
 function eventsFile() {
   const lines = ["# Upcoming Events", ""];
-  if (events.length === 0) {
+  const upcoming = getUpcomingEvents(events);
+  if (upcoming.length === 0) {
     lines.push("No events scheduled right now. Check /events for updates.");
     return lines.join("\n");
   }
-  for (const e of events) {
-    const status = e.state && e.state !== "open" ? ` [${e.state}]` : "";
-    lines.push(`- ${e.month} ${e.day}: ${e.title} (${e.place}, ${e.time})${status}`);
+  for (const e of upcoming) {
+    lines.push(`- ${e.month} ${e.day}: ${e.title} (${e.place}, ${e.time})`);
   }
-  lines.push("", "Full details and RSVP: /events");
+  lines.push("", "Full details: /events");
   return lines.join("\n");
 }
 
@@ -129,7 +129,7 @@ A community for FAST-NUCES students who learn, build, and ship together.
 Click "Join the club" on the website: /#join`,
       "CONTACT.md": `# Contact
 
-Email: ${JOIN_EMAIL}
+Email: ${CONTACT_EMAIL}
 
 Or use the Join button on the website.`,
     },

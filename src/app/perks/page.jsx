@@ -11,7 +11,7 @@ export const metadata = {
 
 export default function PerksPage() {
   return (
-    <main className="perks-page">
+    <main id="main-content" className="perks-page">
       <header className="perks-header" aria-labelledby="perks-title">
         <div className="perks-hero-copy">
           <p className="perks-subtitle">{"// git checkout perks"}</p>
