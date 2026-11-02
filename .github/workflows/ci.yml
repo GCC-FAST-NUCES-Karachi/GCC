@@ -11,8 +11,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # The job id is the status check name that branch protection requires ("build").
+  # Don't add a `name:` here without updating the required check in the repo settings.
   build:
-    name: Lint and build
     runs-on: ubuntu-latest
     steps:
       # Actions are pinned to full commit SHAs; the comment shows the release.
