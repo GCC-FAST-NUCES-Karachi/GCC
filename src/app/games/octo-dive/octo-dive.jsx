@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { ArrowLeft, Copy, Pause, Play, RefreshCw, Volume2, VolumeX } from "lucide-react";
 import OctocatDiver from "./octocat-diver";
@@ -50,35 +50,53 @@ function getRank(score) {
   return RANKS.slice().reverse().find((r) => score >= r.minScore) ?? RANKS[0];
 }
 
+// The deepest zone; also the full length of the depth bar.
+const ABYSS_DEPTH = ZONES[ZONES.length - 1].minScore;
+
 // ---------------------------------------------------------------------------
 // localStorage helpers
+// Storage can be unavailable (private browsing, blocked site data), so every
+// access is guarded. Saved values are only read after mount, which keeps the
+// server render and the first client render identical.
 // ---------------------------------------------------------------------------
 const LS_KEY = "octo-dive-best-v2";
 const LS_MUTE = "octo-dive-mute";
 
-function readBest() {
-  if (typeof window === "undefined") return 0;
-  return parseInt(localStorage.getItem(LS_KEY) ?? "0", 10) || 0;
+function readStorage(key) {
+  try {
+    return window.localStorage.getItem(key);
+  } catch {
+    return null;
+  }
 }
-function saveBest(score) {
-  if (typeof window === "undefined") return;
-  if (score > readBest()) localStorage.setItem(LS_KEY, String(score));
+function writeStorage(key, value) {
+  try {
+    window.localStorage.setItem(key, value);
+  } catch {
+    /* storage unavailable, ignore */
+  }
 }
-function readMute() {
-  if (typeof window === "undefined") return false;
-  return localStorage.getItem(LS_MUTE) === "1";
+const readBest = () => parseInt(readStorage(LS_KEY) ?? "0", 10) || 0;
+
+// ---------------------------------------------------------------------------
+// Reduced-motion preference (server and first client render assume motion)
+// ---------------------------------------------------------------------------
+const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
+
+function subscribeReducedMotion(onChange) {
+  const mq = window.matchMedia(REDUCED_MOTION_QUERY);
+  mq.addEventListener("change", onChange);
+  return () => mq.removeEventListener("change", onChange);
 }
-function saveMute(v) {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(LS_MUTE, v ? "1" : "0");
-}
+const getReducedMotion = () => window.matchMedia(REDUCED_MOTION_QUERY).matches;
+const getServerReducedMotion = () => false;
 
 // ---------------------------------------------------------------------------
 // Game state machine
 // ---------------------------------------------------------------------------
 const PHASE = { START: "start", QUESTION: "question", RESULT: "result", PAUSED: "paused", END: "end" };
 
-function initRun() {
+function initRun(personalBest = 0) {
   return {
     phase: PHASE.START,
     questions: buildRun(),
@@ -89,7 +107,7 @@ function initRun() {
     chosen: null,
     correct: null,
     pointsEarned: null,
-    personalBest: readBest(),
+    personalBest,
     correctCount: 0,
   };
 }
@@ -97,7 +115,10 @@ function initRun() {
 function reducer(state, action) {
   switch (action.type) {
     case "NEW_RUN":
-      return initRun();
+      return initRun(state.personalBest);
+
+    case "LOAD_BEST":
+      return { ...state, personalBest: Math.max(state.personalBest, action.best) };
 
     case "START":
       return { ...state, phase: PHASE.QUESTION, timeLeft: QUESTION_SECONDS, chosen: null, correct: null, pointsEarned: null };
@@ -147,9 +168,7 @@ function reducer(state, action) {
     case "NEXT": {
       const next = state.qIndex + 1;
       if (next >= QUESTIONS_PER_RUN) {
-        const best = Math.max(state.personalBest, state.score);
-        saveBest(state.score);
-        return { ...state, phase: PHASE.END, personalBest: best };
+        return { ...state, phase: PHASE.END, personalBest: Math.max(state.personalBest, state.score) };
       }
       return { ...state, phase: PHASE.QUESTION, qIndex: next, timeLeft: QUESTION_SECONDS, chosen: null, correct: null, pointsEarned: null };
     }
@@ -168,23 +187,22 @@ const TILE_LABELS = ["A", "B", "C", "D"];
 // Main component
 // ---------------------------------------------------------------------------
 export default function OctoDive() {
-  const [state, dispatch] = useReducer(reducer, null, initRun);
-  const [muted, setMuted] = useState(readMute);
+  const [state, dispatch] = useReducer(reducer, 0, initRun);
+  const [muted, setMuted] = useState(false);
   const [shake, setShake] = useState(false);
   const [tint, setTint] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(
-    () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  );
+  const reducedMotion = useSyncExternalStore(subscribeReducedMotion, getReducedMotion, getServerReducedMotion);
   const timerRef = useRef(null);
   const nextTimerRef = useRef(null);
   const shakeTimers = useRef([]);
 
-  // Track reduced-motion changes
+  // Restore the saved best score and sound setting after hydration.
   useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const h = (e) => setReducedMotion(e.matches);
-    mq.addEventListener("change", h);
-    return () => mq.removeEventListener("change", h);
+    const timer = setTimeout(() => {
+      dispatch({ type: "LOAD_BEST", best: readBest() });
+      setMuted(readStorage(LS_MUTE) === "1");
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   // Sound helper
@@ -237,9 +255,11 @@ export default function OctoDive() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.phase, state.qIndex]);
 
-  // End jingle
+  // End of run: save a new best and play the jingle
   useEffect(() => {
-    if (state.phase === PHASE.END) setTimeout(() => sound(playEnd), 0);
+    if (state.phase !== PHASE.END) return;
+    if (state.score > readBest()) writeStorage(LS_KEY, String(state.score));
+    setTimeout(() => sound(playEnd), 0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.phase]);
 
@@ -247,7 +267,11 @@ export default function OctoDive() {
   useEffect(() => {
     const onKey = (e) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const target = e.target;
+      if (target?.closest?.("input, textarea, select, [contenteditable]")) return;
       if (state.phase === PHASE.START && (e.key === " " || e.key === "Enter")) {
+        // A focused link or button handles its own Enter/Space (e.g. "All games").
+        if (target?.closest?.("a, button")) return;
         e.preventDefault(); dispatch({ type: "START" }); return;
       }
       if (state.phase === PHASE.QUESTION) {
@@ -276,7 +300,9 @@ export default function OctoDive() {
   }
 
   function toggleMute() {
-    setMuted((m) => { saveMute(!m); return !m; });
+    const next = !muted;
+    setMuted(next);
+    writeStorage(LS_MUTE, next ? "1" : "0");
   }
 
   function togglePause() {
@@ -288,7 +314,7 @@ export default function OctoDive() {
   const q = state.questions[state.qIndex];
   const zone = getZone(state.score);
   const rank = getRank(state.score);
-  const depthPct = Math.min(state.score / 1500, 1);
+  const depthPct = Math.min(state.score / ABYSS_DEPTH, 1);
   const isNewBest = state.phase === PHASE.END && state.score > 0 && state.score >= state.personalBest;
   const timerPct = (state.timeLeft / QUESTION_SECONDS) * 100;
   const timerWarn = state.timeLeft <= 5;
@@ -342,7 +368,7 @@ export default function OctoDive() {
 
           <div className="score-main">
             <strong>{state.score}</strong>
-            <span>/ 1500 m</span>
+            <span>/ {ABYSS_DEPTH} m</span>
           </div>
 
           <dl className="score-stats">
@@ -572,7 +598,7 @@ export default function OctoDive() {
             <li><b>15 questions.</b> They get harder as you dive deeper.</li>
             <li><b>15 seconds</b> per question. Answer wrong or time out and streak resets.</li>
             <li><b>Score = depth.</b> Correct = 100 + speed bonus (up to +50) + streak bonus (+10 each, max +50).</li>
-            <li><b>Aim for the Abyss</b> at 900 m.</li>
+            <li><b>Aim for the Abyss</b> at {ABYSS_DEPTH} m.</li>
           </ol>
           <div className="snake-keys">
             <p><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd><span>or A B C D to answer</span></p>

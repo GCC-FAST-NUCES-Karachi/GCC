@@ -11,6 +11,8 @@ import {
   Target,
 } from "lucide-react";
 import { siGithub } from "simple-icons";
+import { contributorHref, gameHref, games } from "@/content/games";
+import { GAMES_GUIDE_URL } from "@/content/site";
 import "./games.css";
 
 export const metadata = {
@@ -18,51 +20,7 @@ export const metadata = {
   description: "Play small games made by the GitHub Campus Club community.",
 };
 
-const games = [
-  {
-    href: "/games/commit-snake",
-    name: "Commit Snake",
-    command: "./play commit-snake",
-    status: "PLAYABLE",
-    description: "Collect commits before they expire and dodge the GCC blocks. Ship the release, grow your branch, and build speed with every commit.",
-    meta: [
-      { Icon: Target, label: "Goal", value: "15 commits" },
-      { Icon: Clock, label: "Run time", value: "about 2 min" },
-      { Icon: Keyboard, label: "Controls", value: "Keys or swipe" },
-    ],
-    contributors: [
-      { username: "ismailsilat7", href: "https://github.com/ismailsilat7" },
-    ],
-  },
-  {
-    href: "/games/bug-bash",
-    name: "Bug Bash",
-    command: "./play bug-bash",
-    status: "PLAYABLE",
-    description: "Squash bugs before they ship, spare the working code and never force push. Chain combos into fever mode and take down the legacy monolith.",
-    meta: [
-      { Icon: Target, label: "Goal", value: "Keep the build green" },
-      { Icon: Clock, label: "Run time", value: "1 to 3 min" },
-      { Icon: MousePointerClick, label: "Controls", value: "Click, tap or slash" },
-    ],
-    contributors: [{ username: "maybethemuhammadibrahim", href: "https://github.com/maybethemuhammadibrahim" }],
-  },
-  {
-    href: "/games/octo-dive",
-    name: "Octo Dive",
-    command: "./play octo-dive",
-    status: "PLAYABLE",
-    description: "Dive through GitHub and Git questions, build streaks and earn depth with every correct answer.",
-    meta: [
-      { Icon: Target, label: "Goal", value: "Reach the Abyss" },
-      { Icon: Clock, label: "Run time", value: "about 3 min" },
-      { Icon: Keyboard, label: "Controls", value: "Tap tiles or 1–4" },
-    ],
-    contributors: [{ username: "del-b2l", href: "https://github.com/GCC-FAST-NUCES-Karachi/GCC/commits?author=del-b2l" }],
-  },
-];
-
-const CONTRIBUTE_URL = "https://github.com/GCC-FAST-NUCES-Karachi/GCC/blob/main/games.md";
+const META_ICONS = { goal: Target, time: Clock, keyboard: Keyboard, pointer: MousePointerClick };
 
 const steps = [
   { Icon: BookOpen, title: "Read the game guide", text: "See how a game plugs into the arcade." },
@@ -103,28 +61,29 @@ export default function GamesPage() {
 
         <div className="games-grid">
           {games.map((game) => (
-            <article key={game.name} className="game-card">
-              <div className="game-card-top"><span className="game-status"><i />{game.status}</span><code>{`$ ${game.command}`}</code></div>
+            <article key={game.slug} className="game-card">
+              <div className="game-card-top"><span className="game-status"><i />PLAYABLE</span><code>{`$ ./play ${game.slug}`}</code></div>
               <h3>{game.name}</h3>
               <p className="game-description">{game.description}</p>
               <ul className="arcade-meta">
-                {game.meta.map(({ Icon, label, value }) => (
-                  <li key={label}><Icon size={16} aria-hidden="true" /><span>{label}</span><strong>{value}</strong></li>
-                ))}
+                {game.meta.map(({ icon, label, value }) => {
+                  const Icon = META_ICONS[icon];
+                  return <li key={label}><Icon size={16} aria-hidden="true" /><span>{label}</span><strong>{value}</strong></li>;
+                })}
               </ul>
               <div className="game-card-footer">
                 <div className="game-contributor-group" aria-label={`Contributors to ${game.name}`}>
                   <span className="game-contributors-label">Contributed by</span>
                   <div className="game-contributors">
-                    {game.contributors.map(({ username, href }) => (
-                      <a key={username} href={href} target="_blank" rel="noreferrer" aria-label={`${username} on GitHub`}>
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d={siGithub.path} /></svg><span>{username}</span>
+                    {game.contributors.map((contributor) => (
+                      <a key={contributor.username} href={contributorHref(contributor)} target="_blank" rel="noreferrer" aria-label={`${contributor.username} on GitHub`}>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d={siGithub.path} /></svg><span>{contributor.username}</span>
                       </a>
                     ))}
                   </div>
                 </div>
                 <div className="game-card-action">
-                  <Link href={game.href} className="arcade-cta">Play now <ArrowRight size={16} aria-hidden="true" /></Link>
+                  <Link href={gameHref(game)} className="arcade-cta">Play now <ArrowRight size={16} aria-hidden="true" /></Link>
                 </div>
               </div>
             </article>
@@ -146,7 +105,7 @@ export default function GamesPage() {
             </li>
           ))}
         </ol>
-        <a className="arcade-contribute-link" href={CONTRIBUTE_URL} target="_blank" rel="noreferrer">
+        <a className="arcade-contribute-link" href={GAMES_GUIDE_URL} target="_blank" rel="noreferrer">
           How to contribute <ArrowRight size={15} aria-hidden="true" />
         </a>
       </section>

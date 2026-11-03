@@ -1,7 +1,9 @@
 import EventsList from "@/components/events/EventsList";
 import "./events.css";
 
-export const dynamic = "force-dynamic";
+// Rebuild hourly so events move from Upcoming to Past once they end, without
+// rendering on every request.
+export const revalidate = 3600;
 
 export const metadata = {
   title: "Events",

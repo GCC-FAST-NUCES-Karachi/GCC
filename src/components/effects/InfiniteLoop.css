@@ -3,8 +3,9 @@
   display: flow-root;
 }
 
-/* The loop never ends, so the footer is never reached on the looping page. */
-body.is-looping .site-footer {
+/* While looping, every copy carries its own footer; hide the site-wide one that
+   would otherwise sit after the last copy. */
+body.is-looping .site-content > .site-footer {
   display: none;
 }
 

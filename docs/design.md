@@ -26,6 +26,7 @@ If a handoff value conflicts with an established shared token or accessible impl
 | `/games` | Arcade hub and contribution information |
 | `/games/commit-snake` | Playable Commit Snake |
 | `/games/bug-bash` | Playable Bug Bash |
+| `/games/octo-dive` | Playable Octo Dive quiz |
 | `/terminal` | Simulated Git terminal |
 
 The navbar and footer are shared. The terminal is available from the global navbar and its own route. Current route details and metadata live in the corresponding `src/app/**/page.jsx` files.
@@ -38,11 +39,11 @@ The intended section order is:
 
 - **Hero:** strong club statement over a dark grid/galaxy background, with the GitHub mark and a scroll cue. Keep contrast stable across background states.
 - **Core Functions:** four cards for hackathons, workshops, tech talks, and community, with code-like filenames, simple icons, and concise descriptions.
-- **Highlights:** responsive cards for posts, recaps, and tutorials. Current items are illustrative sample content in `src/content/highlights.js`.
-- **Play:** terminal-inspired panel that promotes the playable Commit Snake route and the arcade contribution path. The game itself is on `/games/commit-snake`.
+- **Highlights:** responsive cards for posts, recaps, and tutorials. Current items are two past-workshop posters plus LinkedIn and WhatsApp community cards, defined in `src/app/landing/LandingSections.jsx`.
+- **Play:** arcade-window panel listing every playable game from `src/content/games.js`, with a link to the `/games` hub.
 - **Events:** shared event component used on the landing and `/events`. The content source is `src/content/events.js`; verify sample event details and RSVP links.
-- **Join:** direct email link from the landing section.
-- **Footer:** brand summary, navigation, community/build links, and build metadata. Audit external destinations before release.
+- **Join:** call to action that opens the club's WhatsApp community (`WHATSAPP_URL` in `src/content/site.js`).
+- **Footer:** brand summary, navigation, community/build links, and the commit the build came from. While the landing loop runs, each loop copy ends with its own footer.
 
 See [landingpage_design.md](landingpage_design.md) for more detailed visual notes and the comparison with current implementation.
 
@@ -66,12 +67,12 @@ Preserve keyboard history/input, usable command suggestions, clear close behavio
 | --- | --- | --- |
 | Shared shell and navbar | `src/app/layout.jsx`, `src/components/layout/`, `src/components/terminal/` | Responsive site shell; working terminal trigger and overlay. |
 | Hero and galaxy | `src/app/page.jsx`, `src/app/landing/landing.css`, `src/components/effects/GalaxyBackground.jsx` | Landing hero and canvas galaxy are implemented; reduced-motion fallback is present. |
-| Core Functions and Highlights | `src/app/landing/LandingSections.jsx`, `src/content/highlights.js` | Implemented; highlight entries/previews are sample content. |
-| Play | `src/app/landing/LandingSections.jsx` | Arcade promotion links to Commit Snake and `/games#contribute`. |
+| Core Functions and Highlights | `src/app/landing/LandingSections.jsx` | Implemented. |
+| Play | `src/app/landing/LandingSections.jsx`, `src/content/games.js` | Lists every arcade game and links to `/games`. |
 | Events | `src/components/events/EventsList.jsx`, `src/content/events.js`, route styles | Shared list and empty state; event content/destinations need verification. |
-| Join | `src/app/landing/LandingSections.jsx` | Mailto CTA. |
+| Join | `src/app/landing/LandingSections.jsx`, `src/content/site.js` | WhatsApp community CTA. |
 | Team and Perks | `src/app/team/`, `src/content/team.js`, `src/app/perks/` | Populated routes; confirm copy/assets/destinations. |
-| Arcade | `src/app/games/`, `src/app/games/commit-snake/`, `src/app/games/bug-bash/` | Hub, playable Commit Snake, and playable Bug Bash. See [games.md](../games.md). |
+| Arcade | `src/app/games/`, `src/content/games.js` | Hub plus playable Commit Snake, Bug Bash, and Octo Dive. See [games.md](../games.md). |
 | Terminal | `src/app/terminal/`, `src/components/terminal/` | Simulated terminal with virtual commands and puzzle flow. |
 | Loop interstitials and Easter egg | `src/components/effects/InfiniteLoop.jsx`, `EasterBug.jsx`, `BugFinale.jsx`, `src/lib/easterBug.js` | Four progress prompts lead to a crack/shatter finale and terminal route; local storage remembers discovery. |
 

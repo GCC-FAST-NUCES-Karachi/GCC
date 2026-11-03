@@ -40,6 +40,7 @@ export default function BugFinale({ onDone, startStage = 3 }) {
   const [phase, setPhase] = useState("crack"); // crack -> shatter -> terminal -> out
   const [shown, setShown] = useState(0);
   const [opening, setOpening] = useState(false);
+  const rootRef = useRef(null);
   const timers = useRef([]);
   const finished = useRef(false);
   const doneRef = useRef(onDone);
@@ -99,10 +100,15 @@ export default function BugFinale({ onDone, startStage = 3 }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Move focus into the dialog so assistive tech announces it and Escape reaches it.
+  useEffect(() => {
+    rootRef.current?.focus({ preventScroll: true });
+  }, []);
+
   // Keep the cinematic frame within the visible area on mobile browsers, where
   // the visual viewport can be smaller than the layout viewport.
   useEffect(() => {
-    const root = document.querySelector(".fin-root");
+    const root = rootRef.current;
     const viewport = window.visualViewport;
     if (!root || !viewport) return undefined;
     const syncViewport = () => {
@@ -119,7 +125,7 @@ export default function BugFinale({ onDone, startStage = 3 }) {
   }, []);
 
   return (
-    <div className={`fin-root is-${phase}`} role="dialog" aria-modal="true" aria-label="Easter egg">
+    <div ref={rootRef} className={`fin-root is-${phase}`} role="dialog" aria-modal="true" aria-label="Easter egg" tabIndex={-1}>
       {/* The GitHub-style terminal, revealed when the glass falls away */}
       <div className={`fin-stage${opening ? " is-opening" : ""}`}>
         <div className="terminal-window fin-term" inert>

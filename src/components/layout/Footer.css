@@ -143,6 +143,12 @@
 
 .build-tag {
   color: var(--accent-green);
+  text-decoration: none;
+}
+
+a.build-tag:hover {
+  text-decoration: underline;
+  text-underline-offset: .2em;
 }
 
 @media (max-width: 900px) {

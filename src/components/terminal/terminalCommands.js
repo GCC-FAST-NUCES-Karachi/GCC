@@ -648,42 +648,6 @@ export function executeCommand(rawInput, state) {
 }
 
 // ---------------------------------------------------------------------------
-// Quick-command chips (shown above the input; tapping fills the input)
-// ---------------------------------------------------------------------------
-export function getQuickCommands(state) {
-  const files = Object.keys(BRANCH_FILES[state.currentBranch] || {});
-  const list = [];
-
-  if (state.currentBranch === "secret" && !state.challengeCompleted) {
-    list.push({ label: "cat BADGE.md", command: "cat BADGE.md" });
-  }
-  if (state.secretUnlocked && state.currentBranch !== "secret") {
-    list.push({ label: "git checkout secret", command: "git checkout secret" });
-  } else if (allCluesFound(state) && !state.secretUnlocked) {
-    list.push({ label: "git unlock", command: "git unlock " });
-  }
-
-  list.push(
-    { label: "git help", command: "git help" },
-    { label: "ls", command: "ls" },
-  );
-  if (files[0])
-    list.push({ label: `cat ${files[0]}`, command: `cat ${files[0]}` });
-  list.push(
-    { label: "git branch", command: "git branch" },
-    { label: "git log --oneline", command: "git log --oneline" },
-    { label: "git status", command: "git status" },
-    { label: "cat KEY.md", command: "cat KEY.md" },
-    { label: "clear", command: "clear" },
-  );
-
-  const seen = new Set();
-  return list.filter((c) =>
-    seen.has(c.command) ? false : seen.add(c.command),
-  );
-}
-
-// ---------------------------------------------------------------------------
 // Autocomplete (respects branch visibility; never leaks hidden names)
 // ---------------------------------------------------------------------------
 export function getCompletions(partial, state) {

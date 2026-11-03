@@ -8,13 +8,17 @@ import {
   UpcomingEventsSection,
 } from "@/app/landing/LandingSections";
 import InfiniteLoop from "@/components/effects/InfiniteLoop";
+import Footer from "@/components/layout/Footer";
 import "./landing/landing.css";
 
 export const metadata = { title: "Home" };
 
+// Rebuild hourly so the upcoming-events section drops events once they have ended.
+export const revalidate = 3600;
+
 export default function Home() {
   return (
-    <InfiniteLoop>
+    <InfiniteLoop footer={<Footer />}>
     <main id="main-content">
       <section className="hero" aria-labelledby="home-heading">
         <div className="hero-copy">

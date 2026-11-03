@@ -16,6 +16,8 @@ The arcade lives at `/games`. It is a collection of small, self-contained games 
 | Octo Dive | `/games/octo-dive` | Answer 15 multiple-choice GitHub and Git questions before the 15-second timer runs out. Tap one of the 4 coloured answer tiles or press 1–4 / A–D. Speed bonus + streak bonus reward quick correct answers. Total score equals depth in metres. |
 | Bug Bash | `/games/bug-bash` | Keep the build green for as long as you can. Click or tap bugs to squash them, or hold and drag to slash several. Keyboard players can Tab to a chip and press Enter. Press Space to start or pause, R to reset, and M to mute. |
 
+Octo Dive picks 9 beginner and 6 technical questions from `src/app/games/octo-dive/config.js` for each run and shuffles the answer order. A correct answer scores 100 plus a speed bonus and a streak bonus; the score is the depth in metres, and the Abyss starts at 1500 m. The game saves the best score and the sound setting in local storage on that device.
+
 Commit Snake pickups expire after 10 seconds and move to another open cell without a penalty. The board wraps at its edges. Hitting a GCC block or the snake's own body ends the run. The snake speeds up as commits are collected. The game saves the best score and fastest winning time in the browser's local storage on that device.
 
 Bug Bash chips fall down a code file, and a bug escapes when it reaches the bottom. Set `CHIP_FALL` to `false` in `src/app/games/bug-bash/config.js` to make chips pop up in place on the code lines instead. An escaped bug, a hit on working code or a feature, or a surviving boss costs 1 of 3 build health. Hitting a ⚠ command such as `git push --force` ends the run at once. Every 3 squashes in a row raise the score multiplier, and reaching ×5 starts fever mode for double points. Bigger bugs take several hits, split bugs break into two smaller ones that cost only 0.25 build health each if they escape, and disguised bugs look like code with a wavy red underline. Power-ups restore health, slow time, or fix every bug on screen. A `legacy_monolith.js` boss appears after 40 seconds and then about once a minute. The game gets faster for the first 90 seconds; tune the pace with the progression values in `src/app/games/bug-bash/config.js`. It saves the best score and the sound setting in local storage on that device.
@@ -24,9 +26,9 @@ Bug Bash watches its own frame times during a run. If too many frames run long, 
 
 ## How the arcade is organized
 
-- `src/app/games/page.jsx` renders the arcade hub and its game cards. Its `games` list is the directory of games currently shown on the page.
+- `src/content/games.js` is the arcade directory. The hub at `src/app/games/page.jsx` and the landing Play section both render from this one list.
 - `src/app/games/games.css` contains styles shared by the arcade hub and games.
-- Each game has a route folder under `src/app/games/`. For example, Commit Snake is in `src/app/games/commit-snake/` and Bug Bash is in `src/app/games/bug-bash/`.
+- Each game has a route folder under `src/app/games/`. For example, Commit Snake is in `src/app/games/commit-snake/`, Bug Bash is in `src/app/games/bug-bash/`, and Octo Dive is in `src/app/games/octo-dive/`.
 - A route's `page.jsx` should stay small: export page metadata and render the game component.
 - Put game behavior in a client component (`"use client"`) when it needs browser APIs, state, input events, canvas, or animation. Keep reusable, non-UI constants in a nearby `config.js` when that makes the game easier to maintain.
 
@@ -55,19 +57,19 @@ The design documents include both implemented behavior and older or aspirational
 
    `page.jsx` can import the shared game stylesheet with `import "../games.css";`. Export `metadata` with a concise title and description. Put `"use client"` at the top of the component file only if that component needs client-side React or browser features.
 
-3. **Design the play experience.** Include the objective, rules, controls, start/restart behavior, and a clear result state. Support keyboard and touch when practical; do not make a keyboard-only game the sole option on mobile. Make focus visible and provide accessible names for controls. Pause safely when the tab is hidden if the game has a real-time loop, and respect reduced-motion preferences.
+3. **Design the play experience.** Include the objective, rules, controls, start/restart behavior, and a clear result state. Support keyboard and touch when practical; do not make a keyboard-only game the sole option on mobile. Make focus visible and provide accessible names for controls. Pause safely when the tab is hidden if the game has a real-time loop, and respect reduced-motion preferences. Wrap every `localStorage` read and write in `try/catch` and read saved values after mount, so private browsing cannot crash the page and the server and client render the same markup. A real-time game should also pause the site's galaxy background while a run is live by dispatching the `gcc:pause-background` event (see Commit Snake or Bug Bash).
 
 4. **Use the shared visual system.** Start with the CSS tokens and existing arcade classes. Keep the game readable at narrow widths, make interactive targets easy to use, and scope any new selectors so the game cannot restyle the hub or other games.
 
-5. **Add it to the hub.** In `src/app/games/page.jsx`, add an entry to the `games` array with:
-   - `href` matching the new route;
-   - a short name and command label;
-   - a truthful status such as `PLAYABLE` only when the game is ready;
-   - a one-sentence description;
-   - concise goal, expected run time, and control details;
-   - a small preview component if the game has a useful static preview.
+5. **List it in the arcade.** Add one entry to the `games` array in `src/content/games.js`. The `/games` hub and the landing Play section both pick it up. Each entry needs:
+   - `slug` matching the route folder (the game is served at `/games/<slug>`);
+   - `name`, a short `genre` label, and a one-line `tagline` for the landing card;
+   - a one- or two-sentence `description` for the hub card;
+   - a short `controls` summary, such as `KEYBOARD · SWIPE`;
+   - `meta` rows for the goal, expected run time, and controls;
+   - your GitHub username in `contributors`.
 
-   The first entry is rendered as the featured game; later entries appear in the secondary grid. If the featured game changes, confirm its preview and hub layout still make sense.
+   Only add the entry once the game is playable end to end; every listed game is shown as `PLAYABLE`.
 
 6. **Run and inspect the project.** From the repository root:
 

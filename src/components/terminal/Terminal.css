@@ -844,6 +844,12 @@
   box-shadow: 0 0 0 3px rgba(63, 185, 80, 0.1);
 }
 
+/* The input has no outline of its own, so keyboard focus is shown on the row. */
+.terminal-input-row:has(.terminal-input:focus-visible) {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.25);
+}
+
 .terminal-prompt {
   flex-shrink: 0;
   color: var(--t-green);

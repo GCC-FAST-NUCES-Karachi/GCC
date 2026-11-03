@@ -360,6 +360,14 @@ export default function CommitSnake() {
     };
   }, [draw]);
 
+  // The site's animated galaxy background pauses while a run is live (see GalaxyBackground).
+  const running = hud.status === "running";
+  useEffect(() => {
+    if (!running) return undefined;
+    window.dispatchEvent(new CustomEvent("gcc:pause-background", { detail: true }));
+    return () => window.dispatchEvent(new CustomEvent("gcc:pause-background", { detail: false }));
+  }, [running]);
+
   /* ---------- actions ---------- */
   const begin = useCallback(() => {
     const g = gameRef.current;

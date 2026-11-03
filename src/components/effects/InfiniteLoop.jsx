@@ -10,7 +10,7 @@ import EasterBug from "./EasterBug";
  * top; upward scrolling remains ordinary page scrolling. Progress is preserved
  * across each downward wrap for the Easter egg hints and background effects.
  */
-export default function InfiniteLoop({ children }) {
+export default function InfiniteLoop({ children, footer = null }) {
   const topRef = useRef(null);
   const midRef = useRef(null);
   const wasBug = useRef(true);
@@ -108,12 +108,14 @@ export default function InfiniteLoop({ children }) {
 
   return (
     <>
+      {/* Each copy ends with the footer, so it is reachable on every pass. Once the
+          loop is off, the site-wide footer from the layout takes over. */}
       {bug ? (
         <>
-          <div ref={topRef} className="infinite-loop-copy">{children}</div>
-          <div ref={midRef} className="infinite-loop-copy" aria-hidden="true">{children}</div>
-          <div className="infinite-loop-copy" aria-hidden="true">{children}</div>
-          <div className="infinite-loop-copy" aria-hidden="true">{children}</div>
+          <div ref={topRef} className="infinite-loop-copy">{children}{footer}</div>
+          <div ref={midRef} className="infinite-loop-copy" aria-hidden="true">{children}{footer}</div>
+          <div className="infinite-loop-copy" aria-hidden="true">{children}{footer}</div>
+          <div className="infinite-loop-copy" aria-hidden="true">{children}{footer}</div>
         </>
       ) : children}
       <EasterBug active={bug} />

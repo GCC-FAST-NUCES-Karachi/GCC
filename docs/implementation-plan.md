@@ -8,7 +8,7 @@ The repository is a JavaScript/JSX Next.js App Router application. It has a shar
 
 | Route / feature | Current implementation | Source of truth |
 | --- | --- | --- |
-| `/` | Hero, Core Functions, sample Highlights, Play/arcade teaser, upcoming events, Join section; wrapped by `InfiniteLoop` | `src/app/page.jsx`, `src/app/landing/`, `src/content/highlights.js`, `src/content/events.js` |
+| `/` | Hero, Core Functions, sample Highlights, Play/arcade teaser, upcoming events, Join section; wrapped by `InfiniteLoop` | `src/app/page.jsx`, `src/app/landing/`, `src/content/games.js`, `src/content/events.js` |
 | `/events` | Shared event list with upcoming items and empty state | `src/app/events/`, `src/components/events/EventsList.jsx`, `src/content/events.js` |
 | `/learn` | Learning paths and selected student resources | `src/app/learn/`, `src/app/perks/perks.js` |
 | `/team` | Roster grouped by tiers with member cards and portraits | `src/app/team/`, `src/content/team.js`, `src/app/team/MemberCard.jsx` |
@@ -16,6 +16,7 @@ The repository is a JavaScript/JSX Next.js App Router application. It has a shar
 | `/games` | Arcade directory and contribution section | `src/app/games/page.jsx`, `src/app/games/games.css`, `games.md` |
 | `/games/commit-snake` | Keyboard, touch-pad, and swipe playable game; per-device records | `src/app/games/commit-snake/` |
 | `/games/bug-bash` | Click, tap, slash, and keyboard playable game; per-device best score | `src/app/games/bug-bash/` |
+| `/games/octo-dive` | Timed Git and GitHub quiz; per-device best score | `src/app/games/octo-dive/` |
 | `/terminal` and navbar terminal | Safe simulated terminal with virtual files, branch navigation, clues, challenge, history, onboarding, and session persistence | `src/app/terminal/`, `src/components/terminal/` |
 | Shared shell | Galaxy, navigation, footer, terminal context and overlay | `src/app/layout.jsx`, `src/components/layout/`, `src/components/effects/GalaxyBackground.jsx`, `src/components/terminal/` |
 
@@ -31,7 +32,7 @@ The repository is a JavaScript/JSX Next.js App Router application. It has a shar
 
 ### 1. Content and destination audit
 
-Review `src/content/events.js`, `src/content/highlights.js`, `src/content/team.js`, `src/app/perks/perks.js`, terminal virtual files in `src/components/terminal/terminalData.js`, plus links in the navbar/footer and page components. Confirm names, descriptions, dates, RSVP targets, social accounts, Join contact, and footer destinations with the club. Keep clearly provisional data until approved and avoid presenting invented details as real.
+Review `src/content/events.js`, `src/content/site.js`, `src/content/team.js`, `src/app/perks/perks.js`, terminal virtual files in `src/components/terminal/terminalData.js`, plus links in the navbar/footer and page components. Confirm names, descriptions, dates, RSVP targets, social accounts, Join contact, and footer destinations with the club. Keep clearly provisional data until approved and avoid presenting invented details as real.
 
 **Done when:** the site has an owner-approved content source and destination for each public claim and call to action, or explicitly identifies missing information.
 
@@ -49,7 +50,7 @@ Review the shared shell and all routes at narrow/mobile, tablet, laptop, and wid
 
 ### 4. Extend the arcade when there is a selected game
 
-The current hub lists Commit Snake and Bug Bash. Follow [games.md](../games.md) to add a focused route, clear rules and controls, and a truthful hub entry. Keep the landing Play panel linked to the actual game and contribution route.
+The hub lists Commit Snake, Bug Bash, and Octo Dive. Follow [games.md](../games.md) to add a focused route, clear rules and controls, and one entry in `src/content/games.js`, which feeds both the hub and the landing Play panel.
 
 **Done when:** each listed game is reachable, playable, and accurately described in both the UI and game guide.
 
